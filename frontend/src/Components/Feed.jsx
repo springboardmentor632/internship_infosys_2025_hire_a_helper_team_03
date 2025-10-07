@@ -150,7 +150,7 @@ export default function Feed() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {/* Top Bar - Desktop */}
-        <header className="hidden lg:flex items-center justify-between text-white px-14 py-6" style={{ backgroundColor: '#5B86FF', borderRadius: '0 0 6.35px 6.35px' }}>
+        <header className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]" style={{ backgroundColor: '#5B86FF', borderRadius: '' }}>
           <div className="flex-1 max-w-[548px]">
             <div className="relative">
               <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
