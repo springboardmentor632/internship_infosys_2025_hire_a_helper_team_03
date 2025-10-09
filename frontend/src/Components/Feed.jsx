@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { 
   Search, 
   Filter, 
@@ -20,6 +22,9 @@ import {
 } from 'lucide-react';
 
 export default function Feed() {
+
+  const navigate = useNavigate();
+
   const [favorites, setFavorites] = useState([false, false, false, false, false, false, false, false]);
 
   const toggleFavorite = (index) => {
@@ -103,21 +108,21 @@ export default function Feed() {
         <div className="w-full h-px" style={{ backgroundColor: '#FFFFFF' }}></div>
 
         <nav className="flex-1 pt-10 px-2">
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer">
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer" onClick={() => navigate("/")}>
             <div className="flex items-center gap-4">
               <LayoutDashboard size={24} strokeWidth={2} />
               <span className="text-2xl font-normal leading-7">Dashboard</span>
             </div>
           </div>
 
-          <div className="px-6 py-3 mb-1" style={{ backgroundColor: 'rgba(251, 251, 251, 0.4)', borderRadius: '4px' }}>
+          <div className="px-6 py-3 mb-1" style={{ backgroundColor: 'rgba(251, 251, 251, 0.4)', borderRadius: '4px' }} onClick={() => navigate("/feedPage")}>
             <div className="flex items-center gap-4">
               <List size={20} strokeWidth={2.5} />
               <span className="text-2xl font-bold leading-7">Feed</span>
             </div>
           </div>
 
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer">
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer" onClick={() => navigate("/mytasks")}>
             <div className="flex items-center gap-4">
               <CheckSquare size={20} strokeWidth={2} />
               <span className="text-2xl font-normal leading-7">My Tasks</span>
