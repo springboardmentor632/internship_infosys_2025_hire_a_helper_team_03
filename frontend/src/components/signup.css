@@ -1,0 +1,174 @@
+/* src/App.css */
+
+/* --- General Page Layout --- */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf2 100%);
+}
+
+.main-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.03);
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  max-width: 1100px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* --- Form Section Styling --- */
+.form-section {
+  padding: 60px 50px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #333;
+  transition: background 0.3s, box-shadow 0.3s;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.input-field::placeholder {
+  color: #a0a0a0;
+}
+
+.input-field:focus {
+  outline: none;
+  background: #ebebeb;
+  box-shadow: 0 0 0 2px rgba(43, 89, 255, 0.3);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin: 24px 0 32px 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #2B59FF;
+  border-radius: 4px;
+}
+
+.checkbox-group label {
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.link {
+  color: #2B59FF;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: #2B59FF;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.submit-btn:hover {
+  background: #234CCD;
+}
+
+.submit-btn:active {
+  transform: translateY(1px);
+}
+
+/* --- Welcome Section Styling --- */
+.welcome-section {
+  background: #2B59FF;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.welcome-text {
+  font-size: 48px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.brand-text {
+  font-size: 54px;
+  font-weight: 800;
+  color: #EC4899;
+  margin: 0;
+}
+
+.welcome-subtitle {
+  color: white;
+  font-size: 15px;
+  margin-top: 12px;
+}
+
+/* --- Illustration Styling --- */
+.illustration-container {
+  margin-top: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.illustration-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* --- No Responsive Changes - Desktop Only --- */
+/* All media queries removed to keep desktop layout on all screens */
