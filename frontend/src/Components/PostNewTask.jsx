@@ -20,8 +20,9 @@ import {
 } from "lucide-react";
 
 export default function PostNewTask() {
-  const navigate = useNavigate();
 
+    const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -61,60 +62,42 @@ export default function PostNewTask() {
     {
       icon: "✏️",
       title: "Clear Title",
-      description:
-        "Use specific, descriptive titles that explain exactly what you need",
+      description: "Use specific, descriptive titles that explain exactly what you need",
       color: "bg-blue-300",
     },
     {
       icon: "✅",
       title: "Right Category",
-      description:
-        "Choose the most relevant category to reach the right helpers",
+      description: "Choose the most relevant category to reach the right helpers",
       color: "bg-green-300",
     },
     {
       icon: "📸",
       title: "Add Photos",
-      description:
-        "Images help helpers understand your task better and get more responses",
+      description: "Images help helpers understand your task better and get more responses",
       color: "bg-yellow-200",
     },
   ];
 
   return (
-    <div
-      className="flex flex-col lg:flex-row min-h-screen"
-      style={{ backgroundColor: "rgba(231, 231, 231, 0.33)" }}
-    >
+    <div className="flex flex-col lg:flex-row min-h-screen" style={{ backgroundColor: 'rgba(231, 231, 231, 0.33)' }}>
       {/* Sidebar - Desktop */}
-      <aside
-        className="hidden lg:flex flex-col text-white flex-shrink-0"
-        style={{ backgroundColor: "#5B86FF", width: "330px" }}
-      >
+      <aside className="hidden lg:flex flex-col text-white flex-shrink-0" style={{ backgroundColor: '#5B86FF', width: '330px' }}>
         <div className="px-7 pt-11 pb-8">
           <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
           <p className="text-xl font-normal">Welcome back, John</p>
         </div>
         <div className="w-full h-px bg-white"></div>
         <nav className="flex-1 pt-10 px-2">
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
-            nClick={() => navigate("/dashboard")}
-          >
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded" nClick={() => navigate("/feedPage")}>
             <LayoutDashboard size={24} strokeWidth={2} />
             <span className="text-2xl font-normal">Dashboard</span>
           </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
-            onClick={() => navigate("/feedPage")}
-          >
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded" onClick={() => navigate('/feedPage')}>
             <List size={24} strokeWidth={2} />
             <span className="text-2xl font-normal">Feed</span>
           </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
-            onClick={() => navigate("/mytasks")}
-          >
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded" onClick={() => navigate('/mytasks')}>
             <CheckSquare size={24} strokeWidth={2} />
             <span className="text-2xl font-normal">My Tasks</span>
           </div>
@@ -136,15 +119,9 @@ export default function PostNewTask() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {/* Header */}
-        <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6"
-          style={{ backgroundColor: "#5B86FF", height: "85px" }}
-        >
-          <div className="flex-1 relative" style={{ maxWidth: "548px" }}>
-            <Search
-              className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+        <header className="hidden lg:flex items-center justify-between text-white px-14 py-6" style={{ backgroundColor: '#5B86FF', height: '85px' }}>
+          <div className="flex-1 relative" style={{ maxWidth: '548px' }}>
+            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
               placeholder="Search.."
@@ -162,10 +139,7 @@ export default function PostNewTask() {
         </header>
 
         {/* Mobile Header */}
-        <header
-          className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px" }}
-        >
+        <header className="lg:hidden text-white p-4 shadow-lg" style={{ backgroundColor: '#5B86FF', borderRadius: '0 0 30px 30px' }}>
           <div className="flex items-center justify-between mb-4">
             <button className="p-2">
               <Menu size={28} />
@@ -176,10 +150,7 @@ export default function PostNewTask() {
             </button>
           </div>
           <div className="relative">
-            <Search
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={18}
-            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
               placeholder="Search.."
@@ -191,9 +162,7 @@ export default function PostNewTask() {
         {/* Content */}
         <section className="flex-1 p-4 lg:p-12 overflow-y-auto pb-24 lg:pb-8">
           <div className="mb-6">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-2">
-              Post New Task
-            </h2>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-2">Post New Task</h2>
             <p className="text-sm lg:text-base font-normal text-black">
               Get help with your task from skilled helpers
             </p>
@@ -203,9 +172,7 @@ export default function PostNewTask() {
             {/* Form */}
             <div className="lg:col-span-2 bg-white rounded-2xl shadow p-6">
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Task Title *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Task Title *</label>
                 <input
                   type="text"
                   name="title"
@@ -217,9 +184,7 @@ export default function PostNewTask() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Category *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
                 <select
                   name="category"
                   value={formData.category}
@@ -237,9 +202,7 @@ export default function PostNewTask() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -249,15 +212,11 @@ export default function PostNewTask() {
                   placeholder="Brief description of your task"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
-                <p className="text-right text-sm text-gray-500 mt-1">
-                  {formData.description.length}/150 characters
-                </p>
+                <p className="text-right text-sm text-gray-500 mt-1">{formData.description.length}/150 characters</p>
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Task Image
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Task Image</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
                   <input
                     type="file"
@@ -269,30 +228,15 @@ export default function PostNewTask() {
                   <label htmlFor="imageUpload" className="cursor-pointer">
                     {imagePreview ? (
                       <div>
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="mx-auto max-h-48 rounded-lg mb-2"
-                        />
-                        <p className="text-sm text-gray-600">
-                          Click to change image
-                        </p>
+                        <img src={imagePreview} alt="Preview" className="mx-auto max-h-48 rounded-lg mb-2" />
+                        <p className="text-sm text-gray-600">Click to change image</p>
                       </div>
                     ) : (
                       <div>
-                        <Upload
-                          className="mx-auto text-gray-400 mb-2"
-                          size={40}
-                        />
-                        <p className="text-gray-700 font-medium mb-1">
-                          Click to upload
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          PNG, JPG up to 5MB
-                        </p>
+                        <Upload className="mx-auto text-gray-400 mb-2" size={40} />
+                        <p className="text-gray-700 font-medium mb-1">Click to upload</p>
+                        <p className="text-sm text-gray-500">or drag and drop</p>
+                        <p className="text-xs text-gray-400 mt-2">PNG, JPG up to 5MB</p>
                       </div>
                     )}
                   </label>
@@ -319,9 +263,7 @@ export default function PostNewTask() {
             <div className="lg:col-span-1 bg-white rounded-2xl shadow p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="text-yellow-500" size={20} />
-                <h3 className="text-lg font-bold text-gray-900">
-                  Tips for Success
-                </h3>
+                <h3 className="text-lg font-bold text-gray-900">Tips for Success</h3>
               </div>
               <div className="space-y-4">
                 {tips.map((tip, index) => (
@@ -329,12 +271,8 @@ export default function PostNewTask() {
                     <div className="flex items-start gap-2">
                       <span className="text-xl">{tip.icon}</span>
                       <div className="flex-1">
-                        <h4 className="font-bold text-gray-900 mb-1">
-                          {tip.title}
-                        </h4>
-                        <p className="text-sm text-gray-700">
-                          {tip.description}
-                        </p>
+                        <h4 className="font-bold text-gray-900 mb-1">{tip.title}</h4>
+                        <p className="text-sm text-gray-700">{tip.description}</p>
                       </div>
                     </div>
                   </div>
@@ -347,59 +285,24 @@ export default function PostNewTask() {
         {/* Mobile Bottom Navigation */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 shadow-lg">
           <div className="flex items-center justify-around relative">
-            <button
-              className="flex flex-col items-center gap-1"
-              onClick={() => handleNavigation("dashboard")}
-            >
-              <LayoutDashboard
-                size={28}
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Dashboard
-              </span>
+            <button className="flex flex-col items-center gap-1" onClick={() => handleNavigation('dashboard')}>
+              <LayoutDashboard size={28} style={{ color: 'rgba(0, 0, 0, 0.47)' }} />
+              <span className="text-xs font-medium" style={{ color: 'rgba(0, 0, 0, 0.47)' }}>Dashboard</span>
             </button>
-            <button
-              className="flex flex-col items-center gap-1"
-              onClick={() => handleNavigation("")}
-            >
-              <Home size={28} style={{ color: "rgba(0, 0, 0, 0.47)" }} />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Home
-              </span>
+            <button className="flex flex-col items-center gap-1" onClick={() => handleNavigation('')}>
+              <Home size={28} style={{ color: 'rgba(0, 0, 0, 0.47)' }} />
+              <span className="text-xs font-medium" style={{ color: 'rgba(0, 0, 0, 0.47)' }}>Home</span>
             </button>
-            <button
-              className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-              style={{ backgroundColor: "#2B5CE6" }}
-            >
+            <button className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: '#2B5CE6' }}>
               <PlusCircle size={36} className="text-white" />
             </button>
             <button className="flex flex-col items-center gap-1">
-              <Mail size={28} style={{ color: "rgba(0, 0, 0, 0.47)" }} />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Request
-              </span>
+              <Mail size={28} style={{ color: 'rgba(0, 0, 0, 0.47)' }} />
+              <span className="text-xs font-medium" style={{ color: 'rgba(0, 0, 0, 0.47)' }}>Request</span>
             </button>
             <button className="flex flex-col items-center gap-1">
-              <MoreHorizontal
-                size={28}
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                More
-              </span>
+              <MoreHorizontal size={28} style={{ color: 'rgba(0, 0, 0, 0.47)' }} />
+              <span className="text-xs font-medium" style={{ color: 'rgba(0, 0, 0, 0.47)' }}>More</span>
             </button>
           </div>
         </nav>
