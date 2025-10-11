@@ -133,7 +133,7 @@ export default function Feed() {
         <nav className="flex-1 pt-10 px-2">
           <div
             className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
           >
             <div className="flex items-center gap-4">
               <LayoutDashboard size={24} strokeWidth={2} />
