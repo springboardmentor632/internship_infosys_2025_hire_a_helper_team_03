@@ -60,7 +60,7 @@ export default function MyTask() {
         <nav className="flex-1 pt-10 px-2">
           <div
             className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
           >
             <LayoutDashboard size={24} />
             <span className="text-2xl">Dashboard</span>
