@@ -46,117 +46,117 @@ export default function SignUpPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
       setSuccess("Account created successfully! Sign in to verify your account.");
-      // No alert, just show message below
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="page-container" style={{ background: '#f3f3f3', minHeight: '100vh', padding: 20 }}>
-      <div className="main-card" style={{ display: 'flex', borderRadius: 24, overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.08)', maxWidth: 1000, margin: '40px auto', minHeight: 500 }}>
+    <div className="page-container">
+      <div className="main-card">
         {/* Left Section: Create Account Form */}
         <div className="form-section">
-          <div>
+          <div style={{ width: "100%", maxWidth: 500, margin: '0 auto' }}>
             <h2 className="title">Create Account</h2>
             <p className="subtitle">Join the HireHelper community</p>
+
+            <form onSubmit={handleSubmit}>
+              {error && (
+                <div style={{ color: "red", marginBottom: 10, textAlign: "center" }}>{error}</div>
+              )}
+              {success && (
+                <div style={{ color: "green", marginBottom: 10, textAlign: "center" }}>{success}</div>
+              )}
+
+              {/* First Name & Last Name */}
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="input-field"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="input-field"
+                  required
+                />
+              </div>
+
+              {/* Email Address */}
+              <input
+                type="email"
+                name="email"
+                placeholder="Email address"
+                value={formData.email}
+                onChange={handleChange}
+                className="input-field full-width"
+                required
+              />
+
+              {/* Phone Number */}
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="input-field full-width"
+                required
+              />
+
+              {/* Password */}
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="input-field full-width"
+                required
+              />
+
+              {/* Terms & Conditions Checkbox */}
+              <div className="checkbox-group">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                />
+                <label htmlFor="terms">
+                  I agree to <span className="link">Terms & Conditions</span>
+                </label>
+              </div>
+
+              <button type="submit" className="submit-btn">
+                Create Account
+              </button>
+            </form>
+
+            <div className="existing">
+              Already Have an Account?
+              <span
+                className="signIn"
+                onClick={() => navigate("/")}
+                style={{ cursor: "pointer" }}
+              >
+                Sign in
+              </span>
+            </div>
           </div>
-
-          <form className="form-content" onSubmit={handleSubmit}>
-            {error && (
-              <div style={{ color: "red", marginBottom: 10 }}>{error}</div>
-            )}
-            {success && (
-              <div style={{ color: "green", marginBottom: 10 }}>{success}</div>
-            )}
-            {/* First Name & Last Name */}
-            <div className="form-row">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="input-field"
-              />
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="input-field"
-              />
-            </div>
-
-            {/* Email Address */}
-            <input
-              type="email"
-              name="email"
-              placeholder="Email address"
-              value={formData.email}
-              onChange={handleChange}
-              className="input-field full-width"
-            />
-
-            {/* Phone Number */}
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number"
-              value={formData.phone}
-              onChange={handleChange}
-              className="input-field full-width"
-            />
-
-            {/* Password */}
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="input-field full-width"
-            />
-
-            {/* Terms & Conditions Checkbox */}
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                id="terms"
-                name="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={handleChange}
-              />
-              <label htmlFor="terms">
-                I agree to <span className="link">Terms & Conditions</span>
-              </label>
-            </div>
-
-            <button type="submit" className="submit-btn">
-              Create Account
-            </button>
-          </form>
-
-          <div className="existing">
-            Already Have an Account?
-            <span
-              className="signIn"
-              onClick={() => navigate("/")}
-              style={{ cursor: "pointer" }}
-            >
-              Sign in
-            </span>
-          </div>
-          {success && (
-            <div style={{ color: "green", marginTop: 10, textAlign: "center" }}>
-              {success}
-            </div>
-          )}
         </div>
 
-        {/* Right Section: Welcome Illustration */}
-        <div className="welcome-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '60px', background: '#2B59FF', minHeight: '100%', width: '100%' }}>
+        {/* Right Section: Welcome Illustration (Hidden on mobile) */}
+        <div className="welcome-section" style={{ alignItems: 'flex-start' }}>
           <div style={{ maxWidth: 420 }}>
             <h1 style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: '#fff' }}>
               Welcome Back<br />

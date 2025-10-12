@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./signup.css";
@@ -34,16 +33,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="page-container" style={{ background: "#f3f3f3", minHeight: "100vh", padding: 20 }}>
-      <div className="main-card" style={{ display: "flex", borderRadius: 24, overflow: "hidden", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", maxWidth: 1000, margin: "40px auto", minHeight: 500 }}>
-        {/* Left: Blue Welcome Section */}
-        <div style={{ background: "#2563eb", color: "#fff", flex: 1.2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", padding: "48px 32px", position: "relative" }}>
+    <div className="page-container">
+      <div className="main-card">
+        {/* Left: Blue Welcome Section (Hidden on mobile) */}
+        <div className="welcome-section" style={{ flex: 1.2, alignItems: 'flex-start', textAlign: 'left' }}>
           <div style={{ maxWidth: 420 }}>
-            <h1 style={{ fontSize: 44, fontWeight: 800, marginBottom: 8, lineHeight: 1.1 }}>
+            <h1 style={{ fontSize: 44, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: '#fff' }}>
               Welcome Back<br />
               <span style={{ color: "#f472b6" }}>to HireHelper</span>
             </h1>
-            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9 }}>
+            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9, color: '#fff' }}>
               Login to access your account
             </div>
           </div>
@@ -53,11 +52,18 @@ export default function LoginPage() {
             style={{ width: "100%", maxWidth: 420, marginTop: 24 }}
           />
         </div>
+
         {/* Right: Login Form Section */}
-        <div style={{ background: "#fff", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "48px 32px" }}>
-          <div style={{ width: "100%", maxWidth: 340 }}>
-            <h2 style={{ fontWeight: 700, fontSize: 28, marginBottom: 4 }}>Login</h2>
-            <div style={{ color: "#555", fontSize: 15, marginBottom: 24 }}>Enter your account details</div>
+        <div className="form-section" style={{ flex: 1 }}>
+          {/* Mobile Icon (Visible only on mobile) */}
+          <div className="mobile-icon-container">
+            📱
+          </div>
+
+          <div style={{ width: "100%", maxWidth: 340, margin: '0 auto' }}>
+            <h2 className="title">Welcome Back</h2>
+            <div className="subtitle">Sign in to continue</div>
+
             <form onSubmit={handleSubmit}>
               <input
                 type="email"
@@ -65,7 +71,7 @@ export default function LoginPage() {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: "none", background: "#f3f4f6", marginBottom: 18, fontSize: 16 }}
+                className="input-field full-width"
                 required
               />
               <input
@@ -74,34 +80,31 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: "none", background: "#f3f4f6", marginBottom: 10, fontSize: 16 }}
+                className="input-field full-width"
                 required
               />
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
+              <div className="checkbox-group">
                 <input
                   type="checkbox"
                   id="remember"
                   name="remember"
                   checked={formData.remember}
                   onChange={handleChange}
-                  style={{ marginRight: 8 }}
                 />
-                <label htmlFor="remember" style={{ fontSize: 15, color: "#444" }}>Remember me</label>
+                <label htmlFor="remember">Remember me</label>
               </div>
               {error && (
-                <div style={{ color: "red", marginBottom: 10 }}>{error}</div>
+                <div style={{ color: "red", marginBottom: 10, textAlign: "center" }}>{error}</div>
               )}
-              <button
-                type="submit"
-                style={{ width: "100%", background: "#2563eb", color: "#fff", border: "none", borderRadius: 12, padding: "14px 0", fontWeight: 600, fontSize: 17, marginBottom: 16, marginTop: 8, cursor: "pointer" }}
-              >
+              <button type="submit" className="submit-btn">
                 Sign In
               </button>
             </form>
-            <div style={{ textAlign: "center", fontSize: 15, marginTop: 8 }}>
-              Don't have an account ?{' '}
+
+            <div className="existing">
+              Don't have an account?{' '}
               <span
-                style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }}
+                className="signIn"
                 onClick={() => navigate("/signup")}
               >
                 Sign Up
