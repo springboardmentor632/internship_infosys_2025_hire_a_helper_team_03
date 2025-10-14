@@ -1,1 +1,0 @@
-# internship_infosys_2025_hire_a_helper_team_03
