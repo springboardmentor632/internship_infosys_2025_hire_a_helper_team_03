@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-
   const navigate = useNavigate();
 
   const stats = [
@@ -78,8 +77,16 @@ export default function Dashboard() {
     >
       {/* Sidebar - Desktop */}
       <aside
-        className="hidden lg:flex flex-col w-80 text-white flex-shrink-0"
-        style={{ backgroundColor: "#5B86FF" }}
+        className="hidden lg:flex flex-col text-white flex-shrink-0"
+        style={{
+          backgroundColor: "#5B86FF",
+          width: "330px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100vh",
+          zIndex: 30,
+        }}
       >
         <div className="px-7 pt-11 pb-8">
           <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
@@ -92,7 +99,7 @@ export default function Dashboard() {
           <div
             className="px-6 py-3 mb-1 rounded cursor-pointer flex items-center gap-4"
             style={{ backgroundColor: "rgba(251, 251, 251, 0.4)" }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
           >
             <LayoutDashboard size={24} />
             <span className="text-2xl font-bold">Dashboard</span>
@@ -127,11 +134,11 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col" style={{ marginLeft: "0px" }}>
         {/* Header - Desktop */}
         <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6"
-          style={{ backgroundColor: "#5B86FF" }}
+          className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
+          style={{ backgroundColor: "#5B86FF", marginLeft: "330px", position: "sticky", top: 0, zIndex: 40 }}
         >
           <div className="flex-1 max-w-lg relative">
             <Search
@@ -157,7 +164,7 @@ export default function Dashboard() {
         {/* Mobile Header */}
         <header
           className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px" }}
+          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px", position: "sticky", top: 0, zIndex: 40 }}
         >
           <div className="flex items-center justify-between mb-4">
             <button className="p-2">
@@ -182,7 +189,10 @@ export default function Dashboard() {
         </header>
 
         {/* Dashboard Content */}
-        <section className="flex-1 p-4 lg:pt-8 lg:px-12 overflow-y-auto pb-24 lg:pb-8">
+        <section
+          className="flex-1 p-4 lg:pt-8 lg:px-12 overflow-y-auto pb-24 lg:pb-8"
+          style={{ marginLeft: "330px" }}
+        >
           {/* Page Title */}
           <div className="mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold mb-2">Dashboard</h2>
@@ -215,11 +225,15 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-4">
               <button
                 className="px-8 py-3 text-white rounded-xl font-bold hover:opacity-90 transition"
-                style={{ backgroundColor: "#2B5CE6" }} onClick={() => navigate("/posttask")}
+                style={{ backgroundColor: "#2B5CE6" }}
+                onClick={() => navigate("/posttask")}
               >
                 Post New Task
               </button>
-              <button className="px-8 py-3 bg-gray-300 text-gray-800 rounded-xl font-bold hover:opacity-90 transition" onClick={() => navigate("/feedPage")}>
+              <button
+                className="px-8 py-3 bg-gray-300 text-gray-800 rounded-xl font-bold hover:opacity-90 transition"
+                onClick={() => navigate("/feedPage")}
+              >
                 Browse Tasks
               </button>
               <button className="px-8 py-3 bg-white text-gray-800 rounded-xl font-bold hover:bg-gray-100 transition shadow">

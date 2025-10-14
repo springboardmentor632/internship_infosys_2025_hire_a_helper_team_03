@@ -112,143 +112,124 @@ export default function Feed() {
 
   return (
     <div
-      className="flex flex-col lg:flex-row min-h-screen"
-      style={{ backgroundColor: "rgba(231, 231, 231, 0.33)" }}
-    >
-      {/* Sidebar - Desktop */}
-      <aside
-        className="hidden lg:flex flex-col w-[330px] text-white flex-shrink-0"
-        style={{ backgroundColor: "#5B86FF" }}
-      >
-        <div className="px-7 pt-11 pb-8">
-          <h1 className="text-4xl font-bold leading-[44px] mb-4">HireHelper</h1>
-          <p className="text-xl font-normal">Welcome back , John</p>
-        </div>
-
-        <div
-          className="w-full h-px"
-          style={{ backgroundColor: "#FFFFFF" }}
-        ></div>
-
-        <nav className="flex-1 pt-10 px-2">
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer"
-            onClick={() => navigate("/dashboard")}
-          >
-            <div className="flex items-center gap-4">
-              <LayoutDashboard size={24} strokeWidth={2} />
-              <span className="text-2xl font-normal leading-7">Dashboard</span>
-            </div>
-          </div>
-
-          <div
-            className="px-6 py-3 mb-1"
+          className="flex flex-col lg:flex-row min-h-screen"
+          style={{ backgroundColor: "rgba(231, 231, 231, 0.33)" }}
+        >
+          {/* Sidebar - Desktop */}
+          <aside
+            className="hidden lg:flex flex-col text-white flex-shrink-0"
             style={{
-              backgroundColor: "rgba(251, 251, 251, 0.4)",
-              borderRadius: "4px",
+              backgroundColor: "#5B86FF",
+              width: "330px",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              height: "100vh",
+              zIndex: 30,
             }}
-            onClick={() => navigate("/feedPage")}
           >
-            <div className="flex items-center gap-4">
-              <List size={20} strokeWidth={2.5} />
-              <span className="text-2xl font-bold leading-7">Feed</span>
+            <div className="px-7 pt-11 pb-8">
+              <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
+              <p className="text-xl">Welcome back , John</p>
             </div>
-          </div>
-
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer"
-            onClick={() => navigate("/mytasks")}
-          >
-            <div className="flex items-center gap-4">
-              <CheckSquare size={20} strokeWidth={2} />
-              <span className="text-2xl font-normal leading-7">My Tasks</span>
-            </div>
-          </div>
-
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer">
-            <div className="flex items-center gap-4">
-              <Mail size={18} strokeWidth={2} />
-              <span className="text-2xl font-normal leading-7">Requests</span>
-            </div>
-          </div>
-
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer">
-            <div className="flex items-center gap-4">
-              <Laptop size={24} strokeWidth={2} />
-              <span className="text-2xl font-normal leading-7">
-                My Requests
-              </span>
-            </div>
-          </div>
-
-          <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 transition cursor-pointer">
-            <div className="flex items-center gap-4">
-              <Settings size={24} strokeWidth={2} />
-              <span className="text-2xl font-normal leading-7">Settings</span>
-            </div>
-          </div>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        {/* Top Bar - Desktop */}
-        <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "" }}
-        >
-          <div className="flex-1 max-w-[548px]">
-            <div className="relative">
-              <Search
-                className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="Search.."
-                className="w-full pl-14 pr-4 py-2 rounded-lg text-gray-600 text-xs focus:outline-none shadow-md"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-6 ml-12">
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <Bell size={40} />
-            </button>
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <User size={40} />
-            </button>
-          </div>
-        </header>
-
-        {/* Mobile Header */}
-        <header
-          className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px" }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <button className="p-2">
-              <Menu size={28} />
-            </button>
-            <h1 className="text-2xl font-bold">HireHelper</h1>
-            <button className="p-2">
-              <Bell size={24} />
-            </button>
-          </div>
-          <div className="relative">
-            <Search
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search.."
-              className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 focus:outline-none text-sm shadow-md"
-            />
-          </div>
-        </header>
+    
+            <div className="w-full h-px bg-white"></div>
+    
+            <nav className="flex-1 pt-10 px-2">
+              <div
+                className="px-6 py-3 mb-1 rounded cursor-pointer flex items-center gap-4"
+                onClick={() => navigate("/dashboard")}
+              >
+                <LayoutDashboard size={24} />
+                <span className="text-2xl font-bold">Dashboard</span>
+              </div>
+              <div
+                className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
+                style={{ backgroundColor: "rgba(251, 251, 251, 0.4)" }}
+                onClick={() => navigate("/feedPage")}
+              >
+                <List size={24} />
+                <span className="text-2xl">Feed</span>
+              </div>
+              <div
+                className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
+                onClick={() => navigate("/mytasks")}
+              >
+                <CheckSquare size={24} />
+                <span className="text-2xl">My Tasks</span>
+              </div>
+              <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+                <Mail size={24} />
+                <span className="text-2xl">Requests</span>
+              </div>
+              <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+                <Laptop size={24} />
+                <span className="text-2xl">My Requests</span>
+              </div>
+              <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+                <Settings size={24} />
+                <span className="text-2xl">Settings</span>
+              </div>
+            </nav>
+          </aside>
+    
+          {/* Main Content */}
+          <main className="flex-1 flex flex-col" style={{ marginLeft: "0px" }}>
+            {/* Header - Desktop */}
+            <header
+              className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
+              style={{ backgroundColor: "#5B86FF", marginLeft: "330px", position: "sticky", top: 0, zIndex: 40 }}
+            >
+              <div className="flex-1 max-w-lg relative">
+                <Search
+                  className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
+                <input
+                  type="text"
+                  placeholder="Search.."
+                  className="w-full pl-14 pr-4 py-2 rounded-lg text-gray-600 text-xs focus:outline-none shadow-md"
+                />
+              </div>
+              <div className="flex items-center gap-6 ml-12">
+                <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
+                  <Bell size={40} />
+                </button>
+                <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
+                  <User size={40} />
+                </button>
+              </div>
+            </header>
+    
+            {/* Mobile Header */}
+            <header
+              className="lg:hidden text-white p-4 shadow-lg"
+              style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px", position: "sticky", top: 0, zIndex: 40 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <button className="p-2">
+                  <Menu size={28} />
+                </button>
+                <h1 className="text-2xl font-bold">HireHelper</h1>
+                <button className="p-2">
+                  <Bell size={24} />
+                </button>
+              </div>
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Search.."
+                  className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 focus:outline-none text-sm shadow-md"
+                />
+              </div>
+            </header>
 
         {/* Feed Content */}
-        <section className="flex-1 p-4 lg:p-0 lg:pt-8 lg:px-12 overflow-y-auto pb-24 lg:pb-8">
+  <section className="flex-1 p-4 lg:p-0 lg:pt-8 lg:px-12 overflow-y-auto pb-24 lg:pb-8" style={{ marginLeft: "330px" }}>
           {/* Page Title */}
           <div className="mb-6 lg:mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold leading-tight mb-2">

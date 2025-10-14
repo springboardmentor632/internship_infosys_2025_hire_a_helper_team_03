@@ -89,58 +89,68 @@ export default function PostNewTask() {
       {/* Sidebar - Desktop */}
       <aside
         className="hidden lg:flex flex-col text-white flex-shrink-0"
-        style={{ backgroundColor: "#5B86FF", width: "330px" }}
+        style={{
+          backgroundColor: "#5B86FF",
+          width: "330px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100vh",
+          zIndex: 30,
+        }}
       >
         <div className="px-7 pt-11 pb-8">
           <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
-          <p className="text-xl font-normal">Welcome back, John</p>
+          <p className="text-xl">Welcome back , John</p>
         </div>
+
         <div className="w-full h-px bg-white"></div>
+
         <nav className="flex-1 pt-10 px-2">
           <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
-            nClick={() => navigate("/dashboard")}
+            className="px-6 py-3 mb-1 rounded cursor-pointer flex items-center gap-4"
+            onClick={() => navigate("/dashboard")}
           >
-            <LayoutDashboard size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">Dashboard</span>
+            <LayoutDashboard size={24} />
+            <span className="text-2xl font-bold">Dashboard</span>
           </div>
           <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
+            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
             onClick={() => navigate("/feedPage")}
           >
-            <List size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">Feed</span>
+            <List size={24} />
+            <span className="text-2xl">Feed</span>
           </div>
           <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded"
+            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
             onClick={() => navigate("/mytasks")}
           >
-            <CheckSquare size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">My Tasks</span>
+            <CheckSquare size={24} />
+            <span className="text-2xl">My Tasks</span>
           </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded">
-            <Mail size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">Requests</span>
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+            <Mail size={24} />
+            <span className="text-2xl">Requests</span>
           </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded">
-            <Laptop size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">My Requests</span>
+          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+            <Laptop size={24} />
+            <span className="text-2xl">My Requests</span>
           </div>
-          <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4 transition rounded">
-            <Settings size={24} strokeWidth={2} />
-            <span className="text-2xl font-normal">Settings</span>
+          <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
+            <Settings size={24} />
+            <span className="text-2xl">Settings</span>
           </div>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        {/* Header */}
+      <main className="flex-1 flex flex-col" style={{ marginLeft: "0px" }}>
+        {/* Header - Desktop */}
         <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6"
-          style={{ backgroundColor: "#5B86FF", height: "85px" }}
+          className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
+          style={{ backgroundColor: "#5B86FF", marginLeft: "330px", position: "sticky", top: 0, zIndex: 40 }}
         >
-          <div className="flex-1 relative" style={{ maxWidth: "548px" }}>
+          <div className="flex-1 max-w-lg relative">
             <Search
               className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
               size={20}
@@ -164,7 +174,7 @@ export default function PostNewTask() {
         {/* Mobile Header */}
         <header
           className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px" }}
+          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px", position: "sticky", top: 0, zIndex: 40 }}
         >
           <div className="flex items-center justify-between mb-4">
             <button className="p-2">
@@ -183,13 +193,16 @@ export default function PostNewTask() {
             <input
               type="text"
               placeholder="Search.."
-              className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 text-sm focus:outline-none shadow-md"
+              className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 focus:outline-none text-sm shadow-md"
             />
           </div>
         </header>
 
         {/* Content */}
-        <section className="flex-1 p-4 lg:p-12 overflow-y-auto pb-24 lg:pb-8">
+        <section
+          className="flex-1 p-4 lg:p-12 overflow-y-auto pb-24 lg:pb-8"
+          style={{ marginLeft: "330px" }}
+        >
           <div className="mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold mb-2">
               Post New Task

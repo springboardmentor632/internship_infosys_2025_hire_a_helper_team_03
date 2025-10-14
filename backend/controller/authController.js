@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
     try {
+        // Simulate loader delay (for frontend loader UX)
+        await new Promise(resolve => setTimeout(resolve, 1200));
         const { firstName, lastName, phone, email, password } = req.body;
         if (!firstName || !lastName || !phone || !email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -24,6 +26,8 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
+        // Simulate loader delay (for frontend loader UX)
+        await new Promise(resolve => setTimeout(resolve, 1200));
         const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
