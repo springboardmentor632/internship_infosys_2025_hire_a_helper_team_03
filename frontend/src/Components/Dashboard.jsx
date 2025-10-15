@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   LayoutDashboard,
   List,
@@ -18,16 +17,19 @@ import {
   DollarSign,
   UserCircle,
   CheckCircle2,
+  Award,
+  Clock,
 } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [activeNav, setActiveNav] = useState('dashboard');
 
   const stats = [
-    { label: "Tasks Completed", value: "23", color: "#3B82F6" },
-    { label: "Active Tasks", value: "5", color: "#10B981" },
-    { label: "Total Earnings", value: "$1,240", color: "#8B5CF6" },
-    { label: "Average Rating", value: "4.8", color: "#EF4444" },
+    { label: "Tasks Completed", value: "23", color: "#3B82F6", icon: CheckCircle2, gradient: "from-blue-500 to-blue-600" },
+    { label: "Active Tasks", value: "5", color: "#10B981", icon: Clock, gradient: "from-green-500 to-emerald-600" },
+    { label: "Total Earnings", value: "$1,240", color: "#8B5CF6", icon: DollarSign, gradient: "from-purple-500 to-purple-600" },
+    { label: "Average Rating", value: "4.8", color: "#EF4444", icon: Award, gradient: "from-amber-500 to-orange-600" },
   ];
 
   const recentActivity = [
@@ -35,19 +37,22 @@ export default function Dashboard() {
       icon: UserCircle,
       text: "John requested your 'Fix Kitchen Sink' task",
       time: "2 minutes ago",
-      bgColor: "bg-gray-200",
+      bgColor: "bg-gradient-to-br from-indigo-100 to-blue-100",
+      iconColor: "text-indigo-600"
     },
     {
       icon: CheckCircle2,
       text: "You completed 'Garden Cleanup'",
       time: "1 hour ago",
-      bgColor: "bg-purple-200",
+      bgColor: "bg-gradient-to-br from-purple-100 to-pink-100",
+      iconColor: "text-purple-600"
     },
     {
       icon: DollarSign,
-      text: "Payment received : $",
+      text: "Payment received: $120",
       time: "Yesterday",
-      bgColor: "bg-blue-200",
+      bgColor: "bg-gradient-to-br from-green-100 to-emerald-100",
+      iconColor: "text-green-600"
     },
   ];
 
@@ -59,6 +64,7 @@ export default function Dashboard() {
       price: "$75",
       button1: "View",
       button2: "Edit",
+      gradient: "from-blue-500 to-indigo-600"
     },
     {
       title: "Garden Cleanup",
@@ -67,69 +73,53 @@ export default function Dashboard() {
       price: "$120",
       button1: "Track",
       button2: "Chat",
+      gradient: "from-purple-500 to-pink-600"
     },
   ];
 
+  const navItems = [
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+    { id: 'feed', icon: List, label: 'Feed', path: '/feedPage' },
+    { id: 'mytasks', icon: CheckSquare, label: 'My Tasks', path: '/mytasks' },
+    { id: 'requests', icon: Mail, label: 'Requests', path: '/requests' },
+    { id: 'myrequests', icon: Laptop, label: 'My Requests', path: '/myrequests' },
+    { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' },
+  ];
+
   return (
-    <div
-      className="flex flex-col lg:flex-row min-h-screen"
-      style={{ backgroundColor: "rgba(231, 231, 231, 0.33)" }}
-    >
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       {/* Sidebar - Desktop */}
       <aside
-        className="hidden lg:flex flex-col text-white flex-shrink-0"
-        style={{
-          backgroundColor: "#5B86FF",
-          width: "330px",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100vh",
-          zIndex: 30,
-        }}
+        className="hidden lg:flex flex-col text-white flex-shrink-0 fixed top-0 left-0 h-screen shadow-2xl z-30 bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-700"
+        style={{ width: "330px" }}
       >
-        <div className="px-7 pt-11 pb-8">
-          <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
-          <p className="text-xl">Welcome back , John</p>
+        <div className="px-8 pt-12 pb-8">
+          <h1 className="text-4xl font-bold mb-3 tracking-tight">HireHelper</h1>
+          <p className="text-lg text-blue-100">Welcome back, John</p>
         </div>
 
-        <div className="w-full h-px bg-white"></div>
+        <div className="w-full h-px bg-white/20"></div>
 
-        <nav className="flex-1 pt-10 px-2">
-          <div
-            className="px-6 py-3 mb-1 rounded cursor-pointer flex items-center gap-4"
-            style={{ backgroundColor: "rgba(251, 251, 251, 0.4)" }}
-            onClick={() => navigate("/dashboard")}
-          >
-            <LayoutDashboard size={24} />
-            <span className="text-2xl font-bold">Dashboard</span>
-          </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/feedPage")}
-          >
-            <List size={24} />
-            <span className="text-2xl">Feed</span>
-          </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/mytasks")}
-          >
-            <CheckSquare size={24} />
-            <span className="text-2xl">My Tasks</span>
-          </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Mail size={24} />
-            <span className="text-2xl">Requests</span>
-          </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Laptop size={24} />
-            <span className="text-2xl">My Requests</span>
-          </div>
-          <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Settings size={24} />
-            <span className="text-2xl">Settings</span>
-          </div>
+        <nav className="flex-1 pt-8 px-3 space-y-1">
+          {navItems.map((item) => (
+            <div
+              key={item.id}
+              className={`px-6 py-4 rounded-xl cursor-pointer flex items-center gap-4 transition-all duration-200 ${
+                activeNav === item.id
+                  ? 'bg-white/25 shadow-lg backdrop-blur-sm'
+                  : 'hover:bg-white/10'
+              }`}
+              onClick={() => {
+                setActiveNav(item.id);
+                navigate(item.path);
+              }}
+            >
+              <item.icon size={24} />
+              <span className={`text-xl ${activeNav === item.id ? 'font-semibold' : 'font-medium'}`}>
+                {item.label}
+              </span>
+            </div>
+          ))}
         </nav>
       </aside>
 
@@ -137,41 +127,40 @@ export default function Dashboard() {
       <main className="flex-1 flex flex-col" style={{ marginLeft: "0px" }}>
         {/* Header - Desktop */}
         <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
-          style={{ backgroundColor: "#5B86FF", marginLeft: "330px", position: "sticky", top: 0, zIndex: 40 }}
+          className="hidden lg:flex items-center justify-between text-white px-12 py-5 shadow-lg sticky top-0 z-40 bg-gradient-to-r from-indigo-600 to-blue-600"
+          style={{ marginLeft: "330px" }}
         >
-          <div className="flex-1 max-w-lg relative">
+          <div className="flex-1 max-w-xl relative">
             <Search
               className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
               size={20}
             />
             <input
               type="text"
-              placeholder="Search.."
-              className="w-full pl-14 pr-4 py-2 rounded-lg text-gray-600 text-xs focus:outline-none shadow-md"
+              placeholder="Search..."
+              className="w-full pl-14 pr-4 py-3 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/30 shadow-md transition-all"
             />
           </div>
-          <div className="flex items-center gap-6 ml-12">
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <Bell size={40} />
+          <div className="flex items-center gap-4 ml-8">
+            <button className="p-3 hover:bg-white/20 rounded-full transition-all duration-200 transform hover:scale-110">
+              <Bell size={28} />
             </button>
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <User size={40} />
+            <button className="p-3 hover:bg-white/20 rounded-full transition-all duration-200 transform hover:scale-110">
+              <User size={28} />
             </button>
           </div>
         </header>
 
         {/* Mobile Header */}
         <header
-          className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px", position: "sticky", top: 0, zIndex: 40 }}
+          className="lg:hidden text-white p-5 shadow-xl rounded-b-3xl sticky top-0 z-40 bg-gradient-to-br from-indigo-600 to-blue-600"
         >
           <div className="flex items-center justify-between mb-4">
-            <button className="p-2">
+            <button className="p-2 hover:bg-white/20 rounded-lg transition">
               <Menu size={28} />
             </button>
             <h1 className="text-2xl font-bold">HireHelper</h1>
-            <button className="p-2">
+            <button className="p-2 hover:bg-white/20 rounded-lg transition">
               <Bell size={24} />
             </button>
           </div>
@@ -182,37 +171,36 @@ export default function Dashboard() {
             />
             <input
               type="text"
-              placeholder="Search.."
-              className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 focus:outline-none text-sm shadow-md"
+              placeholder="Search..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl text-gray-700 focus:outline-none shadow-md"
             />
           </div>
         </header>
 
         {/* Dashboard Content */}
         <section
-          className="flex-1 p-4 lg:pt-8 lg:px-12 overflow-y-auto pb-24 lg:pb-8"
+          className="flex-1 p-6 lg:p-10 overflow-y-auto pb-28 lg:pb-10"
           style={{ marginLeft: "330px" }}
         >
           {/* Page Title */}
-          <div className="mb-6">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-2">Dashboard</h2>
-            <p className="text-sm lg:text-base text-gray-700">
-              Here's what's happening with your tasks today.
+          <div className="mb-8">
+            <h2 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h2>
+            <p className="text-lg text-gray-600">
+              Here's what's happening with your tasks today
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow p-5">
-                <div
-                  className="w-full h-1 rounded-full mb-4"
-                  style={{ backgroundColor: stat.color }}
-                ></div>
+              <div key={index} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 transition-all duration-300 transform hover:scale-105 border border-gray-100">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-4 shadow-md`}>
+                  <stat.icon size={24} className="text-white" />
+                </div>
                 <p className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                   {stat.value}
                 </p>
-                <p className="text-sm lg:text-base text-gray-600">
+                <p className="text-sm lg:text-base text-gray-600 font-medium">
                   {stat.label}
                 </p>
               </div>
@@ -221,22 +209,21 @@ export default function Dashboard() {
 
           {/* Quick Actions */}
           <div className="mb-8">
-            <h3 className="text-2xl font-bold mb-4">Quick Actions</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-5">Quick Actions</h3>
             <div className="flex flex-wrap gap-4">
               <button
-                className="px-8 py-3 text-white rounded-xl font-bold hover:opacity-90 transition"
-                style={{ backgroundColor: "#2B5CE6" }}
+                className="px-8 py-4 text-white rounded-2xl font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                 onClick={() => navigate("/posttask")}
               >
                 Post New Task
               </button>
               <button
-                className="px-8 py-3 bg-gray-300 text-gray-800 rounded-xl font-bold hover:opacity-90 transition"
+                className="px-8 py-4 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-2xl font-semibold hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
                 onClick={() => navigate("/feedPage")}
               >
                 Browse Tasks
               </button>
-              <button className="px-8 py-3 bg-white text-gray-800 rounded-xl font-bold hover:bg-gray-100 transition shadow">
+              <button className="px-8 py-4 bg-white text-gray-800 rounded-2xl font-semibold hover:bg-gray-50 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 border border-gray-200">
                 View Earnings
               </button>
             </div>
@@ -245,29 +232,28 @@ export default function Dashboard() {
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Activity */}
-            <div className="bg-white rounded-2xl shadow p-6">
+            <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl p-6 lg:p-8 transition-all duration-300 border border-gray-100">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold">Recent Activity</h3>
+                <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
                 <button
-                  className="font-medium text-sm hover:underline"
-                  style={{ color: "#2B5CE6" }}
+                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
                 >
                   View All
                 </button>
               </div>
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => (
-                  <div key={index} className="flex gap-4 items-start">
+                  <div key={index} className="flex gap-4 items-start p-4 rounded-2xl hover:bg-gray-50 transition-all duration-200 cursor-pointer">
                     <div
-                      className={`${activity.bgColor} rounded-lg p-3 flex-shrink-0`}
+                      className={`${activity.bgColor} rounded-xl p-3 flex-shrink-0 shadow-md`}
                     >
-                      <activity.icon size={24} className="text-gray-700" />
+                      <activity.icon size={24} className={activity.iconColor} />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm lg:text-base text-gray-800 font-medium">
+                      <p className="text-sm lg:text-base text-gray-800 font-semibold mb-1">
                         {activity.text}
                       </p>
-                      <p className="text-xs lg:text-sm text-gray-500 mt-1">
+                      <p className="text-xs lg:text-sm text-gray-500">
                         {activity.time}
                       </p>
                     </div>
@@ -277,41 +263,38 @@ export default function Dashboard() {
             </div>
 
             {/* Your Active Tasks */}
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h3 className="text-2xl font-bold mb-6">Your Active Tasks</h3>
+            <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl p-6 lg:p-8 transition-all duration-300 border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Your Active Tasks</h3>
               <div className="space-y-4">
                 {activeTasks.map((task, index) => (
                   <div
                     key={index}
-                    className="border border-gray-200 rounded-xl p-4"
+                    className="border-2 border-gray-200 rounded-2xl p-5 hover:border-indigo-300 transition-all duration-200 hover:shadow-lg"
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <h4 className="text-lg lg:text-xl font-bold text-gray-900 mb-2">
                           {task.title}
                         </h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <p className="text-sm text-gray-600">
-                            {task.location}
-                          </p>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <p>{task.location}</p>
                           <span className="text-gray-400">•</span>
-                          <p className="text-sm text-gray-600">
+                          <p className="font-medium text-indigo-600">
                             {task.requests || task.status}
                           </p>
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                      <span className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 rounded-xl text-base font-bold shadow-md">
                         {task.price}
                       </span>
                     </div>
                     <div className="flex gap-3">
                       <button
-                        className="flex-1 text-white py-2 rounded-lg font-medium hover:opacity-90 transition"
-                        style={{ backgroundColor: "#2B5CE6" }}
+                        className={`flex-1 text-white py-3 rounded-xl font-semibold bg-gradient-to-r ${task.gradient} hover:shadow-lg transition-all duration-200 transform hover:scale-105`}
                       >
                         {task.button1}
                       </button>
-                      <button className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-medium hover:opacity-90 transition">
+                      <button className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 border border-gray-300">
                         {task.button2}
                       </button>
                     </div>
@@ -323,35 +306,30 @@ export default function Dashboard() {
         </section>
 
         {/* Mobile Bottom Nav */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 shadow-lg">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-3 shadow-2xl z-50">
           <div className="flex items-center justify-around relative">
-            <button className="flex flex-col items-center gap-1">
-              <LayoutDashboard size={28} style={{ color: "#2B5CE6" }} />
-              <span className="text-xs font-bold" style={{ color: "#2B5CE6" }}>
-                Dashboard
-              </span>
+            <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
+              <LayoutDashboard size={26} className="text-indigo-600" />
+              <span className="text-xs font-bold text-indigo-600">Dashboard</span>
             </button>
 
-            <button className="flex flex-col items-center gap-1">
-              <Home size={28} className="text-gray-600" />
-              <span className="text-xs text-gray-600">Home</span>
+            <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
+              <Home size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Home</span>
             </button>
 
-            <button
-              className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-              style={{ backgroundColor: "#2B5CE6" }}
-            >
+            <button className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-600 shadow-2xl transition-all duration-200 hover:scale-110">
               <PlusCircle size={36} className="text-white" />
             </button>
 
-            <button className="flex flex-col items-center gap-1">
-              <Mail size={28} className="text-gray-600" />
-              <span className="text-xs text-gray-600">Request</span>
+            <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
+              <Mail size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Request</span>
             </button>
 
-            <button className="flex flex-col items-center gap-1">
-              <MoreHorizontal size={28} className="text-gray-600" />
-              <span className="text-xs text-gray-600">More</span>
+            <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
+              <MoreHorizontal size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">More</span>
             </button>
           </div>
         </nav>
