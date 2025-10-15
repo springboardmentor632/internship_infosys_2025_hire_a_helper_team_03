@@ -1,13 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-
-import Feed from './Components/Feed';
-import SignUpPage from './Components/signup';
-import LoginPage from './Components/login';
-import Dashboard from './Components/Dashboard';
-import MyTask from './Components/MyTask';
-import PostNewTask from './Components/PostNewTask';
+import Feed from './components/Feed';
+import SignUpPage from './components/signup';
+import LoginPage from './components/login';
+import Dashboard from './components/Dashboard';
+import MyTask from './components/MyTask';
+import PostNewTask from './components/PostNewTask';
+import Request from './components/RequestPage'; 
+import MyRequests from './components/MyRequest';
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
           <Route path="/feedPage" element={<Feed />} />
           <Route path="/mytasks" element={<MyTask />} />
           <Route path="/posttask" element={<PostNewTask />} />
+          <Route path="/requests" element={<Request />} />
+          <Route path="/myrequests" element={<MyRequests />} /> 
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/" element={<LoginPage />} />
         </Routes>

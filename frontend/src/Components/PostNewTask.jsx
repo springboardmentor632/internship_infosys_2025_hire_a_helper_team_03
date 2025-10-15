@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   Search,
   Menu,
   Bell,
   User,
-  Home,
   PlusCircle,
   MoreHorizontal,
   LayoutDashboard,
@@ -17,10 +15,15 @@ import {
   Settings,
   Upload,
   Lightbulb,
+  X,
+  ImagePlus,
+  Sparkles,
+  Home,
 } from "lucide-react";
 
 export default function PostNewTask() {
   const navigate = useNavigate();
+  const [activeNav, setActiveNav] = useState('posttask');
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,10 +32,7 @@ export default function PostNewTask() {
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
-
-  const handleNavigation = (page) => {
-    console.log(`Navigate to: ${page}`);
-  };
+  const [focusedField, setFocusedField] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,92 +54,80 @@ export default function PostNewTask() {
     }
   };
 
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData((prev) => ({ ...prev, image: null }));
+  };
+
   const handleSaveDraft = () => console.log("Draft saved:", formData);
   const handleContinue = () => console.log("Continue:", formData);
 
+  const isFormValid = formData.title && formData.category && formData.description;
+
   const tips = [
     {
-      icon: "✏️",
-      title: "Clear Title",
-      description:
-        "Use specific, descriptive titles that explain exactly what you need",
-      color: "bg-blue-300",
+      icon: <Sparkles className="text-indigo-600" size={20} />,
+      title: "Be Specific",
+      description: "Clear, detailed titles get 3x more responses from helpers",
+      gradient: "from-indigo-50 to-blue-100",
     },
     {
-      icon: "✅",
+      icon: <CheckSquare className="text-emerald-600" size={20} />,
       title: "Right Category",
-      description:
-        "Choose the most relevant category to reach the right helpers",
-      color: "bg-green-300",
+      description: "Proper categorization connects you with expert helpers faster",
+      gradient: "from-emerald-50 to-green-100",
     },
     {
-      icon: "📸",
-      title: "Add Photos",
-      description:
-        "Images help helpers understand your task better and get more responses",
-      color: "bg-yellow-200",
+      icon: <ImagePlus className="text-purple-600" size={20} />,
+      title: "Add Visuals",
+      description: "Tasks with images receive 2.5x more qualified offers",
+      gradient: "from-purple-50 to-purple-100",
     },
   ];
 
+  const navItems = [
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+    { id: 'feed', icon: List, label: 'Feed', path: '/feedPage' },
+    { id: 'mytasks', icon: CheckSquare, label: 'My Tasks', path: '/mytasks' },
+    { id: 'requests', icon: Mail, label: 'Requests', path: '/requests' },
+    { id: 'myrequests', icon: Laptop, label: 'My Requests', path: '/myrequests' },
+    { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' },
+  ];
+
   return (
-    <div
-      className="flex flex-col lg:flex-row min-h-screen"
-      style={{ backgroundColor: "rgba(231, 231, 231, 0.33)" }}
-    >
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       {/* Sidebar - Desktop */}
       <aside
-        className="hidden lg:flex flex-col text-white flex-shrink-0"
-        style={{
-          backgroundColor: "#5B86FF",
-          width: "330px",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100vh",
-          zIndex: 30,
-        }}
+        className="hidden lg:flex flex-col text-white flex-shrink-0 fixed top-0 left-0 h-screen shadow-2xl z-30 bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-700"
+        style={{ width: "330px" }}
       >
-        <div className="px-7 pt-11 pb-8">
-          <h1 className="text-4xl font-bold mb-4">HireHelper</h1>
-          <p className="text-xl">Welcome back , John</p>
+        <div className="px-8 pt-12 pb-8">
+          <h1 className="text-4xl font-bold mb-3 tracking-tight">HireHelper</h1>
+          <p className="text-lg text-blue-100">Welcome back, John</p>
         </div>
 
-        <div className="w-full h-px bg-white"></div>
+        <div className="w-full h-px bg-white/20"></div>
 
-        <nav className="flex-1 pt-10 px-2">
-          <div
-            className="px-6 py-3 mb-1 rounded cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/dashboard")}
-          >
-            <LayoutDashboard size={24} />
-            <span className="text-2xl font-bold">Dashboard</span>
-          </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/feedPage")}
-          >
-            <List size={24} />
-            <span className="text-2xl">Feed</span>
-          </div>
-          <div
-            className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4"
-            onClick={() => navigate("/mytasks")}
-          >
-            <CheckSquare size={24} />
-            <span className="text-2xl">My Tasks</span>
-          </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Mail size={24} />
-            <span className="text-2xl">Requests</span>
-          </div>
-          <div className="px-6 py-4 mb-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Laptop size={24} />
-            <span className="text-2xl">My Requests</span>
-          </div>
-          <div className="px-6 py-4 mt-1 hover:bg-white hover:bg-opacity-10 cursor-pointer flex items-center gap-4">
-            <Settings size={24} />
-            <span className="text-2xl">Settings</span>
-          </div>
+        <nav className="flex-1 pt-8 px-3 space-y-1">
+          {navItems.map((item) => (
+            <div
+              key={item.id}
+              className={`px-6 py-4 rounded-xl cursor-pointer flex items-center gap-4 transition-all duration-200 ${
+                activeNav === item.id
+                  ? 'bg-white/25 shadow-lg backdrop-blur-sm'
+                  : 'hover:bg-white/10'
+              }`}
+              onClick={() => {
+                setActiveNav(item.id);
+                navigate(item.path);
+              }}
+            >
+              <item.icon size={24} />
+              <span className={`text-xl ${activeNav === item.id ? 'font-semibold' : 'font-medium'}`}>
+                {item.label}
+              </span>
+            </div>
+          ))}
         </nav>
       </aside>
 
@@ -147,41 +135,40 @@ export default function PostNewTask() {
       <main className="flex-1 flex flex-col" style={{ marginLeft: "0px" }}>
         {/* Header - Desktop */}
         <header
-          className="hidden lg:flex items-center justify-between text-white px-14 py-6 h-[85px]"
-          style={{ backgroundColor: "#5B86FF", marginLeft: "330px", position: "sticky", top: 0, zIndex: 40 }}
+          className="hidden lg:flex items-center justify-between text-white px-12 py-5 shadow-lg sticky top-0 z-40 bg-gradient-to-r from-indigo-600 to-blue-600"
+          style={{ marginLeft: "330px" }}
         >
-          <div className="flex-1 max-w-lg relative">
+          <div className="flex-1 max-w-xl relative">
             <Search
               className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400"
               size={20}
             />
             <input
               type="text"
-              placeholder="Search.."
-              className="w-full pl-14 pr-4 py-2 rounded-lg text-gray-600 text-xs focus:outline-none shadow-md"
+              placeholder="Search tasks, helpers, or categories..."
+              className="w-full pl-14 pr-4 py-3 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/30 shadow-md transition-all"
             />
           </div>
-          <div className="flex items-center gap-6 ml-12">
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <Bell size={40} />
+          <div className="flex items-center gap-4 ml-8">
+            <button className="p-3 hover:bg-white/20 rounded-full transition-all duration-200 transform hover:scale-110">
+              <Bell size={28} />
             </button>
-            <button className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition">
-              <User size={40} />
+            <button className="p-3 hover:bg-white/20 rounded-full transition-all duration-200 transform hover:scale-110">
+              <User size={28} />
             </button>
           </div>
         </header>
 
         {/* Mobile Header */}
         <header
-          className="lg:hidden text-white p-4 shadow-lg"
-          style={{ backgroundColor: "#5B86FF", borderRadius: "0 0 30px 30px", position: "sticky", top: 0, zIndex: 40 }}
+          className="lg:hidden text-white p-5 shadow-xl rounded-b-3xl sticky top-0 z-40 bg-gradient-to-br from-indigo-600 to-blue-600"
         >
           <div className="flex items-center justify-between mb-4">
-            <button className="p-2">
+            <button className="p-2 hover:bg-white/20 rounded-lg transition">
               <Menu size={28} />
             </button>
             <h1 className="text-2xl font-bold">HireHelper</h1>
-            <button className="p-2">
+            <button className="p-2 hover:bg-white/20 rounded-lg transition">
               <Bell size={24} />
             </button>
           </div>
@@ -192,227 +179,265 @@ export default function PostNewTask() {
             />
             <input
               type="text"
-              placeholder="Search.."
-              className="w-full pl-12 pr-4 py-2 rounded-lg text-gray-600 focus:outline-none text-sm shadow-md"
+              placeholder="Search..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl text-gray-700 focus:outline-none shadow-md"
             />
           </div>
         </header>
 
         {/* Content */}
         <section
-          className="flex-1 p-4 lg:p-12 overflow-y-auto pb-24 lg:pb-8"
+          className="flex-1 p-6 lg:p-10 overflow-y-auto pb-28 lg:pb-10"
           style={{ marginLeft: "330px" }}
         >
-          <div className="mb-6">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-2">
-              Post New Task
-            </h2>
-            <p className="text-sm lg:text-base font-normal text-black">
-              Get help with your task from skilled helpers
-            </p>
-          </div>
+          <div className="max-w-6xl mx-auto">
+            {/* Page Header */}
+            <div className="mb-8">
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">Post a New Task</h2>
+              <p className="text-lg text-gray-600">
+                Connect with skilled helpers in your area and get your task done quickly
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Form */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow p-6">
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Task Title *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Fix leaky faucet"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Category *
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select a category</option>
-                  <option value="plumbing">Plumbing</option>
-                  <option value="electrical">Electrical</option>
-                  <option value="carpentry">Carpentry</option>
-                  <option value="cleaning">Cleaning</option>
-                  <option value="gardening">Gardening</option>
-                  <option value="painting">Painting</option>
-                </select>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={4}
-                  maxLength={150}
-                  placeholder="Brief description of your task"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                />
-                <p className="text-right text-sm text-gray-500 mt-1">
-                  {formData.description.length}/150 characters
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Task Image
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-                  <input
-                    type="file"
-                    id="imageUpload"
-                    accept="image/png,image/jpeg,image/jpg"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <label htmlFor="imageUpload" className="cursor-pointer">
-                    {imagePreview ? (
-                      <div>
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="mx-auto max-h-48 rounded-lg mb-2"
-                        />
-                        <p className="text-sm text-gray-600">
-                          Click to change image
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <Upload
-                          className="mx-auto text-gray-400 mb-2"
-                          size={40}
-                        />
-                        <p className="text-gray-700 font-medium mb-1">
-                          Click to upload
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          PNG, JPG up to 5MB
-                        </p>
-                      </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Form Section */}
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl p-8 transition-all duration-300 border border-gray-100">
+                  {/* Task Title */}
+                  <div className="mb-6">
+                    <label className="block text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      Task Title
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('title')}
+                      onBlur={() => setFocusedField(null)}
+                      placeholder="e.g., Fix leaky kitchen faucet"
+                      className={`w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl focus:outline-none transition-all text-lg ${
+                        focusedField === 'title' 
+                          ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    />
+                    {focusedField === 'title' && (
+                      <p className="text-sm text-indigo-600 mt-2">💡 Be specific to attract the right helpers</p>
                     )}
-                  </label>
+                  </div>
+
+                  {/* Category */}
+                  <div className="mb-6">
+                    <label className="block text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      Category
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('category')}
+                      onBlur={() => setFocusedField(null)}
+                      className={`w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl focus:outline-none transition-all text-lg ${
+                        focusedField === 'category' 
+                          ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <option value="">Select a category</option>
+                      <option value="plumbing">🔧 Plumbing</option>
+                      <option value="electrical">⚡ Electrical</option>
+                      <option value="carpentry">🔨 Carpentry</option>
+                      <option value="cleaning">🧹 Cleaning</option>
+                      <option value="gardening">🌱 Gardening</option>
+                      <option value="painting">🎨 Painting</option>
+                    </select>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-6">
+                    <label className="block text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      Task Description
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('description')}
+                      onBlur={() => setFocusedField(null)}
+                      rows={5}
+                      maxLength={150}
+                      placeholder="Describe your task in detail. Include what needs to be done, any specific requirements, and your timeline..."
+                      className={`w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl focus:outline-none transition-all resize-none text-lg ${
+                        focusedField === 'description' 
+                          ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    />
+                    <div className="flex justify-between items-center mt-3">
+                      <p className="text-sm text-gray-500">
+                        {focusedField === 'description' ? '✍️ Add more details to get better offers' : ''}
+                      </p>
+                      <p className={`text-base font-medium ${
+                        formData.description.length > 140 ? 'text-red-500' : 'text-gray-500'
+                      }`}>
+                        {formData.description.length}/150
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Image Upload */}
+                  <div className="mb-8">
+                    <label className="block text-lg font-bold text-gray-800 mb-3">
+                      Task Image (Optional)
+                    </label>
+                    <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
+                      imagePreview 
+                        ? 'border-indigo-400 bg-indigo-50' 
+                        : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                    }`}>
+                      <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/png,image/jpeg,image/jpg"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      {imagePreview ? (
+                        <div className="relative">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="mx-auto max-h-64 rounded-2xl shadow-lg"
+                          />
+                          <button
+                            onClick={removeImage}
+                            className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition shadow-lg transform hover:scale-110"
+                          >
+                            <X size={20} />
+                          </button>
+                          <label htmlFor="imageUpload" className="block mt-4 text-base text-indigo-600 font-medium cursor-pointer hover:text-indigo-700">
+                            Change image
+                          </label>
+                        </div>
+                      ) : (
+                        <label htmlFor="imageUpload" className="cursor-pointer block">
+                          <Upload
+                            className="mx-auto text-gray-400 mb-4"
+                            size={52}
+                          />
+                          <p className="text-gray-800 font-semibold mb-2 text-xl">
+                            Click to upload or drag & drop
+                          </p>
+                          <p className="text-base text-gray-500">
+                            PNG, JPG up to 5MB
+                          </p>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <button
+                      onClick={handleSaveDraft}
+                      className="flex-1 px-8 py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold hover:bg-gray-200 transition-all duration-200 border-2 border-gray-200 hover:border-gray-300 transform hover:scale-105"
+                    >
+                      Save Draft
+                    </button>
+                    <button
+                      onClick={handleContinue}
+                      disabled={!isFormValid}
+                      className={`flex-1 px-8 py-4 rounded-2xl font-semibold transition-all duration-200 transform hover:scale-105 ${
+                        isFormValid
+                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-xl'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      Continue →
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button
-                  onClick={handleSaveDraft}
-                  className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition"
-                >
-                  Save Draft
-                </button>
-                <button
-                  onClick={handleContinue}
-                  className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition"
-                >
-                  Continue
-                </button>
-              </div>
-            </div>
-
-            {/* Tips */}
-            <div className="lg:col-span-1 bg-white rounded-2xl shadow p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Lightbulb className="text-yellow-500" size={20} />
-                <h3 className="text-lg font-bold text-gray-900">
-                  Tips for Success
-                </h3>
-              </div>
-              <div className="space-y-4">
-                {tips.map((tip, index) => (
-                  <div key={index} className={`${tip.color} rounded-lg p-4`}>
-                    <div className="flex items-start gap-2">
-                      <span className="text-xl">{tip.icon}</span>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-gray-900 mb-1">
-                          {tip.title}
-                        </h4>
-                        <p className="text-sm text-gray-700">
-                          {tip.description}
-                        </p>
-                      </div>
+              {/* Tips Section */}
+              <div className="lg:col-span-1">
+                <div className="bg-gradient-to-br from-indigo-50 to-blue-100 rounded-3xl shadow-lg hover:shadow-2xl p-6 lg:p-8 transition-all duration-300 border border-indigo-200 sticky top-24">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-3 rounded-xl shadow-md">
+                      <Lightbulb className="text-white" size={24} />
                     </div>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      Tips for Success
+                    </h3>
                   </div>
-                ))}
+                  <div className="space-y-4">
+                    {tips.map((tip, index) => (
+                      <div key={index} className={`bg-gradient-to-br ${tip.gradient} rounded-2xl p-5 shadow-sm border border-white hover:shadow-lg transition-all duration-200`}>
+                        <div className="flex items-start gap-4">
+                          <div className="bg-white p-2 rounded-lg shadow-sm">
+                            {tip.icon}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-gray-900 mb-2 text-base">
+                              {tip.title}
+                            </h4>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {tip.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 pt-6 border-t border-indigo-300">
+                    <p className="text-sm text-gray-600 text-center font-medium">
+                      💡 Tasks with complete information get responses 50% faster
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Mobile Bottom Navigation */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 shadow-lg">
+        {/* Mobile Bottom Nav */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-3 shadow-2xl z-50">
           <div className="flex items-center justify-around relative">
-            <button
-              className="flex flex-col items-center gap-1"
-              onClick={() => handleNavigation("dashboard")}
+            <button 
+              className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110"
+              onClick={() => navigate("/dashboard")}
             >
-              <LayoutDashboard
-                size={28}
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Dashboard
-              </span>
+              <LayoutDashboard size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Dashboard</span>
             </button>
-            <button
-              className="flex flex-col items-center gap-1"
-              onClick={() => handleNavigation("")}
+
+            <button 
+              className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110"
+              onClick={() => navigate("/feedPage")}
             >
-              <Home size={28} style={{ color: "rgba(0, 0, 0, 0.47)" }} />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Home
-              </span>
+              <Home size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Home</span>
             </button>
-            <button
-              className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-              style={{ backgroundColor: "#2B5CE6" }}
-            >
+
+            <button className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-600 shadow-2xl transition-all duration-200 hover:scale-110">
               <PlusCircle size={36} className="text-white" />
             </button>
-            <button className="flex flex-col items-center gap-1">
-              <Mail size={28} style={{ color: "rgba(0, 0, 0, 0.47)" }} />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                Request
-              </span>
+
+            <button 
+              className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110"
+              onClick={() => navigate("/mytasks")}
+            >
+              <CheckSquare size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">My Tasks</span>
             </button>
-            <button className="flex flex-col items-center gap-1">
-              <MoreHorizontal
-                size={28}
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              />
-              <span
-                className="text-xs font-medium"
-                style={{ color: "rgba(0, 0, 0, 0.47)" }}
-              >
-                More
-              </span>
+
+            <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
+              <MoreHorizontal size={26} className="text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">More</span>
             </button>
           </div>
         </nav>
