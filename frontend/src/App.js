@@ -9,6 +9,7 @@ import MyTask from './components/MyTask';
 import PostNewTask from './components/PostNewTask';
 import Request from './components/RequestPage'; 
 import MyRequests from './components/MyRequest';
+import VerifyOtp from "./components/VerifyOtp";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/feedPage" element={<Feed />} />
           <Route path="/mytasks" element={<MyTask />} />
           <Route path="/posttask" element={<PostNewTask />} />
+          <Route path="/verifyotp" element={<VerifyOtp />} />
           <Route path="/requests" element={<Request />} />
           <Route path="/myrequests" element={<MyRequests />} /> 
           <Route path="/signup" element={<SignUpPage />} />

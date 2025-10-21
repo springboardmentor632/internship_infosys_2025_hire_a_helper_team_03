@@ -1,4 +1,11 @@
 {
+  "name": "your-backend-name",
+  "version": "1.0.0",
+  "description": "Backend for OTP project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

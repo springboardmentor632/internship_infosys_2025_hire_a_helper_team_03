@@ -45,7 +45,14 @@ export default function SignUpPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
-      setSuccess("Account created successfully! Sign in to verify your account.");
+
+      // Save email to localStorage for OTP page to access
+      localStorage.setItem("email", formData.email);
+
+      setSuccess("Account created successfully! Redirecting to OTP verification...");
+
+      // Navigate to OTP verification page
+      navigate("/verifyotp");
     } catch (err) {
       setError(err.message);
     }
@@ -56,7 +63,7 @@ export default function SignUpPage() {
       <div className="main-card">
         {/* Left Section: Create Account Form */}
         <div className="form-section">
-          <div style={{ width: "100%", maxWidth: 500, margin: '0 auto' }}>
+          <div style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}>
             <h2 className="title">Create Account</h2>
             <p className="subtitle">Join the HireHelper community</p>
 
@@ -156,22 +163,23 @@ export default function SignUpPage() {
         </div>
 
         {/* Right Section: Welcome Illustration (Hidden on mobile) */}
-        <div className="welcome-section" style={{ alignItems: 'flex-start' }}>
+        <div className="welcome-section" style={{ alignItems: "flex-start" }}>
           <div style={{ maxWidth: 420 }}>
-            <h1 style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: '#fff' }}>
-              Welcome Back<br />
-              <span style={{ color: '#EC4899' }}>to HireHelper</span>
+            <h1 style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: "#fff" }}>
+              Welcome Back
+              <br />
+              <span style={{ color: "#EC4899" }}>to HireHelper</span>
             </h1>
-            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9, color: '#fff' }}>
+            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9, color: "#fff" }}>
               Signup for your account
             </div>
           </div>
-          <div className="illustration-container" style={{ marginTop: 40, width: '100%', maxWidth: 400 }}>
+          <div className="illustration-container" style={{ marginTop: 40, width: "100%", maxWidth: 400 }}>
             <img
               src="/Illustration.png"
               alt="Sign up illustration for HireHelper"
               className="illustration-img"
-              style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: 0 }}
+              style={{ maxWidth: "100%", height: "auto", display: "block", margin: 0 }}
             />
           </div>
         </div>
