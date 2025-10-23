@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaHandshakeAngle } from "react-icons/fa6";
 import {
   MdDashboard,
@@ -19,6 +19,36 @@ const Sidebar = ({
   setSidebarCollapsed,
   navigate,
 }) => {
+  const [userInfo, setUserInfo] = useState(null);
+
+  // Load user info from localStorage when component mounts
+  useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          const user = JSON.parse(userData);
+          setUserInfo(user);
+        }
+      } catch (e) {
+        console.error('Error loading user data:', e);
+      }
+    };
+
+    // Load initially
+    loadUserInfo();
+
+    // Listen for storage changes (in case user logs in from another tab)
+    window.addEventListener('storage', loadUserInfo);
+    
+    // Custom event for same-tab updates
+    window.addEventListener('userLogin', loadUserInfo);
+
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+      window.removeEventListener('userLogin', loadUserInfo);
+    };
+  }, []);
   const navItems = [
     {
       id: "dashboard",
@@ -84,12 +114,12 @@ const Sidebar = ({
             </div>
             {!sidebarCollapsed && (
               <div className="flex">
-                <p className="font-bold text-lg leading-none text-[39px] shadow-xl">
+                <div className="font-bold text-lg leading-none text-[41px] shadow-xl">
                   Hire
-                </p>
-                <p className="text-xs font-semibold leading-none text-[29px] mt-[20px] shadow-xl">
+                </div>
+                <div className="text-xs font-semibold leading-none text-[31px] mt-[20px] shadow-xl">
                   Helper
-                </p>
+                </div>
               </div>
             )}
           </div>
@@ -128,34 +158,35 @@ const Sidebar = ({
         </nav>
 
         {/* User Profile */}
-        {!sidebarCollapsed && (
-          (() => {
-            // Try to get user info from localStorage
-            let user = null;
-            try {
-              user = JSON.parse(localStorage.getItem('user'));
-            } catch (e) {}
-            const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Emily Chen';
-            const email = user ? user.email : 'emilychen@gmail.com';
-            // Get initials for avatar
-            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
-            return (
-              <div className="border-t border-white border-opacity-30 p-4 mt-auto">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {initials}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">{name}</p>
-                    <p className="text-xs text-white text-opacity-80 truncate">
-                      {email}
-                    </p>
-                  </div>
+        {!sidebarCollapsed && (() => {
+          // Build user display information from state
+          const firstName = userInfo?.firstName || '';
+          const lastName = userInfo?.lastName || '';
+          const name = `${firstName} ${lastName}`.trim() || 'Guest User';
+          const email = userInfo?.email || 'Not logged in';
+          
+          // Get initials for avatar
+          let initials = 'GU';
+          if (firstName || lastName) {
+            initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+          }
+          
+          return (
+            <div className="border-t border-white border-opacity-30 p-4 mt-auto">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  {initials}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm truncate">{name}</p>
+                  <p className="text-xs text-white text-opacity-80 truncate">
+                    {email}
+                  </p>
                 </div>
               </div>
-            );
-          })()
-        )}
+            </div>
+          );
+        })()}
       </aside>
     </>
   );

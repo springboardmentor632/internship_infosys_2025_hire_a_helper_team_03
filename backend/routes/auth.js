@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const User = require('../model/User'); // adjust path if needed
@@ -49,8 +48,18 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET || 'yoursecret',
       { expiresIn: '7d' }
     );
-    // Success
-    res.status(200).json({ message: 'Login successful', token });
+    // Success - Include user data in response
+    res.status(200).json({ 
+      message: 'Login successful', 
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        email: user.email
+      }
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
