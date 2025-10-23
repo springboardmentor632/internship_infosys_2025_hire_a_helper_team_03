@@ -146,7 +146,7 @@ export default function SignUpPage() {
               Already Have an Account?
               <span
                 className="signIn"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/signin")}
                 style={{ cursor: "pointer" }}
               >
                 Sign in
