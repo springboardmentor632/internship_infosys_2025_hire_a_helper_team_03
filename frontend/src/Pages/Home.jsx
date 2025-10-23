@@ -4,7 +4,7 @@ import heroPageImage from "../Assets/heroPageImage.png";
 import { FaHandshakeAngle } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-export default function Hero() {
+export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 

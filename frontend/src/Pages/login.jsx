@@ -26,10 +26,13 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
-      // Store token and login state in localStorage
+      // Store token, user info, and login state in localStorage
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
       }
       navigate("/dashboard");
     } catch (err) {
