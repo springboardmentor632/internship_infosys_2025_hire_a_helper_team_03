@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaHandshakeAngle } from "react-icons/fa6";
 import {
   MdDashboard,
@@ -17,21 +18,21 @@ const Sidebar = ({
   setMobileMenuOpen,
   sidebarCollapsed,
   setSidebarCollapsed,
-  navigate,
 }) => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
 
   // Load user info from localStorage when component mounts
   useEffect(() => {
     const loadUserInfo = () => {
       try {
-        const userData = localStorage.getItem('user');
+        const userData = localStorage.getItem("user");
         if (userData) {
           const user = JSON.parse(userData);
           setUserInfo(user);
         }
       } catch (e) {
-        console.error('Error loading user data:', e);
+        console.error("Error loading user data:", e);
       }
     };
 
@@ -39,14 +40,14 @@ const Sidebar = ({
     loadUserInfo();
 
     // Listen for storage changes (in case user logs in from another tab)
-    window.addEventListener('storage', loadUserInfo);
-    
+    window.addEventListener("storage", loadUserInfo);
+
     // Custom event for same-tab updates
-    window.addEventListener('userLogin', loadUserInfo);
+    window.addEventListener("userLogin", loadUserInfo);
 
     return () => {
-      window.removeEventListener('storage', loadUserInfo);
-      window.removeEventListener('userLogin', loadUserInfo);
+      window.removeEventListener("storage", loadUserInfo);
+      window.removeEventListener("userLogin", loadUserInfo);
     };
   }, []);
   const navItems = [
@@ -108,23 +109,20 @@ const Sidebar = ({
 
         {/* Logo */}
         <div className="px-2 pt-2 pb-2">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-[48px] h-[48px] bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-              <FaHandshakeAngle className="text-xl font-bold w-[30px] h-[32px]" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <FaHandshakeAngle className="text-2xl text-white" />
             </div>
             {!sidebarCollapsed && (
-              <div className="flex">
-                <div className="font-bold text-lg leading-none text-[41px] shadow-xl">
-                  Hire
-                </div>
-                <div className="text-xs font-semibold leading-none text-[31px] mt-[20px] shadow-xl">
+              <div className="flex flex-row leading-none">
+                <span className="font-bold text-4xl text-white">Hire</span>
+                <span className="font-semibold text-3xl text-white mt-3">
                   Helper
-                </div>
+                </span>
               </div>
             )}
           </div>
         </div>
-
         <div className="w-full h-px bg-white/30"></div>
 
         {/* Navigation */}
@@ -158,35 +156,38 @@ const Sidebar = ({
         </nav>
 
         {/* User Profile */}
-        {!sidebarCollapsed && (() => {
-          // Build user display information from state
-          const firstName = userInfo?.firstName || '';
-          const lastName = userInfo?.lastName || '';
-          const name = `${firstName} ${lastName}`.trim() || 'Guest User';
-          const email = userInfo?.email || 'Not logged in';
-          
-          // Get initials for avatar
-          let initials = 'GU';
-          if (firstName || lastName) {
-            initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-          }
-          
-          return (
-            <div className="border-t border-white border-opacity-30 p-4 mt-auto">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                  {initials}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate">{name}</p>
-                  <p className="text-xs text-white text-opacity-80 truncate">
-                    {email}
-                  </p>
+        {!sidebarCollapsed &&
+          (() => {
+            // Build user display information from state
+            const firstName = userInfo?.firstName || "";
+            const lastName = userInfo?.lastName || "";
+            const name = `${firstName} ${lastName}`.trim() || "Guest User";
+            const email = userInfo?.email || "Not logged in";
+
+            // Get initials for avatar
+            let initials = "GU";
+            if (firstName || lastName) {
+              initials = `${firstName.charAt(0)}${lastName.charAt(
+                0
+              )}`.toUpperCase();
+            }
+
+            return (
+              <div className="border-t border-white border-opacity-30 p-4 mt-auto">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm truncate">{name}</p>
+                    <p className="text-xs text-white text-opacity-80 truncate">
+                      {email}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
       </aside>
     </>
   );

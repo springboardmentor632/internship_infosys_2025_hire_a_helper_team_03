@@ -50,28 +50,75 @@ const TaskForm = ({ navigate }) => {
     alert("Task saved as draft!");
   };
 
-  const handleSubmit = async () => {
-    const token = localStorage.getItem('token');
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) data.append(key, value);
+  // In TaskForm.jsx - Update the handleSubmit function
+
+const handleSubmit = async () => {
+  // Validate required fields
+  if (!formData.title || !formData.category || !formData.description || !formData.location) {
+    alert('Please fill in all required fields');
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Please login to post a task');
+    navigate('/login');
+    return;
+  }
+
+  const submitData = new FormData();
+  
+  // Append all form data
+  submitData.append('title', formData.title);
+  submitData.append('category', formData.category);
+  submitData.append('description', formData.description);
+  submitData.append('location', formData.location);
+  
+  // Append optional fields only if they have values
+  if (formData.startDate) submitData.append('startDate', formData.startDate);
+  if (formData.startTime) submitData.append('startTime', formData.startTime);
+  if (formData.endDate) submitData.append('endDate', formData.endDate);
+  if (formData.endTime) submitData.append('endTime', formData.endTime);
+  if (formData.budget) submitData.append('budget', formData.budget);
+  if (formData.urgency) submitData.append('urgency', formData.urgency);
+  
+  // Append image if exists
+  if (formData.image) {
+    submitData.append('image', formData.image);
+  }
+
+  try {
+    console.log('Submitting task data:', {
+      title: formData.title,
+      category: formData.category,
+      location: formData.location,
+      hasImage: !!formData.image
     });
-    try {
-      const res = await fetch('http://localhost:5000/api/tasks/create', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: data
-      });
-      if (!res.ok) throw new Error('Failed to post task');
-      await res.json();
-      alert('Task posted successfully!');
-      navigate('/mytasks');
-    } catch (err) {
-      alert('Error posting task: ' + err.message);
+
+    const res = await fetch('http://localhost:5000/api/tasks/create', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+        // Don't set Content-Type for FormData - let browser set it with boundary
+      },
+      body: submitData
+    });
+
+    const result = await res.json();
+    console.log('Server response:', result);
+
+    if (!res.ok) {
+      throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to post task`);
     }
-  };
+
+    alert('Task posted successfully!');
+    navigate('/mytasks');
+    
+  } catch (err) {
+    console.error('Error posting task:', err);
+    alert('Error posting task: ' + err.message);
+  }
+};
 
   const isFormValid = formData.title && formData.category && formData.description && formData.location;
 

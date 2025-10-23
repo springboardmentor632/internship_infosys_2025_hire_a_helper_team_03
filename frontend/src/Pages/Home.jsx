@@ -64,7 +64,7 @@ export default function Home() {
                   className="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg"
                   onClick={() => navigate("/signup")}
                 >
-                  Login
+                  Sign Up
                 </button>
               </div>
 
