@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "./signup.css";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({ email: "", password: "", remember: false });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -22,7 +26,10 @@ export default function LoginPage() {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, password: formData.password }),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
@@ -34,83 +41,70 @@ export default function LoginPage() {
 
   return (
     <div className="page-container">
-      <div className="main-card">
-        {/* Left: Blue Welcome Section (Hidden on mobile) */}
-        <div className="welcome-section" style={{ flex: 1.2, alignItems: 'flex-start', textAlign: 'left' }}>
-          <div style={{ maxWidth: 420 }}>
-            <h1 style={{ fontSize: 44, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: '#fff' }}>
-              Welcome Back<br />
-              <span style={{ color: "#f472b6" }}>to HireHelper</span>
-            </h1>
-            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9, color: '#fff' }}>
-              Login to access your account
-            </div>
-          </div>
-          <img
-            src="/Illustration.png"
-            alt="Login illustration for HireHelper"
-            style={{ width: "100%", maxWidth: 420, marginTop: 24 }}
-          />
+      <div className="login-card">
+        {/* LEFT SIDE */}
+        <div className="left-section">
+          <h1 className="brand-title"> HireHelper</h1>
+          <h3 className="headline">Connect. Help. Accomplish.</h3>
+          <p className="subtext">
+            Join thousands of users who find and offer help for everyday tasks
+          </p>
+          <ul className="features-list">
+            <li>✅ Post tasks in minutes</li>
+            <li>✅ Browse available opportunities</li>
+            <li>✅ Real-time notifications</li>
+          </ul>
         </div>
 
-        {/* Right: Login Form Section */}
-        <div className="form-section" style={{ flex: 1 }}>
-          {/* Mobile Icon (Visible only on mobile) */}
-          <div className="mobile-icon-container">
-            📱
-          </div>
+        {/* RIGHT SIDE */}
+        <div className="right-section">
+          <h2 className="title">Welcome back</h2>
+          <p className="subtitle">Sign in to your account to continue</p>
 
-          <div style={{ width: "100%", maxWidth: 340, margin: '0 auto' }}>
-            <h2 className="title">Welcome Back</h2>
-            <div className="subtitle">Sign in to continue</div>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              className="input-field"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              className="input-field"
+              required
+            />
 
-            <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field full-width"
-                required
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input-field full-width"
-                required
-              />
-              <div className="checkbox-group">
+            <div className="form-options">
+              <label>
                 <input
                   type="checkbox"
-                  id="remember"
                   name="remember"
                   checked={formData.remember}
                   onChange={handleChange}
-                />
-                <label htmlFor="remember">Remember me</label>
-              </div>
-              {error && (
-                <div style={{ color: "red", marginBottom: 10, textAlign: "center" }}>{error}</div>
-              )}
-              <button type="submit" className="submit-btn">
-                Sign In
-              </button>
-            </form>
-
-            <div className="existing">
-              Don't have an account?{' '}
-              <span
-                className="signIn"
-                onClick={() => navigate("/signup")}
-              >
-                Sign Up
-              </span>
+                />{" "}
+                Remember me
+              </label>
+              <span className="forgot">Forgot password?</span>
             </div>
-          </div>
+
+            {error && <div className="error-msg">{error}</div>}
+
+            <button type="submit" className="submit-btn">
+              Sign In
+            </button>
+
+            <div className="signup-link">
+              Don’t have an account?{" "}
+              <span onClick={() => navigate("/signup")}>Sign up</span>
+            </div>
+          </form>
         </div>
       </div>
     </div>
