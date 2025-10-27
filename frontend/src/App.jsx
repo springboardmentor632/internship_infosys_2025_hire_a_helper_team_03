@@ -9,6 +9,8 @@ import LoginPage from './Pages/login';
 import Home from './Pages/Home';  
 import MyRequest from './Pages/MyRequest';
 import Requests from './Pages/RequestPage';
+import Settings from './Pages/SettingsPage';
+import Notifications from './Pages/NotificationsPage';
 
 // Pages
 
@@ -24,9 +26,11 @@ function App() {
           <Route path="/mytasks" element={<MyTask />} />
           <Route path="/posttask" element={<PostNewTask />} />
           <Route path="/myrequests" element={<MyRequest />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/signin" element={<LoginPage />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </Router>
     </div>
