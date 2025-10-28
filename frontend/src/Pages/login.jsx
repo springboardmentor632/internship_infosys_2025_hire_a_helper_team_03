@@ -25,7 +25,21 @@ export default function LoginPage() {
         body: JSON.stringify({ email: formData.email, password: formData.password }),
       });
       const data = await res.json();
+      
       if (!res.ok) throw new Error(data.message || "Login failed");
+      
+      // Store token, user info, and login state in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          // Dispatch custom event to notify sidebar of user login
+          window.dispatchEvent(new Event('userLogin'));
+        }
+      }
+      
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
