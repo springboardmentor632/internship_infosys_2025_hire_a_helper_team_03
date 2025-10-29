@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaSearch, FaBell, FaUser } from "react-icons/fa";
 import { MdList } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ 
   mobileMenuOpen, 
   setMobileMenuOpen, 
   sidebarCollapsed 
 }) => {
+  const navigate = useNavigate();
+  const [unreadCount] = useState(3); // You can update this from your API/state management
+
+  const handleNotificationClick = () => {
+    navigate('/notifications');
+  };
+
   return (
     <>
       {/* Header - Desktop */}
@@ -23,8 +31,17 @@ const Header = ({
           />
         </div>
         <div className="flex items-center gap-4 ml-8">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-all">
+          {/* Notification Bell with Badge */}
+          <button 
+            onClick={handleNotificationClick}
+            className="relative p-2 hover:bg-gray-100 rounded-lg transition-all"
+          >
             <FaBell size={20} className="text-gray-600" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-all">
             <FaUser size={20} className="text-gray-600" />
@@ -53,8 +70,17 @@ const Header = ({
           />
         </div>
 
-        <button className="p-2 hover:bg-gray-100 rounded-lg">
+        {/* Notification Bell with Badge - Mobile */}
+        <button 
+          onClick={handleNotificationClick}
+          className="relative p-2 hover:bg-gray-100 rounded-lg"
+        >
           <FaBell size={20} className="text-gray-600" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
         </button>
       </header>
     </>
