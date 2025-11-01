@@ -19,17 +19,32 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
+      console.log('Attempting login with:', { 
+        email: formData.email, 
+        password: formData.password 
+      });
+
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, password: formData.password }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ 
+          email: formData.email, 
+          password: formData.password 
+        }),
       });
+
+      console.log('Response status:', res.status);
       const data = await res.json();
+      console.log('Response data:', data);
       
       if (!res.ok) throw new Error(data.message || "Login failed");
       
       // Store token, user info, and login state in localStorage
       if (data.token) {
+        console.log('Storing token and user data');
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
         
@@ -40,8 +55,10 @@ export default function LoginPage() {
         }
       }
       
+      console.log('Navigating to dashboard');
       navigate("/dashboard");
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message);
     }
   };

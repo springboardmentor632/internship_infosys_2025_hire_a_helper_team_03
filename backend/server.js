@@ -15,7 +15,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tasks', require('./routes/task'));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hirehelper', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/hirehelper', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
