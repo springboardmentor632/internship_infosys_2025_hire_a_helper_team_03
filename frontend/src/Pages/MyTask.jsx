@@ -50,6 +50,7 @@ const MyTask = () => {
         throw new Error(result.message || 'Failed to fetch tasks');
       }
 
+      console.log('Fetched tasks:', result); // Log the fetched tasks
       setTasks(result);
     } catch (err) {
       console.error('Error fetching tasks:', err);
@@ -78,6 +79,77 @@ const MyTask = () => {
   const handleCloseTaskDetails = () => {
     setShowTaskDetails(false);
     setSelectedTask(null);
+  };
+
+  // Handle delete task
+  const handleDeleteTask = async (task) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Please login to delete tasks');
+      return;
+    }
+
+    console.log('Task to delete:', task);
+    console.log('Task ID type:', typeof task._id);
+    console.log('Task ID value:', task._id);
+    
+    if (!task._id) {
+      alert('Invalid task ID');
+      return;
+    }
+
+    try {
+      const url = `http://localhost:5000/api/tasks/${task._id}`;
+      console.log('Making DELETE request to:', url);
+      console.log('With token:', token.substring(0, 20) + '...');
+      
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('Response status:', res.status);
+      console.log('Response status text:', res.statusText);
+
+      const responseText = await res.text();
+      console.log('Response body:', responseText);
+
+      if (!res.ok) {
+        throw new Error(responseText || 'Failed to delete task');
+      }
+
+      // Try to parse the response as JSON if it exists
+      let response;
+      try {
+        if (responseText) {
+          response = JSON.parse(responseText);
+        }
+      } catch (e) {
+        console.warn('Response was not JSON:', e);
+      }
+
+      // Remove the deleted task from the state
+      setTasks(prevTasks => {
+        const newTasks = prevTasks.filter(t => t._id !== task._id);
+        console.log('Tasks after deletion:', newTasks);
+        return newTasks;
+      });
+      
+      // Show success message
+      alert(response?.message || 'Task deleted successfully');
+
+      // Refresh the task list
+      fetchUserTasks();
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      alert('Failed to delete task: ' + err.message);
+    }
   };
 
   if (loading) {
@@ -253,6 +325,7 @@ const MyTask = () => {
                   <TaskTable 
                     tasks={filteredTasks} 
                     onViewClick={handleViewTask}
+                    onDeleteClick={handleDeleteTask}
                   />
                 </div>
               </>
