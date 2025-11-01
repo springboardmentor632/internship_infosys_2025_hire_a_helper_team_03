@@ -15,7 +15,19 @@ router.use((req, res, next) => {
 });
 
 // Task routes
-router.post('/create', auth, parser.single('image'), createTask);
+router.post('/create', auth, (req, res, next) => {
+  parser.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(400).json({ 
+        message: 'Error uploading image', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, createTask);
+
 router.get('/mytasks', auth, getUserTasks);
 router.delete('/:id', auth, deleteTask);
 
@@ -35,7 +47,5 @@ router.use((err, req, res, next) => {
     error: err.message
   });
 });
-
-module.exports = router;
 
 module.exports = router;
