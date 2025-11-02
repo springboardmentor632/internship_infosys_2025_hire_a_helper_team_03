@@ -19,18 +19,47 @@ const MyTask = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTask, setSelectedTask] = useState(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
+  const [filterView, setFilterView] = useState("all"); // all, drafts, active, completed, cancelled
 
-  // Separate drafts and active tasks
+  // Separate tasks by status
   const drafts = tasks.filter(task => task.status === 'draft');
-  const activeTasks = tasks.filter(task => task.status !== 'draft');
+  const activeTasks = tasks.filter(task => task.status === 'active');
+  const completedTasks = tasks.filter(task => task.status === 'completed');
+  const cancelledTasks = tasks.filter(task => task.status === 'cancelled');
+  const inProgressTasks = tasks.filter(task => task.status === 'in-progress');
 
-  // Filter active tasks based on search query
-  const filteredTasks = activeTasks.filter(task =>
+  // Filter tasks based on selected filter view
+  const getFilteredTasksByView = () => {
+    switch (filterView) {
+      case 'drafts':
+        return drafts;
+      case 'active':
+        return activeTasks;
+      case 'completed':
+        return completedTasks;
+      case 'cancelled':
+        return cancelledTasks;
+      case 'in-progress':
+        return inProgressTasks;
+      case 'all':
+      default:
+        return tasks;
+    }
+  };
+
+  const viewFilteredTasks = getFilteredTasksByView();
+
+  // Filter tasks based on search query
+  const filteredTasks = viewFilteredTasks.filter(task =>
     task.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.location?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Separate drafts and non-drafts from filtered results for display
+  const displayDrafts = filteredTasks.filter(task => task.status === 'draft');
+  const displayActiveTasks = filteredTasks.filter(task => task.status !== 'draft');
 
   const fetchUserTasks = async () => {
     const token = localStorage.getItem('token');
@@ -359,9 +388,10 @@ const MyTask = () => {
               </p>
             </div>
 
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="max-w-md relative">
+            {/* Search and Filter Bar */}
+            <div className="mb-6 flex flex-col md:flex-row gap-4">
+              {/* Search Bar */}
+              <div className="flex-1 max-w-md relative">
                 <input
                   type="text"
                   placeholder="Search your tasks..."
@@ -380,6 +410,31 @@ const MyTask = () => {
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
+                </svg>
+              </div>
+
+              {/* Filter Dropdown */}
+              <div className="relative">
+                <select
+                  value={filterView}
+                  onChange={(e) => setFilterView(e.target.value)}
+                  className="appearance-none px-6 py-3 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-gray-700 bg-white shadow-sm font-medium cursor-pointer hover:border-gray-400 transition-colors"
+                >
+                  <option value="all">All Tasks</option>
+                  <option value="drafts">Drafts</option>
+                  <option value="active">Active</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
             </div>
@@ -416,35 +471,54 @@ const MyTask = () => {
                 </button>
               </div>
 
-              {/* Tasks Count and Search Results */}
-              <div className="flex items-center gap-4 text-sm text-gray-600">
+              {/* Tasks Count and Filter Info */}
+              <div className="flex items-center flex-wrap gap-3 text-sm">
                 {searchQuery && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full font-medium">
                     {filteredTasks.length} result{filteredTasks.length !== 1 ? 's' : ''} for "{searchQuery}"
                   </span>
                 )}
-                <span>
-                  {activeTasks.length} active task{activeTasks.length !== 1 ? 's' : ''}
-                </span>
-                {drafts.length > 0 && (
-                  <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-medium">
-                    {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
+                {filterView === 'all' ? (
+                  <>
+                    <span className="text-gray-600 font-medium">
+                      {tasks.length} total task{tasks.length !== 1 ? 's' : ''}
+                    </span>
+                    {drafts.length > 0 && (
+                      <span className="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full font-medium">
+                        {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    {activeTasks.length > 0 && (
+                      <span className="bg-sky-100 text-sky-700 px-3 py-1.5 rounded-full font-medium">
+                        {activeTasks.length} active
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className={`px-3 py-1.5 rounded-full font-medium ${
+                    filterView === 'drafts' ? 'bg-amber-100 text-amber-700' :
+                    filterView === 'active' ? 'bg-sky-100 text-sky-700' :
+                    filterView === 'completed' ? 'bg-green-100 text-green-700' :
+                    filterView === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}>
+                    {filteredTasks.length} {filterView === 'in-progress' ? 'in progress' : filterView}
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Drafts Section */}
-            {drafts.length > 0 && (
+            {/* Drafts Section - Only show when viewing "All" */}
+            {displayDrafts.length > 0 && filterView === 'all' && (
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                   <h2 className="text-2xl font-bold text-gray-900">Drafts</h2>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-semibold rounded-full">
-                    {drafts.length}
+                    {displayDrafts.length}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {drafts.map((draft, index) => (
+                  {displayDrafts.map((draft, index) => (
                     <DraftCard
                       key={draft._id || index}
                       draft={draft}
@@ -458,17 +532,17 @@ const MyTask = () => {
             )}
 
             {/* Active Tasks Section Header */}
-            {activeTasks.length > 0 && drafts.length > 0 && (
+            {displayActiveTasks.length > 0 && displayDrafts.length > 0 && filterView === 'all' && (
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">Active Tasks</h2>
                 <span className="px-3 py-1 bg-sky-100 text-sky-700 text-sm font-semibold rounded-full">
-                  {activeTasks.length}
+                  {displayActiveTasks.length}
                 </span>
               </div>
             )}
 
             {/* Tasks Display */}
-            {tasks.length === 0 && !error ? (
+            {filteredTasks.length === 0 && !error ? (
               <div className="bg-white rounded-2xl shadow-sm p-8 text-center border border-gray-200">
                 <div className="max-w-md mx-auto">
                   <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -477,39 +551,64 @@ const MyTask = () => {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    No tasks yet
+                    {searchQuery ? 'No tasks found' : 
+                     filterView === 'all' ? 'No tasks yet' : 
+                     `No ${filterView === 'in-progress' ? 'in progress' : filterView} tasks`}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Create your first task to get help from our community
+                    {searchQuery 
+                      ? `No tasks match your search for "${searchQuery}". Try different keywords.`
+                      : filterView === 'all'
+                      ? 'Create your first task to get help from our community'
+                      : `You don't have any ${filterView === 'in-progress' ? 'in progress' : filterView} tasks yet.`
+                    }
                   </p>
-                  <button
-                    onClick={() => navigate('/posttask')}
-                    className="px-8 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    Post Your First Task
-                  </button>
+                  {!searchQuery && filterView === 'all' && (
+                    <button
+                      onClick={() => navigate('/posttask')}
+                      className="px-8 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                    >
+                      Post Your First Task
+                    </button>
+                  )}
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                  {!searchQuery && filterView !== 'all' && (
+                    <button
+                      onClick={() => setFilterView('all')}
+                      className="px-6 py-2 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-colors"
+                    >
+                      View All Tasks
+                    </button>
+                  )}
                 </div>
               </div>
-            ) : filteredTasks.length === 0 && activeTasks.length > 0 && !error ? (
-              <div className="bg-white rounded-2xl shadow-sm p-8 text-center border border-gray-200">
-                <div className="max-w-md mx-auto">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">No tasks found</h3>
-                  <p className="text-gray-600 mb-6">
-                    No tasks match your search for "{searchQuery}". Try different keywords.
-                  </p>
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-                  >
-                    Clear Search
-                  </button>
+            ) : filterView === 'drafts' ? (
+              // Show only drafts when drafts filter is selected
+              displayDrafts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {displayDrafts.map((draft, index) => (
+                    <DraftCard
+                      key={draft._id || index}
+                      draft={draft}
+                      onPublish={handlePublishDraft}
+                      onDelete={handleDeleteDraft}
+                      onEdit={handleEditDraft}
+                    />
+                  ))}
                 </div>
-              </div>
+              ) : null
             ) : (
               <>
                 {/* Mobile View */}
                 <div className="lg:hidden space-y-4">
-                  {filteredTasks.map((task, index) => (
+                  {displayActiveTasks.map((task, index) => (
                     <TaskCardMobile 
                       key={task._id || index} 
                       task={task} 
@@ -522,7 +621,7 @@ const MyTask = () => {
                 {/* Desktop View */}
                 <div className="hidden lg:block">
                   <TaskTable 
-                    tasks={filteredTasks} 
+                    tasks={displayActiveTasks} 
                     onViewClick={handleViewTask}
                     onDeleteClick={handleDeleteTask}
                   />

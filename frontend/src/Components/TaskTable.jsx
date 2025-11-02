@@ -5,7 +5,7 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick }) => {
     const normalizedStatus = status?.toLowerCase() || 'active';
     switch (normalizedStatus) {
       case 'completed':
-        return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
+        return 'bg-gradient-to-r from-blue-500 to-blue-600';
       case 'in-progress':
       case 'in progress':
         return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
