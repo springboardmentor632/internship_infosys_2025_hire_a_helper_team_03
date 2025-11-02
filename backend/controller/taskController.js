@@ -1,5 +1,47 @@
 const Task = require('../model/Task');
 
+exports.saveDraft = async (req, res) => {
+  try {
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    console.log('User ID:', req.user.id);
+
+    const { title, description, category, location, startDate, startTime, endDate, endTime, budget, urgency } = req.body;
+    
+    const imageUrl = req.file ? req.file.path : null;
+
+    const task = new Task({
+      user: req.user.id,
+      title: title || 'Untitled Draft',
+      description: description || '',
+      category: category || 'other',
+      location: location || '',
+      startDate: startDate || null,
+      startTime: startTime || null,
+      endDate: endDate || null,
+      endTime: endTime || null,
+      budget: budget || null,
+      urgency: urgency || 'medium',
+      imageUrl,
+      status: 'draft'
+    });
+
+    await task.save();
+    console.log('Draft saved successfully:', task._id);
+    
+    res.status(201).json({ 
+      message: 'Draft saved successfully', 
+      task: task
+    });
+  } catch (err) {
+    console.error('Error saving draft:', err);
+    return res.status(500).json({ 
+      message: 'Server error while saving draft',
+      error: err.message 
+    });
+  }
+};
+
 exports.createTask = async (req, res) => {
   try {
     console.log('Request body:', req.body);
@@ -44,8 +86,62 @@ exports.createTask = async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating task:', err);
-    res.status(500).json({ 
-      message: 'Server error while creating task',
+    return res.status(500).json({ 
+      message: 'Server error while deleting task',
+      error: err.message 
+    });
+  }
+};
+
+exports.updateTaskStatus = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const userId = req.user.id;
+    const { status } = req.body;
+
+    console.log('=== Update Task Status Request ===');
+    console.log('Task ID:', taskId);
+    console.log('User ID:', userId);
+    console.log('New Status:', status);
+
+    if (!taskId) {
+      return res.status(400).json({ message: 'Task ID is required' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ message: 'Status is required' });
+    }
+
+    // Validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({ message: 'Invalid task ID format' });
+    }
+    
+    // Find the task
+    const task = await Task.findOne({ _id: taskId });
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if the user owns the task
+    if (task.user.toString() !== userId) {
+      return res.status(401).json({ message: 'User not authorized to update this task' });
+    }
+
+    // Update the task status
+    task.status = status;
+    await task.save();
+
+    console.log('Task status updated successfully');
+    return res.status(200).json({ 
+      message: 'Task status updated successfully',
+      task: task
+    });
+  } catch (err) {
+    console.error('Error in updateTaskStatus:', err);
+    return res.status(500).json({ 
+      message: 'Server error while updating task status',
       error: err.message 
     });
   }
@@ -65,6 +161,66 @@ exports.getUserTasks = async (req, res) => {
     console.error('Error fetching user tasks:', err);
     res.status(500).json({ 
       message: 'Server error while fetching tasks',
+      error: err.message 
+    });
+  }
+};
+
+exports.publishDraft = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const userId = req.user.id;
+
+    console.log('=== Publish Draft Request ===');
+    console.log('Task ID:', taskId);
+    console.log('User ID:', userId);
+
+    if (!taskId) {
+      return res.status(400).json({ message: 'Task ID is required' });
+    }
+
+    // Validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({ message: 'Invalid task ID format' });
+    }
+    
+    // Find the task
+    const task = await Task.findOne({ _id: taskId });
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if the user owns the task
+    if (task.user.toString() !== userId) {
+      return res.status(401).json({ message: 'User not authorized to publish this task' });
+    }
+
+    // Check if the task is a draft
+    if (task.status !== 'draft') {
+      return res.status(400).json({ message: 'Task is not a draft' });
+    }
+
+    // Validate required fields before publishing
+    if (!task.title || !task.description || !task.category || !task.location) {
+      return res.status(400).json({ 
+        message: 'Cannot publish draft: Missing required fields (title, description, category, location)' 
+      });
+    }
+
+    // Update the task status to active
+    task.status = 'active';
+    await task.save();
+
+    console.log('Draft published successfully');
+    return res.status(200).json({ 
+      message: 'Draft published successfully',
+      task: task
+    });
+  } catch (err) {
+    console.error('Error in publishDraft:', err);
+    return res.status(500).json({ 
+      message: 'Server error while publishing draft',
       error: err.message 
     });
   }

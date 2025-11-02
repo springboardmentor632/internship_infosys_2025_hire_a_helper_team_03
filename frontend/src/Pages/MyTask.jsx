@@ -6,6 +6,7 @@ import BottomNav from "../Components/BottomNav";
 import TaskCardMobile from "../Components/TaskCardMobile";
 import TaskTable from "../Components/TaskTable";
 import TaskDetailsCard from "../Components/TaskDetailCard";
+import DraftCard from "../Components/DraftCard";
 
 const MyTask = () => {
   const navigate = useNavigate();
@@ -19,8 +20,12 @@ const MyTask = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
 
-  // Filter tasks based on search query
-  const filteredTasks = tasks.filter(task =>
+  // Separate drafts and active tasks
+  const drafts = tasks.filter(task => task.status === 'draft');
+  const activeTasks = tasks.filter(task => task.status !== 'draft');
+
+  // Filter active tasks based on search query
+  const filteredTasks = activeTasks.filter(task =>
     task.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -152,6 +157,160 @@ const MyTask = () => {
     }
   };
 
+  // Handle mark task as complete
+  const handleMarkComplete = async (task) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Please login to update tasks');
+      return;
+    }
+
+    if (!task._id) {
+      alert('Invalid task ID');
+      return;
+    }
+
+    try {
+      const url = `http://localhost:5000/api/tasks/${task._id}/status`;
+      console.log('Making PATCH request to:', url);
+      
+      const res = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'completed' })
+      });
+
+      const result = await res.json();
+      console.log('Update response:', result);
+
+      if (!res.ok) {
+        throw new Error(result.message || 'Failed to update task status');
+      }
+
+      // Update the task in the state
+      setTasks(prevTasks => 
+        prevTasks.map(t => 
+          t._id === task._id ? { ...t, status: 'completed' } : t
+        )
+      );
+
+      // Update selected task if it's the one being viewed
+      if (selectedTask && selectedTask._id === task._id) {
+        setSelectedTask({ ...selectedTask, status: 'completed' });
+      }
+      
+      alert('Task marked as completed!');
+    } catch (err) {
+      console.error('Error updating task status:', err);
+      alert('Failed to update task: ' + err.message);
+    }
+  };
+
+  // Handle publish draft
+  const handlePublishDraft = async (draft) => {
+    if (!window.confirm('Are you sure you want to publish this draft?')) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to publish drafts');
+      return;
+    }
+
+    if (!draft._id) {
+      alert('Invalid draft ID');
+      return;
+    }
+
+    try {
+      const url = `http://localhost:5000/api/tasks/${draft._id}/publish`;
+      console.log('Publishing draft:', url);
+      
+      const res = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await res.json();
+      console.log('Publish response:', result);
+
+      if (!res.ok) {
+        throw new Error(result.message || 'Failed to publish draft');
+      }
+
+      // Update the draft in the state to active
+      setTasks(prevTasks => 
+        prevTasks.map(t => 
+          t._id === draft._id ? { ...t, status: 'active' } : t
+        )
+      );
+      
+      alert('Draft published successfully!');
+      fetchUserTasks(); // Refresh the list
+    } catch (err) {
+      console.error('Error publishing draft:', err);
+      alert('Failed to publish draft: ' + err.message);
+    }
+  };
+
+  // Handle edit draft
+  const handleEditDraft = (draft) => {
+    // Navigate to post task page with draft data
+    // For now, we'll just show an alert - you can implement edit functionality later
+    alert('Edit functionality coming soon! For now, you can delete and create a new one.');
+  };
+
+  // Handle delete draft
+  const handleDeleteDraft = async (draft) => {
+    if (!window.confirm('Are you sure you want to delete this draft?')) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to delete drafts');
+      return;
+    }
+
+    if (!draft._id) {
+      alert('Invalid draft ID');
+      return;
+    }
+
+    try {
+      const url = `http://localhost:5000/api/tasks/${draft._id}`;
+      console.log('Deleting draft:', url);
+      
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result.message || 'Failed to delete draft');
+      }
+
+      // Remove the deleted draft from the state
+      setTasks(prevTasks => prevTasks.filter(t => t._id !== draft._id));
+      
+      alert('Draft deleted successfully');
+      fetchUserTasks(); // Refresh the list
+    } catch (err) {
+      console.error('Error deleting draft:', err);
+      alert('Failed to delete draft: ' + err.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -265,13 +424,51 @@ const MyTask = () => {
                   </span>
                 )}
                 <span>
-                  {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} total
+                  {activeTasks.length} active task{activeTasks.length !== 1 ? 's' : ''}
                 </span>
+                {drafts.length > 0 && (
+                  <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-medium">
+                    {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
             </div>
 
+            {/* Drafts Section */}
+            {drafts.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">Drafts</h2>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-semibold rounded-full">
+                    {drafts.length}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {drafts.map((draft, index) => (
+                    <DraftCard
+                      key={draft._id || index}
+                      draft={draft}
+                      onPublish={handlePublishDraft}
+                      onDelete={handleDeleteDraft}
+                      onEdit={handleEditDraft}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Active Tasks Section Header */}
+            {activeTasks.length > 0 && drafts.length > 0 && (
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Active Tasks</h2>
+                <span className="px-3 py-1 bg-sky-100 text-sky-700 text-sm font-semibold rounded-full">
+                  {activeTasks.length}
+                </span>
+              </div>
+            )}
+
             {/* Tasks Display */}
-            {filteredTasks.length === 0 && !error ? (
+            {tasks.length === 0 && !error ? (
               <div className="bg-white rounded-2xl shadow-sm p-8 text-center border border-gray-200">
                 <div className="max-w-md mx-auto">
                   <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -280,30 +477,32 @@ const MyTask = () => {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    {searchQuery ? 'No tasks found' : 'No tasks yet'}
+                    No tasks yet
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    {searchQuery 
-                      ? `No tasks match your search for "${searchQuery}". Try different keywords.`
-                      : 'Create your first task to get help from our community'
-                    }
+                    Create your first task to get help from our community
                   </p>
-                  {!searchQuery && (
-                    <button
-                      onClick={() => navigate('/posttask')}
-                      className="px-8 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      Post Your First Task
-                    </button>
-                  )}
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
-                    >
-                      Clear Search
-                    </button>
-                  )}
+                  <button
+                    onClick={() => navigate('/posttask')}
+                    className="px-8 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Post Your First Task
+                  </button>
+                </div>
+              </div>
+            ) : filteredTasks.length === 0 && activeTasks.length > 0 && !error ? (
+              <div className="bg-white rounded-2xl shadow-sm p-8 text-center border border-gray-200">
+                <div className="max-w-md mx-auto">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">No tasks found</h3>
+                  <p className="text-gray-600 mb-6">
+                    No tasks match your search for "{searchQuery}". Try different keywords.
+                  </p>
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Clear Search
+                  </button>
                 </div>
               </div>
             ) : (
@@ -336,6 +535,7 @@ const MyTask = () => {
               <TaskDetailsCard
                 task={selectedTask}
                 onClose={handleCloseTaskDetails}
+                onMarkComplete={handleMarkComplete}
               />
             )}
           </div>

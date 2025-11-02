@@ -45,9 +45,57 @@ const TaskForm = ({ navigate }) => {
     setFormData((prev) => ({ ...prev, image: null }));
   };
 
-  const handleSaveDraft = () => {
-    console.log("Draft saved:", formData);
-    alert("Task saved as draft!");
+  const handleSaveDraft = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to save a draft');
+      navigate('/login');
+      return;
+    }
+
+    const submitData = new FormData();
+    
+    // Append all form data (even if empty - we'll use defaults on backend)
+    submitData.append('title', formData.title || 'Untitled Draft');
+    submitData.append('category', formData.category || 'other');
+    submitData.append('description', formData.description || '');
+    submitData.append('location', formData.location || '');
+    
+    // Append optional fields only if they have values
+    if (formData.startDate) submitData.append('startDate', formData.startDate);
+    if (formData.startTime) submitData.append('startTime', formData.startTime);
+    if (formData.endDate) submitData.append('endDate', formData.endDate);
+    if (formData.endTime) submitData.append('endTime', formData.endTime);
+    if (formData.budget) submitData.append('budget', formData.budget);
+    if (formData.urgency) submitData.append('urgency', formData.urgency);
+    
+    // Append image if exists
+    if (formData.image) {
+      submitData.append('image', formData.image);
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/tasks/draft', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: submitData
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message || result.error || 'Failed to save draft');
+      }
+
+      alert('Draft saved successfully!');
+      navigate('/mytasks');
+      
+    } catch (err) {
+      console.error('Error saving draft:', err);
+      alert('Error saving draft: ' + err.message);
+    }
   };
 
   // In TaskForm.jsx - Update the handleSubmit function

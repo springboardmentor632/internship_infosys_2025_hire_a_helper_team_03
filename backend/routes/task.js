@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const parser = require('../config/multer');
-const { createTask, getUserTasks, deleteTask } = require('../controller/taskController');
+const { createTask, getUserTasks, deleteTask, updateTaskStatus, saveDraft, publishDraft } = require('../controller/taskController');
 const auth = require('../middleware/auth');
 
 // Route-specific logging middleware
@@ -14,7 +14,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// Task routes
+// Task routes - Order matters! More specific routes first
 router.post('/create', auth, (req, res, next) => {
   parser.single('image')(req, res, (err) => {
     if (err) {
@@ -28,7 +28,29 @@ router.post('/create', auth, (req, res, next) => {
   });
 }, createTask);
 
+// Save draft
+router.post('/draft', auth, (req, res, next) => {
+  parser.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(400).json({ 
+        message: 'Error uploading image', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, saveDraft);
+
 router.get('/mytasks', auth, getUserTasks);
+
+// Publish draft - must be before generic /:id routes
+router.patch('/:id/publish', auth, publishDraft);
+
+// Update task status - must be before generic /:id routes
+router.patch('/:id/status', auth, updateTaskStatus);
+
+// Delete task
 router.delete('/:id', auth, deleteTask);
 
 // Route not found handler for task routes

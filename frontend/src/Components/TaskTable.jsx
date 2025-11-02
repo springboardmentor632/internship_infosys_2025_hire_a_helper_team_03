@@ -1,6 +1,34 @@
 import React from "react";
 
 const TaskTable = ({ tasks, onViewClick, onDeleteClick }) => {
+  const getStatusStyle = (status) => {
+    const normalizedStatus = status?.toLowerCase() || 'active';
+    switch (normalizedStatus) {
+      case 'completed':
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
+      case 'in-progress':
+      case 'in progress':
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
+      case 'active':
+      default:
+        return 'bg-gradient-to-r from-blue-500 to-blue-600';
+    }
+  };
+
+  const getStatusText = (status) => {
+    const normalizedStatus = status?.toLowerCase() || 'active';
+    switch (normalizedStatus) {
+      case 'completed':
+        return 'Completed';
+      case 'in-progress':
+      case 'in progress':
+        return 'In Progress';
+      case 'active':
+      default:
+        return 'Active';
+    }
+  };
+
   return (
     <div className="hidden lg:block bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
       <div className="overflow-x-auto">
@@ -30,15 +58,15 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick }) => {
                   </span>
                 </td>
                 <td className="py-5 px-6 text-center">
-                  <span className="inline-block px-4 py-2 rounded-xl text-white text-sm font-semibold bg-gradient-to-r from-blue-500 to-blue-600 shadow-md">
-                    {task.status || 'Active'}
+                  <span className={`inline-block px-4 py-2 rounded-xl text-white text-sm font-semibold shadow-md min-w-[110px] ${getStatusStyle(task.status)}`}>
+                    {getStatusText(task.status)}
                   </span>
                 </td>
                 <td className="py-5 px-6 text-center text-gray-700 font-semibold">
                   {task.location}
                 </td>
                 <td className="py-5 px-6 text-center">
-                  <span className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 rounded-xl font-bold shadow-md inline-block">
+                  <span className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 rounded-xl font-bold shadow-md inline-block min-w-[120px]">
                     {task.budget ? `$${task.budget}` : 'Negotiable'}
                   </span>
                 </td>
