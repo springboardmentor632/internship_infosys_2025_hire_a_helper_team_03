@@ -152,13 +152,36 @@ exports.getUserTasks = async (req, res) => {
     const userId = req.user.id;
     console.log('Fetching tasks for user:', userId);
     
-    const tasks = await Task.find({ user: userId }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ user: userId })
+      .populate('user', 'firstName lastName email')
+      .sort({ createdAt: -1 });
     
     console.log(`Found ${tasks.length} tasks for user ${userId}`);
     
     res.json(tasks);
   } catch (err) {
     console.error('Error fetching user tasks:', err);
+    res.status(500).json({ 
+      message: 'Server error while fetching tasks',
+      error: err.message 
+    });
+  }
+};
+
+exports.getAllTasks = async (req, res) => {
+  try {
+    console.log('Fetching all active tasks for feed');
+    
+    // Fetch all tasks that are active (not drafts) and populate user info
+    const tasks = await Task.find({ status: 'active' })
+      .populate('user', 'firstName lastName email')
+      .sort({ createdAt: -1 });
+    
+    console.log(`Found ${tasks.length} active tasks`);
+    
+    res.json(tasks);
+  } catch (err) {
+    console.error('Error fetching all tasks:', err);
     res.status(500).json({ 
       message: 'Server error while fetching tasks',
       error: err.message 

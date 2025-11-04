@@ -1,6 +1,29 @@
 import React from "react";
 
 const TaskCardMobile = ({ task, index, onViewClick }) => {
+  // Get user's full name or show "you" if current user
+  const getUserName = () => {
+    // Get current logged-in user
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (task.user) {
+      // Check if this task is posted by the logged-in user
+      const taskUserId = task.user._id || task.user.id || task.user;
+      const currentUserId = currentUser.id || currentUser._id;
+      
+      if (taskUserId === currentUserId) {
+        return 'you';
+      }
+      
+      // Return the task poster's name
+      if (task.user.firstName && task.user.lastName) {
+        return `${task.user.firstName} ${task.user.lastName}`;
+      }
+      return task.user.firstName || task.user.lastName || 'Anonymous';
+    }
+    return 'Anonymous';
+  };
+
   return (
     <div
       key={task._id || index}
@@ -35,6 +58,15 @@ const TaskCardMobile = ({ task, index, onViewClick }) => {
           {task.location}
         </span>
       </div>
+
+      {task.user && (
+        <div className="flex items-center gap-2 text-gray-700 mb-3">
+          <svg className="w-4 h-4 text-sky-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+          </svg>
+          <span className="text-sm truncate">Posted by {getUserName()}</span>
+        </div>
+      )}
 
       {task.imageUrl && (
         <img 

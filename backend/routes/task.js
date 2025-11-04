@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const parser = require('../config/multer');
-const { createTask, getUserTasks, deleteTask, updateTaskStatus, saveDraft, publishDraft, updateTask } = require('../controller/taskController');
+const { createTask, getUserTasks, deleteTask, updateTaskStatus, saveDraft, publishDraft, updateTask, getAllTasks } = require('../controller/taskController');
 const auth = require('../middleware/auth');
 
 // Route-specific logging middleware
@@ -13,6 +13,12 @@ router.use((req, res, next) => {
   console.log('Body:', req.body);
   next();
 });
+
+// Get all active tasks for feed (public or authenticated users) - MUST BE FIRST
+router.get('/all', getAllTasks);
+
+// Get user's own tasks
+router.get('/mytasks', auth, getUserTasks);
 
 // Task routes - Order matters! More specific routes first
 router.post('/create', auth, (req, res, next) => {
@@ -41,8 +47,6 @@ router.post('/draft', auth, (req, res, next) => {
     next();
   });
 }, saveDraft);
-
-router.get('/mytasks', auth, getUserTasks);
 
 // Publish draft - must be before generic /:id routes
 router.patch('/:id/publish', auth, publishDraft);
