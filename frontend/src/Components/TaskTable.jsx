@@ -1,6 +1,6 @@
 import React from "react";
 
-const TaskTable = ({ tasks, onViewClick, onDeleteClick }) => {
+const TaskTable = ({ tasks, onViewClick, onDeleteClick, onEditClick }) => {
   const getStatusStyle = (status) => {
     const normalizedStatus = status?.toLowerCase() || 'active';
     switch (normalizedStatus) {
@@ -78,7 +78,10 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick }) => {
                     >
                       View
                     </button>
-                    <button className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 border border-gray-300">
+                    <button 
+                      onClick={() => onEditClick(task)}
+                      className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 border border-gray-300"
+                    >
                       Edit
                     </button>
                     <button 

@@ -1,12 +1,18 @@
 import React from "react";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
-const TaskDetailsCard = ({ task, onClose, onMarkComplete }) => {
+const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
   if (!task) return null;
 
   const handleMarkComplete = () => {
     if (onMarkComplete) {
       onMarkComplete(task);
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(task);
     }
   };
 
@@ -190,7 +196,10 @@ const TaskDetailsCard = ({ task, onClose, onMarkComplete }) => {
             >
               Close
             </button>
-            <button className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button 
+              onClick={handleEdit}
+              className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               Edit Task
             </button>
             <button 

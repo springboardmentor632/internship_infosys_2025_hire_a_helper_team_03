@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 
-const TaskForm = ({ navigate }) => {
+const TaskForm = ({ navigate, editTask = null }) => {
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -19,6 +19,33 @@ const TaskForm = ({ navigate }) => {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [focusedField, setFocusedField] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Load task data if editing
+  useEffect(() => {
+    if (editTask) {
+      setIsEditMode(true);
+      setFormData({
+        title: editTask.title || "",
+        category: editTask.category || "",
+        description: editTask.description || "",
+        location: editTask.location || "",
+        startDate: editTask.startDate ? new Date(editTask.startDate).toISOString().split('T')[0] : "",
+        startTime: editTask.startTime || "",
+        endDate: editTask.endDate ? new Date(editTask.endDate).toISOString().split('T')[0] : "",
+        endTime: editTask.endTime || "",
+        budget: editTask.budget || "",
+        urgency: editTask.urgency || "",
+        image: null,
+      });
+      
+      // Set image preview if task has an image
+      if (editTask.imageUrl) {
+        setImagePreview(editTask.imageUrl);
+      }
+    }
+  }, [editTask]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +80,7 @@ const TaskForm = ({ navigate }) => {
       return;
     }
 
+    setLoading(true);
     const submitData = new FormData();
     
     // Append all form data (even if empty - we'll use defaults on backend)
@@ -69,14 +97,26 @@ const TaskForm = ({ navigate }) => {
     if (formData.budget) submitData.append('budget', formData.budget);
     if (formData.urgency) submitData.append('urgency', formData.urgency);
     
+    // Set status as draft if updating
+    if (isEditMode) {
+      submitData.append('status', 'draft');
+    }
+    
     // Append image if exists
     if (formData.image) {
       submitData.append('image', formData.image);
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/tasks/draft', {
-        method: 'POST',
+      // Use update endpoint if editing, otherwise create new draft
+      const url = isEditMode 
+        ? `http://localhost:5000/api/tasks/${editTask._id}`
+        : 'http://localhost:5000/api/tasks/draft';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method: method,
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -89,12 +129,14 @@ const TaskForm = ({ navigate }) => {
         throw new Error(result.message || result.error || 'Failed to save draft');
       }
 
-      alert('Draft saved successfully!');
+      alert(isEditMode ? 'Draft updated successfully!' : 'Draft saved successfully!');
       navigate('/mytasks');
       
     } catch (err) {
       console.error('Error saving draft:', err);
       alert('Error saving draft: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,6 +156,7 @@ const handleSubmit = async () => {
     return;
   }
 
+  setLoading(true);
   const submitData = new FormData();
   
   // Append all form data
@@ -130,6 +173,11 @@ const handleSubmit = async () => {
   if (formData.budget) submitData.append('budget', formData.budget);
   if (formData.urgency) submitData.append('urgency', formData.urgency);
   
+  // Set status as active when posting
+  if (isEditMode) {
+    submitData.append('status', 'active');
+  }
+  
   // Append image if exists
   if (formData.image) {
     submitData.append('image', formData.image);
@@ -140,11 +188,19 @@ const handleSubmit = async () => {
       title: formData.title,
       category: formData.category,
       location: formData.location,
-      hasImage: !!formData.image
+      hasImage: !!formData.image,
+      isEditMode: isEditMode
     });
 
-    const res = await fetch('http://localhost:5000/api/tasks/create', {
-      method: 'POST',
+    // Use update endpoint if editing, otherwise create new task
+    const url = isEditMode 
+      ? `http://localhost:5000/api/tasks/${editTask._id}`
+      : 'http://localhost:5000/api/tasks/create';
+    
+    const method = isEditMode ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method: method,
       headers: {
         'Authorization': `Bearer ${token}`
         // Don't set Content-Type for FormData - let browser set it with boundary
@@ -156,15 +212,17 @@ const handleSubmit = async () => {
     console.log('Server response:', result);
 
     if (!res.ok) {
-      throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to post task`);
+      throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to ${isEditMode ? 'update' : 'post'} task`);
     }
 
-    alert('Task posted successfully!');
+    alert(isEditMode ? 'Task updated successfully!' : 'Task posted successfully!');
     navigate('/mytasks');
     
   } catch (err) {
     console.error('Error posting task:', err);
     alert('Error posting task: ' + err.message);
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -448,26 +506,48 @@ const handleSubmit = async () => {
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <button
             onClick={() => navigate('/mytasks')}
-            className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-200 border border-gray-400"
+            disabled={loading}
+            className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-all duration-200 border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveDraft}
-            className="flex-1 px-6 py-3 bg-white text-sky-600 font-semibold rounded-lg border border-sky-600 hover:bg-sky-50 transition-all duration-200"
+            disabled={loading}
+            className="flex-1 px-6 py-3 bg-white text-sky-600 font-semibold rounded-lg border border-sky-600 hover:bg-sky-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Draft
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {isEditMode ? 'Updating...' : 'Saving...'}
+              </span>
+            ) : (
+              isEditMode ? 'Update Draft' : 'Save Draft'
+            )}
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
             className={`flex-1 px-6 py-3 text-white font-semibold rounded-lg transition-all duration-200 ${
-              isFormValid
+              isFormValid && !loading
                 ? 'bg-sky-500 hover:bg-sky-600 shadow-lg hover:shadow-xl'
                 : 'bg-gray-400 cursor-not-allowed'
             }`}
           >
-            Post Task
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {isEditMode ? 'Updating...' : 'Posting...'}
+              </span>
+            ) : (
+              isEditMode ? 'Update Task' : 'Post Task'
+            )}
           </button>
         </div>
       </div>

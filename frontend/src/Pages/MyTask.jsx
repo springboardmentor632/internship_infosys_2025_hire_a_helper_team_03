@@ -20,6 +20,7 @@ const MyTask = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
   const [filterView, setFilterView] = useState("all"); // all, drafts, active, completed, cancelled
+  const [actionLoading, setActionLoading] = useState(false); // For publish/delete actions
 
   // Separate tasks by status
   const drafts = tasks.filter(task => task.status === 'draft');
@@ -255,6 +256,7 @@ const MyTask = () => {
       return;
     }
 
+    setActionLoading(true);
     try {
       const url = `http://localhost:5000/api/tasks/${draft._id}/publish`;
       console.log('Publishing draft:', url);
@@ -286,14 +288,21 @@ const MyTask = () => {
     } catch (err) {
       console.error('Error publishing draft:', err);
       alert('Failed to publish draft: ' + err.message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
   // Handle edit draft
   const handleEditDraft = (draft) => {
     // Navigate to post task page with draft data
-    // For now, we'll just show an alert - you can implement edit functionality later
-    alert('Edit functionality coming soon! For now, you can delete and create a new one.');
+    navigate('/posttask', { state: { task: draft } });
+  };
+
+  // Handle edit task
+  const handleEditTask = (task) => {
+    // Navigate to post task page with task data
+    navigate('/posttask', { state: { task: task } });
   };
 
   // Handle delete draft
@@ -313,6 +322,7 @@ const MyTask = () => {
       return;
     }
 
+    setActionLoading(true);
     try {
       const url = `http://localhost:5000/api/tasks/${draft._id}`;
       console.log('Deleting draft:', url);
@@ -337,6 +347,8 @@ const MyTask = () => {
     } catch (err) {
       console.error('Error deleting draft:', err);
       alert('Failed to delete draft: ' + err.message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -624,6 +636,7 @@ const MyTask = () => {
                     tasks={displayActiveTasks} 
                     onViewClick={handleViewTask}
                     onDeleteClick={handleDeleteTask}
+                    onEditClick={handleEditTask}
                   />
                 </div>
               </>
@@ -635,7 +648,23 @@ const MyTask = () => {
                 task={selectedTask}
                 onClose={handleCloseTaskDetails}
                 onMarkComplete={handleMarkComplete}
+                onEdit={handleEditTask}
               />
+            )}
+
+            {/* Action Loading Overlay */}
+            {actionLoading && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-6 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <svg className="animate-spin h-6 w-6 text-sky-500" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="text-gray-700 font-medium">Processing...</span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </main>
