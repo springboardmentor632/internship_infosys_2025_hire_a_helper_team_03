@@ -179,7 +179,7 @@ export default function NotificationsPage() {
           </div>
         </section>
 
-        <BottomNav {...{ navigate }} />
+        <BottomNav navigate={navigate} activeTab="notifications" />
       </main>
     </div>
   );

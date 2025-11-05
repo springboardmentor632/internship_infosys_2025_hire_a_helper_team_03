@@ -17,7 +17,7 @@ import {
 import {
   MdDashboard,
   MdList,
-  MdCheckBox, // This was missing!
+  MdCheckBox,
   MdSettings,
   MdLaptop,
 } from "react-icons/md";
@@ -32,7 +32,6 @@ import StatsCard from "../Components/StatsCard";
 export default function Dashboard() {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const stats = [
@@ -40,29 +39,29 @@ export default function Dashboard() {
       label: "Tasks Completed",
       value: "23",
       color: "#3B82F6",
-      icon: MdCheckBox, // Now this will work
-      gradient: "from-blue-500 to-blue-600",
+      icon: MdCheckBox,
+      gradient: "from-blue-500 to-blue-700",
     },
     {
       label: "Active tasks",
       value: "5",
       color: "#10B981",
       icon: FaClock,
-      gradient: "from-green-500 to-emerald-600",
+      gradient: "from-green-400 to-green-600",
     },
     {
       label: "Total Earning",
-      value: "$1,200",
+      value: "$1200",
       color: "#8B5CF6",
       icon: FaDollarSign,
-      gradient: "from-purple-500 to-purple-600",
+      gradient: "from-purple-500 to-purple-700",
     },
     {
       label: "Average Rating",
       value: "4.6",
       color: "#EF4444",
       icon: FaAward,
-      gradient: "from-red-500 to-red-600",
+      gradient: "from-red-500 to-red-700",
     },
   ];
 
@@ -112,12 +111,13 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b lg:bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Desktop Sidebar */}
       <Sidebar
         activeNav={activeNav}
         setActiveNav={setActiveNav}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
+        mobileMenuOpen={false}
+        setMobileMenuOpen={() => {}}
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
         navigate={navigate}
@@ -125,66 +125,64 @@ export default function Dashboard() {
 
       <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
         <Header 
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
           sidebarCollapsed={sidebarCollapsed}
         />
 
         {/* Dashboard Content */}
-        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-32 lg:pb-8">
+        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-8">
           {/* Page Title */}
-          <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <div className="mb-6">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
               Dashboard
             </h2>
-            <p className="text-sm md:text-lg text-gray-600">
+            <p className="text-xs md:text-sm lg:text-base text-gray-600">
               Here's what's happening with your tasks today.
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
             {stats.map((stat, index) => (
               <StatsCard key={index} stat={stat} index={index} />
             ))}
           </div>
 
           {/* Quick Tasks */}
-          <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-8">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
+            <h3 className="text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-4">
               Quick Tasks
             </h3>
-            <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row gap-3">
+            <div className="border-t border-gray-200 pt-4 flex flex-col sm:flex-row gap-3">
               <button
-                className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all md:flex-1"
+                className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold py-3 px-4 md:px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg sm:flex-1 text-sm md:text-base"
                 onClick={() => navigate("/posttask")}
               >
-                <FaPlusCircle size={20} />
+                <FaPlusCircle size={18} />
                 Post Task
               </button>
               <button
-                className="bg-blue-50 hover:bg-gray-400 text-sky-600 font-bold py-3 px-6 rounded-lg transition-all md:flex-1"
+                className="bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-3 px-4 md:px-6 rounded-lg transition-all sm:flex-1 text-sm md:text-base"
                 onClick={() => navigate("/feedPage")}
               >
                 Browse Tasks
               </button>
-              <button className=" bg-gray-100 text-gray-500 hover:text-gray-700 font-bold py-3 px-6 rounded-lg transition-all md:flex-1">
+              <button className="bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 font-bold py-3 px-4 md:px-6 rounded-lg transition-all sm:flex-1 text-sm md:text-base">
                 View Earnings
               </button>
             </div>
           </div>
 
           {/* Recent Activity and Active Tasks */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Recent Activity */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4 md:p-6 border border-gray-200">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900">
+            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-base md:text-lg lg:text-xl font-bold text-gray-900">
                   Recent Activity
                 </h3>
                 <a
                   href="#"
-                  className="text-sky-600 hover:text-sky-700 text-sm font-medium"
+                  className="text-sky-600 hover:text-sky-700 text-xs md:text-sm font-medium"
                 >
                   View All
                 </a>
@@ -193,24 +191,24 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => (
                   <div key={index}>
-                    <div className="flex gap-4 items-start">
+                    <div className="flex gap-3 md:gap-4 items-start">
                       <div
-                        className={`${activity.bgColor} rounded-lg p-3 flex-shrink-0 w-16 h-16 flex items-center justify-center`}
+                        className={`${activity.bgColor} rounded-lg p-2.5 md:p-3 flex-shrink-0 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center`}
                       >
                         <activity.icon
-                          size={24}
+                          size={20}
                           className={activity.iconColor}
                         />
                       </div>
-                      <div className="flex-1 min-w-0 pt-1">
-                        <p className="text-gray-900 text-sm md:text-base font-medium">
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <p className="text-gray-900 text-xs md:text-sm lg:text-base font-medium">
                           {activity.text}
                         </p>
-                        <p className="text-gray-600 text-xs">{activity.time}</p>
+                        <p className="text-gray-500 text-[10px] md:text-xs">{activity.time}</p>
                       </div>
                     </div>
                     {index < 2 && (
-                      <div className="border-b border-gray-300 mt-4"></div>
+                      <div className="border-b border-gray-200 mt-4"></div>
                     )}
                   </div>
                 ))}
@@ -218,8 +216,8 @@ export default function Dashboard() {
             </div>
 
             {/* Your Active Tasks */}
-            <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 border border-gray-200">
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-5">
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+              <h3 className="text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-4">
                 Your Active Tasks
               </h3>
 
@@ -227,35 +225,35 @@ export default function Dashboard() {
                 {activeTasks.map((task, index) => (
                   <div
                     key={index}
-                    className="bg-gray-100 rounded-xl p-4 hover:shadow-md transition-all"
+                    className="bg-gray-50 rounded-xl p-3 md:p-4 hover:shadow-md transition-all border border-gray-100"
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="text-sm md:text-base font-semibold text-gray-900">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-xs md:text-sm lg:text-base font-semibold text-gray-900 flex-1">
                         {task.title}
                       </h4>
-                      <span className="bg-green-200 text-gray-900 text-xs font-bold px-2 py-1 rounded whitespace-nowrap ml-2">
+                      <span className="bg-green-100 text-gray-900 text-[10px] md:text-xs font-bold px-2 py-1 rounded whitespace-nowrap ml-2">
                         {task.price}
                       </span>
                     </div>
 
                     <div className="space-y-1 mb-3">
-                      <p className="text-xs text-gray-600 flex items-center gap-1">
+                      <p className="text-[10px] md:text-xs text-gray-600 flex items-center gap-1">
                         <span>📍</span>
                         {task.location}
                       </p>
-                      <p className="text-xs text-gray-600 flex items-center gap-1">
-                        <FaClock size={12} />
+                      <p className="text-[10px] md:text-xs text-gray-600 flex items-center gap-1">
+                        <FaClock size={10} />
                         {task.requests || task.status}
                       </p>
                     </div>
 
                     <div className="flex gap-2">
                       <button
-                        className={`flex-1 text-white text-sm font-semibold py-2 rounded-lg bg-gradient-to-r ${task.gradient} hover:shadow-lg transition-all`}
+                        className={`flex-1 text-white text-xs md:text-sm font-semibold py-2 rounded-lg bg-gradient-to-r ${task.gradient} hover:shadow-lg transition-all`}
                       >
                         {task.button1}
                       </button>
-                      <button className="flex-1 bg-white text-gray-700 text-sm font-semibold py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all">
+                      <button className="flex-1 bg-white text-gray-700 text-xs md:text-sm font-semibold py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all">
                         {task.button2}
                       </button>
                     </div>
@@ -266,7 +264,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="dashboard" />
       </main>
     </div>
   );

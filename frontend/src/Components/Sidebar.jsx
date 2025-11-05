@@ -81,7 +81,7 @@ const Sidebar = ({
 
       {/* Sidebar - Desktop & Mobile */}
       <aside
-        className={`flex flex-col text-white flex-shrink-0 h-screen shadow-2xl z-50 bg-gradient-to-b from-sky-600 to-sky-700 transition-all duration-300 ${
+        className={`flex flex-col text-white flex-shrink-0 h-screen max-h-screen shadow-2xl z-50 bg-gradient-to-b from-sky-600 to-sky-700 transition-all duration-300 ${
           mobileMenuOpen
             ? "fixed left-0 top-0 w-64"
             : "hidden lg:flex lg:fixed lg:left-0 lg:top-0"
@@ -102,14 +102,14 @@ const Sidebar = ({
         {/* Close Button Mobile */}
         <button
           onClick={() => setMobileMenuOpen(false)}
-          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg"
+          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg z-10"
         >
           <IoIosClose size={24} />
         </button>
 
-        {/* Logo */}
-        <div className="px-2 pt-2 pb-2">
-          <div className="flex items-center gap-3 mb-4">
+        {/* Logo - Fixed at top */}
+        <div className="flex-shrink-0 px-2 pt-4 pb-3">
+          <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
               <FaHandshakeAngle className="text-2xl text-white" />
             </div>
@@ -122,11 +122,11 @@ const Sidebar = ({
               </div>
             )}
           </div>
+          <div className="w-full h-px bg-white/30"></div>
         </div>
-        <div className="w-full h-px bg-white/30"></div>
 
-        {/* Navigation */}
-        <nav className="flex-1 pt-6 px-3 space-y-1">
+        {/* Navigation - Scrollable middle section */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-4 px-3 space-y-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30">
           {navItems.map((item) => (
             <div
               key={item.id}
@@ -155,7 +155,7 @@ const Sidebar = ({
           ))}
         </nav>
 
-        {/* User Profile */}
+        {/* User Profile - Fixed at bottom */}
         {!sidebarCollapsed &&
           (() => {
             // Build user display information from state
@@ -173,12 +173,12 @@ const Sidebar = ({
             }
 
             return (
-              <div className="border-t border-white border-opacity-30 p-4 mt-auto">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
+                <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                     {initials}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="font-semibold text-sm truncate">{name}</p>
                     <p className="text-xs text-white text-opacity-80 truncate">
                       {email}

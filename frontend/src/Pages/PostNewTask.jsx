@@ -54,7 +54,7 @@ export default function PostTask() {
           <TaskForm navigate={navigate} editTask={editTask} />
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="posttask" />
       </main>
     </div>
   );

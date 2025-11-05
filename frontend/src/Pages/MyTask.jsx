@@ -369,8 +369,8 @@ const MyTask = () => {
       <Sidebar
         activeNav={activeNav}
         setActiveNav={setActiveNav}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
+        mobileMenuOpen={false}
+        setMobileMenuOpen={() => {}}
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
         navigate={navigate}
@@ -382,13 +382,11 @@ const MyTask = () => {
       }`}>
         {/* Header */}
         <Header
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
           sidebarCollapsed={sidebarCollapsed}
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-8 pb-20 lg:pb-8">
+        <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto">
             {/* Page Header */}
             <div className="mb-8">
@@ -618,20 +616,8 @@ const MyTask = () => {
               ) : null
             ) : (
               <>
-                {/* Mobile View */}
-                <div className="lg:hidden space-y-4">
-                  {displayActiveTasks.map((task, index) => (
-                    <TaskCardMobile 
-                      key={task._id || index} 
-                      task={task} 
-                      index={index}
-                      onViewClick={handleViewTask}
-                    />
-                  ))}
-                </div>
-
-                {/* Desktop View */}
-                <div className="hidden lg:block">
+                {/* Mobile and Desktop View - Same Table Format */}
+                <div className="w-full">
                   <TaskTable 
                     tasks={displayActiveTasks} 
                     onViewClick={handleViewTask}
@@ -670,7 +656,7 @@ const MyTask = () => {
         </main>
 
         {/* Bottom Navigation for Mobile */}
-  <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="mytasks" />
       </div>
     </div>
   );

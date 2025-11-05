@@ -219,7 +219,7 @@ export default function RequestsPage() {
             </div>
           </div>
         </section>
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="requests" />
       </main>
     </div>
   );

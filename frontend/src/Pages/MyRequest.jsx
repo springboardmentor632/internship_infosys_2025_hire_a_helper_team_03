@@ -138,7 +138,7 @@ export default function MyRequestsPage() {
           </div>
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="myrequests" />
       </main>
     </div>
   );

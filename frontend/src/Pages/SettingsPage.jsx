@@ -130,7 +130,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="settings" />
       </main>
     </div>
   );

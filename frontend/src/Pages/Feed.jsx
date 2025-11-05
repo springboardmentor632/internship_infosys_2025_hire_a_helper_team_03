@@ -11,7 +11,6 @@ export default function Feed() {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [activeNav, setActiveNav] = useState('feed');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,12 +93,12 @@ export default function Feed() {
   const displayTasks = getFilteredAndSortedTasks();
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b lg:bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Desktop Sidebar only */}
       <Sidebar
         activeNav={activeNav}
         setActiveNav={setActiveNav}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
+        mobileMenuOpen={false}
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
         navigate={navigate}
@@ -107,13 +106,11 @@ export default function Feed() {
 
       <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
         <Header 
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
           sidebarCollapsed={sidebarCollapsed}
         />
 
         {/* Feed Content */}
-        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-32 lg:pb-8">
+        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-8">
           {/* Page Title */}
           <div className="mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
@@ -222,7 +219,7 @@ export default function Feed() {
           )}
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="feed" />
       </main>
 
       {/* Task View Modal */}
