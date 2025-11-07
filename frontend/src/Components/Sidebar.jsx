@@ -164,36 +164,19 @@ const Sidebar = ({
         {/* User Profile - Fixed at bottom */}
         {!sidebarCollapsed && (
           <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
-            {userInfo ? (
-              <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                  {`${userInfo.firstName?.charAt(0) || ''}${userInfo.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate">
-                    {`${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim() || 'User'}
-                  </p>
-                  <p className="text-xs text-white text-opacity-80 truncate">
-                    {userInfo.email || ''}
-                  </p>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
               </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                  GU
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm truncate">Guest User</p>
-                  <button
-                    onClick={() => navigate('/signin')}
-                    className="text-xs text-white text-opacity-90 hover:text-opacity-100 underline"
-                  >
-                    Sign in
-                  </button>
-                </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm truncate">
+                  {`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
+                </p>
+                <p className="text-xs text-white text-opacity-80 truncate">
+                  {userInfo?.email || ''}
+                </p>
               </div>
-            )}
+            </div>
           </div>
         )}
       </aside>

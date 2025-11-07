@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
 import Sidebar from "../Components/Sidebar";
 import BottomNav from "../Components/BottomNav";
+import TaskCardMobile from "../Components/TaskCardMobile";
 import TaskTable from "../Components/TaskTable";
 import TaskDetailsCard from "../Components/TaskDetailCard";
 import DraftCard from "../Components/DraftCard";
@@ -12,6 +13,7 @@ const MyTask = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeNav, setActiveNav] = useState("mytasks");
   const [searchQuery, setSearchQuery] = useState("");

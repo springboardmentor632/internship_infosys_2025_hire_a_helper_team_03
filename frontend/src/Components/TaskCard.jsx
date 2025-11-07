@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaClock, FaStar, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
 
 const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRequested }) => {
   // Format date for display

@@ -37,31 +37,31 @@ export default function SignUpPage() {
     }
     setLoading(true);
     try {
-      // Step 1: Send OTP to email
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      // Direct registration without OTP
+      const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+      if (!res.ok) throw new Error(data.message || "Registration failed");
       
-      // Step 2: Navigate to OTP verification page with registration data
-      navigate("/otp-verification", {
-        state: {
-          registrationData: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            password: formData.password,
-          },
-        },
-      });
+      // Show success and navigate to login
+      setSuccess("Account created successfully! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/signin", {
+          state: { message: "Account created successfully! Please sign in." },
+        });
+      }, 1500);
     } catch (err) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };

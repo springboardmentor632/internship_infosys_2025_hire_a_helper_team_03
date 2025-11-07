@@ -272,15 +272,15 @@ export default function Home() {
             </p>
 
             <div className="flex gap-5">
-              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
+              <a href="#" className="hover:underline">
                 Privacy Policy
-              </button>
-              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
+              </a>
+              <a href="#" className="hover:underline">
                 Terms
-              </button>
-              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
+              </a>
+              <a href="#" className="hover:underline">
                 Contact
-              </button>
+              </a>
             </div>
             {/* Logo */}
             <div className="flex items-center gap-3">

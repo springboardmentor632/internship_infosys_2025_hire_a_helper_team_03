@@ -60,9 +60,6 @@ export default function LoginPage() {
         }
       }
       
-      // Show success message
-      alert('Logged in successfully!');
-      
       console.log('Navigating to dashboard');
       navigate("/dashboard");
     } catch (err) {
@@ -124,7 +121,7 @@ export default function LoginPage() {
 
               {/* Email Address */}
               <div style={{ marginBottom: 24 }}>
-                <label className="mobile-label">
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#374151', marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>
                   Email address
                 </label>
                 <input
@@ -134,13 +131,14 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleChange}
                   className="input-field"
+                  style={{ marginBottom: 0 }}
                   required
                 />
               </div>
 
               {/* Password */}
               <div style={{ marginBottom: 24 }}>
-                <label className="mobile-label">
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#374151', marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>
                   Password
                 </label>
                 <div className="password-input-wrapper">
@@ -151,6 +149,7 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={handleChange}
                     className="input-field"
+                    style={{ marginBottom: 0 }}
                     required
                   />
                   <span 
@@ -163,7 +162,7 @@ export default function LoginPage() {
               </div>
 
               {/* Remember me & Forgot password */}
-              <div className="remember-forgot-row">
+              <div style={{ marginBottom: 24 }}>
                 <div className="checkbox-group" style={{ margin: 0 }}>
                   <input
                     type="checkbox"
@@ -174,12 +173,6 @@ export default function LoginPage() {
                   />
                   <label htmlFor="remember">Remember me</label>
                 </div>
-                <span 
-                  onClick={() => navigate("/forgot-password")} 
-                  className="link"
-                >
-                  Forgot password?
-                </span>
               </div>
 
               <button type="submit" className="submit-btn" disabled={loading}>

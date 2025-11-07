@@ -3,16 +3,7 @@ const router = express.Router();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { sendRegistrationOTP, register, resendOTP, sendForgotPasswordOTP, resetPassword } = require('../controller/authController');
-
-// OTP Routes
-router.post('/send-otp', sendRegistrationOTP);
-router.post('/resend-otp', resendOTP);
-router.post('/verify-register', register);
-
-// Forgot Password Routes
-router.post('/forgot-password', sendForgotPasswordOTP);
-router.post('/reset-password', resetPassword);
+const { register } = require('../controller/authController');
 
 router.post('/register', async (req, res) => {
   try {
