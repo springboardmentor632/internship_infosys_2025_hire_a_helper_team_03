@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaHandshakeAngle } from "react-icons/fa6";
+import OTPVerification from "../Components/OTPVerification";
+import { API_ENDPOINTS } from "../config/api";
 import "./signup.css";
 
 export default function LoginPage() {
@@ -9,7 +11,14 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOTPScreen, setShowOTPScreen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userFirstName, setUserFirstName] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get success message from navigation state
+  const successMessage = location.state?.message;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -29,7 +38,7 @@ export default function LoginPage() {
         password: formData.password 
       });
 
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -45,7 +54,33 @@ export default function LoginPage() {
       const data = await res.json();
       console.log('Response data:', data);
       
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) {
+        // Check if email verification is needed
+        if (data.needsVerification) {
+          setError("Email not verified. Sending OTP...");
+          setUserEmail(data.email || formData.email);
+          
+          // Send OTP
+          try {
+            const otpRes = await fetch(API_ENDPOINTS.SEND_OTP, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: formData.email }),
+            });
+            const otpData = await otpRes.json();
+            
+            if (otpRes.ok) {
+              setShowOTPScreen(true);
+            } else {
+              throw new Error(otpData.message || "Failed to send OTP");
+            }
+          } catch (otpErr) {
+            setError(otpErr.message);
+          }
+          return;
+        }
+        throw new Error(data.message || "Login failed");
+      }
       
       // Store token, user info, and login state in localStorage
       if (data.token) {
@@ -69,6 +104,17 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // If OTP screen should be shown, render OTP verification component
+  if (showOTPScreen) {
+    return (
+      <OTPVerification
+        email={userEmail}
+        firstName={userFirstName}
+        onBack={() => setShowOTPScreen(false)}
+      />
+    );
+  }
 
   return (
     <div className="page-container">
@@ -115,6 +161,11 @@ export default function LoginPage() {
             <p className="subtitle">Sign in to your account to continue</p>
 
             <form onSubmit={handleSubmit}>
+              {successMessage && (
+                <div style={{ color: "#10B981", marginBottom: 16, textAlign: "center", fontSize: 14, padding: "10px", backgroundColor: "#D1FAE5", borderRadius: "8px" }}>
+                  {successMessage}
+                </div>
+              )}
               {error && (
                 <div style={{ color: "#EF4444", marginBottom: 16, textAlign: "center", fontSize: 14 }}>{error}</div>
               )}

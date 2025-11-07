@@ -3,112 +3,19 @@ const router = express.Router();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { register } = require('../controller/authController');
+const { register, login, sendOTP, verifyOTP } = require('../controller/authController');
 
-router.post('/register', async (req, res) => {
-  try {
-    console.log('Register request body:', req.body);
-    const { firstName, lastName, email, phone, password } = req.body;
-    
-    // Basic validation
-    if (!firstName || !lastName || !email || !phone || !password) {
-      console.log('Missing required fields');
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+// Register endpoint - creates account (unverified)
+router.post('/register', register);
 
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      console.log('User already exists:', email);
-      return res.status(400).json({ message: 'User already exists' });
-    }
+// Send OTP endpoint
+router.post('/send-otp', sendOTP);
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    console.log('Password hashed successfully');
+// Verify OTP endpoint
+router.post('/verify-otp', verifyOTP);
 
-    // Create user
-    const newUser = new User({ 
-      firstName, 
-      lastName, 
-      email: email.toLowerCase(), // ensure email is lowercase
-      phone, 
-      password: hashedPassword 
-    });
-
-    // Save user
-    const savedUser = await newUser.save();
-    console.log('User saved successfully:', savedUser._id);
-
-    // Return success with user info
-    res.status(201).json({ 
-      message: 'User registered successfully',
-      user: {
-        id: savedUser._id,
-        firstName: savedUser.firstName,
-        lastName: savedUser.lastName,
-        email: savedUser.email,
-        phone: savedUser.phone
-      }
-    });
-  } catch (err) {
-    console.error('Register error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-});
-
-router.post('/login', async (req, res) => {
-  try {
-    console.log('Login attempt with:', req.body);
-    const { email, password } = req.body;
-    
-    // Basic validation
-    if (!email || !password) {
-      console.log('Missing email or password');
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
-    
-    // Find user
-    const user = await User.findOne({ email });
-    console.log('User found:', user ? 'Yes' : 'No');
-    
-    if (!user) {
-      console.log('User not found for email:', email);
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    
-    // Check password using bcrypt
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log('Password valid:', isValidPassword);
-    
-    if (!isValidPassword) {
-      console.log('Invalid password for user:', email);
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    // Success - Include user data in response
-    res.status(200).json({ 
-      message: 'Login successful', 
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        email: user.email
-      }
-    });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+// Login endpoint - requires verified email
+router.post('/login', login);
 
 // Debug endpoint to check users (remove in production)
 router.get('/debug/users', async (req, res) => {

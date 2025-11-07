@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaHandshakeAngle } from "react-icons/fa6";
+import OTPVerification from "../Components/OTPVerification";
+import { API_ENDPOINTS } from "../config/api";
 import "./signup.css";
 
 export default function SignUpPage() {
@@ -17,6 +19,7 @@ export default function SignUpPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOTPScreen, setShowOTPScreen] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -37,8 +40,8 @@ export default function SignUpPage() {
     }
     setLoading(true);
     try {
-      // Direct registration without OTP
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      // Step 1: Register user (creates unverified account)
+      const registerRes = await fetch(API_ENDPOINTS.REGISTER, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -49,22 +52,43 @@ export default function SignUpPage() {
           password: formData.password,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+      const registerData = await registerRes.json();
+      if (!registerRes.ok) throw new Error(registerData.message || "Registration failed");
       
-      // Show success and navigate to login
-      setSuccess("Account created successfully! Redirecting to login...");
+      // Step 2: Send OTP to email
+      const otpRes = await fetch(API_ENDPOINTS.SEND_OTP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          firstName: formData.firstName,
+        }),
+      });
+      const otpData = await otpRes.json();
+      if (!otpRes.ok) throw new Error(otpData.message || "Failed to send OTP");
+      
+      // Step 3: Show success and move to OTP verification screen
+      setSuccess("Account created! OTP sent to your email.");
       setTimeout(() => {
-        navigate("/signin", {
-          state: { message: "Account created successfully! Please sign in." },
-        });
-      }, 1500);
+        setShowOTPScreen(true);
+      }, 1000);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  // If OTP screen should be shown, render OTP verification component
+  if (showOTPScreen) {
+    return (
+      <OTPVerification
+        email={formData.email}
+        firstName={formData.firstName}
+        onBack={() => setShowOTPScreen(false)}
+      />
+    );
+  }
 
   return (
     <div className="page-container">
