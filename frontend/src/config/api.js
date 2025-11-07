@@ -9,6 +9,9 @@ export const API_ENDPOINTS = {
   REGISTER: `${API_BASE_URL}/api/auth/register`,
   SEND_OTP: `${API_BASE_URL}/api/auth/send-otp`,
   VERIFY_OTP: `${API_BASE_URL}/api/auth/verify-otp`,
+  FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
+  VERIFY_RESET_OTP: `${API_BASE_URL}/api/auth/verify-reset-otp`,
+  RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
   LOGOUT: `${API_BASE_URL}/api/auth/logout`,
   
   // Task endpoints

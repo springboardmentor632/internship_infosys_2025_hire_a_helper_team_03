@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { register, login, sendOTP, verifyOTP } = require('../controller/authController');
+const { register, login, sendOTP, verifyOTP, sendResetPasswordOTP, verifyResetPasswordOTP, resetPassword } = require('../controller/authController');
 
 // Register endpoint - creates account (unverified)
 router.post('/register', register);
@@ -16,6 +16,15 @@ router.post('/verify-otp', verifyOTP);
 
 // Login endpoint - requires verified email
 router.post('/login', login);
+
+// Forgot password - send reset OTP
+router.post('/forgot-password', sendResetPasswordOTP);
+
+// Verify reset password OTP
+router.post('/verify-reset-otp', verifyResetPasswordOTP);
+
+// Reset password
+router.post('/reset-password', resetPassword);
 
 // Debug endpoint to check users (remove in production)
 router.get('/debug/users', async (req, res) => {

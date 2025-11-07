@@ -6,6 +6,8 @@ import MyTask from './Pages/MyTask';
 import PostNewTask from './Pages/PostNewTask';
 import SignUpPage from './Pages/signup';
 import LoginPage from './Pages/login';
+import ForgotPassword from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
 import Home from './Pages/Home';  
 import MyRequest from './Pages/MyRequest';
 import Requests from './Pages/RequestPage';
@@ -48,6 +50,12 @@ function AppContent() {
         } />
         <Route path="/signin" element={
           <PublicRoute><LoginPage /></PublicRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <PublicRoute><ForgotPassword /></PublicRoute>
+        } />
+        <Route path="/reset-password" element={
+          <PublicRoute><ResetPassword /></PublicRoute>
         } />
 
         {/* Protected Routes - Require authentication */}

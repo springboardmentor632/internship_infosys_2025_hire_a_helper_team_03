@@ -213,7 +213,7 @@ export default function LoginPage() {
               </div>
 
               {/* Remember me & Forgot password */}
-              <div style={{ marginBottom: 24 }}>
+              <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="checkbox-group" style={{ margin: 0 }}>
                   <input
                     type="checkbox"
@@ -224,6 +224,21 @@ export default function LoginPage() {
                   />
                   <label htmlFor="remember">Remember me</label>
                 </div>
+                <span 
+                  onClick={() => navigate("/forgot-password")}
+                  style={{ 
+                    color: '#667eea', 
+                    fontSize: 14, 
+                    fontWeight: 600, 
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#5568d3'}
+                  onMouseLeave={(e) => e.target.style.color = '#667eea'}
+                >
+                  Forgot Password?
+                </span>
               </div>
 
               <button type="submit" className="submit-btn" disabled={loading}>
