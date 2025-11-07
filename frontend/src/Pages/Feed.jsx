@@ -12,6 +12,7 @@ export default function Feed() {
   const [favorites, setFavorites] = useState([]);
   const [activeNav, setActiveNav] = useState('feed');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -94,11 +95,16 @@ export default function Feed() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b lg:bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)}></div>
+      )}
+
       {/* Desktop Sidebar only */}
       <Sidebar
         activeNav={activeNav}
         setActiveNav={setActiveNav}
-        mobileMenuOpen={false}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
         navigate={navigate}
@@ -106,6 +112,8 @@ export default function Feed() {
 
       <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
         <Header 
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
           sidebarCollapsed={sidebarCollapsed}
         />
 

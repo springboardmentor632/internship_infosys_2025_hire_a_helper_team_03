@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaHandshakeAngle } from "react-icons/fa6";
 import "./signup.css";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "", remember: false });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -70,73 +73,115 @@ export default function LoginPage() {
   return (
     <div className="page-container">
       <div className="main-card">
-        {/* Left: Blue Welcome Section (Hidden on mobile) */}
-        <div className="welcome-section" style={{ flex: 1.2, alignItems: 'flex-start', textAlign: 'left' }}>
-          <div style={{ maxWidth: 420 }}>
-            <h1 style={{ fontSize: 44, fontWeight: 800, marginBottom: 8, lineHeight: 1.1, color: '#fff' }}>
-              Welcome Back<br />
-              <span style={{ color: "#f472b6" }}>to HireHelper</span>
-            </h1>
-            <div style={{ fontSize: 16, marginBottom: 32, marginTop: 8, opacity: 0.9, color: '#fff' }}>
-              Login to access your account
+        {/* Left Section: Welcome & Features */}
+        <div className="welcome-section">
+          <div className="logo-container">
+            <div className="logo-icon">
+              <FaHandshakeAngle className="text-white text-2xl" />
+            </div>
+            <div className="logo-text">
+              <span style={{ fontWeight: 700 }}>Hire</span>
+              <span style={{ fontWeight: 600, fontSize: '22px' }}>Helper</span>
             </div>
           </div>
-          <img
-            src="/Illustration.png"
-            alt="Login illustration for HireHelper"
-            style={{ width: "100%", maxWidth: 420, marginTop: 24 }}
-          />
+
+          <div>
+            <h1 className="welcome-text">Connect. Help. Accomplish.</h1>
+            <p className="welcome-subtitle">
+              Join thousands of users who find and offer help for everyday tasks
+            </p>
+
+            <div className="features-list">
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span className="feature-text">Post tasks in minutes</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span className="feature-text">Browse available opportunities</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span className="feature-text">Real-time notifications</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right: Login Form Section */}
-        <div className="form-section" style={{ flex: 1 }}>
-          {/* Mobile Icon (Visible only on mobile) */}
-          <div className="mobile-icon-container">
-            📱
-          </div>
-
-          <div style={{ width: "100%", maxWidth: 340, margin: '0 auto' }}>
-            <h2 className="title">Welcome Back</h2>
-            <div className="subtitle">Sign in to continue</div>
+        {/* Right Section: Login Form */}
+        <div className="form-section">
+          <div style={{ width: "100%", maxWidth: 448 }}>
+            <h2 className="title">Welcome back</h2>
+            <p className="subtitle">Sign in to your account to continue</p>
 
             <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field full-width"
-                required
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input-field full-width"
-                required
-              />
-              <div className="checkbox-group">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  name="remember"
-                  checked={formData.remember}
-                  onChange={handleChange}
-                />
-                <label htmlFor="remember">Remember me</label>
-              </div>
               {error && (
-                <div style={{ color: "red", marginBottom: 10, textAlign: "center" }}>{error}</div>
+                <div style={{ color: "#EF4444", marginBottom: 16, textAlign: "center", fontSize: 14 }}>{error}</div>
               )}
+
+              {/* Email Address */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#374151', marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>
+                  Email address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input-field"
+                  style={{ marginBottom: 0 }}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: '#374151', marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>
+                  Password
+                </label>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="input-field"
+                    style={{ marginBottom: 0 }}
+                    required
+                  />
+                  <span 
+                    className="password-toggle-icon" 
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </span>
+                </div>
+              </div>
+
+              {/* Remember me & Forgot password */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                <div className="checkbox-group" style={{ margin: 0 }}>
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    name="remember"
+                    checked={formData.remember}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="remember">Remember me</label>
+                </div>
+                <a href="#" className="link" style={{ fontSize: 14 }}>Forgot password?</a>
+              </div>
+
               <button type="submit" className="submit-btn" disabled={loading}>
                 {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24">
+                      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Signing In...
                   </span>
@@ -147,12 +192,9 @@ export default function LoginPage() {
             </form>
 
             <div className="existing">
-              Don't have an account?{' '}
-              <span
-                className="signIn"
-                onClick={() => navigate("/signup")}
-              >
-                Sign Up
+              Don't have an account?
+              <span className="signIn" onClick={() => navigate("/signup")}>
+                Sign up
               </span>
             </div>
           </div>

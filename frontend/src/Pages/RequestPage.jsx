@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
 import TaskCard from "../Components/TaskCard";
+import { API_ENDPOINTS, apiCall } from "../config/api";
 
 export default function RequestsPage() {
   const navigate = useNavigate();
@@ -21,58 +22,53 @@ export default function RequestsPage() {
     setFavorites(newFavorites);
   };
 
+  const [requests, setRequests] = useState([]);
+
+  const loadRequests = async () => {
+    try {
+      const res = await apiCall(API_ENDPOINTS.REQUESTS_OWNER);
+      const incoming = res.requests || [];
+      // Transform to UI format
+      setRequests(incoming.map(r => ({
+        id: r._id,
+        name: r.requester ? `${r.requester.firstName || ''} ${r.requester.lastName || ''}`.trim() : 'Unknown',
+        initials: r.requester ? `${(r.requester.firstName||'').charAt(0)}${(r.requester.lastName||'').charAt(0)}` : 'U',
+        color: '#3B82F6',
+        rating: 4.8,
+        reviews: 23,
+        distance: 3,
+        appliedFor: r.task ? r.task.title : 'Task',
+        description: r.task ? r.task.description : '',
+        price: r.task && r.task.budget ? r.task.budget : 0,
+        experience: '—',
+        time: new Date(r.createdAt).toLocaleString(),
+        status: r.status,
+        _id: r._id,
+      })));
+    } catch (err) {
+      console.error('Failed to load requests', err);
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
+
+  // Calculate tab counts dynamically
   const tabs = [
-    { name: 'All', count: 12 },
-    { name: 'New', count: 3 },
-    { name: 'Reviewed', count: 5 },
-    { name: 'Accepted', count: 3 },
-    { name: 'Declined', count: 1 }
+    { name: 'All', count: requests.length },
+    { name: 'New', count: requests.filter(r => r.status === 'pending').length },
+    { name: 'Reviewed', count: requests.filter(r => r.status !== 'pending').length },
+    { name: 'Accepted', count: requests.filter(r => r.status === 'accepted').length },
+    { name: 'Declined', count: requests.filter(r => r.status === 'declined').length }
   ];
 
-  const requests = [
-    {
-      id: 1,
-      name: 'Mike Brown',
-      initials: 'MB',
-      color: '#3B82F6',
-      rating: 4.8,
-      reviews: 23,
-      distance: 3,
-      appliedFor: 'Garden Cleanup',
-      description: 'I specialize in garden work and have all necessary tools.',
-      price: 120,
-      experience: '3 years experience',
-      time: '5 hours ago'
-    },
-    {
-      id: 2,
-      name: 'Lisa Wilson',
-      initials: 'LW',
-      color: '#10B981',
-      rating: 4.7,
-      reviews: 13,
-      distance: 5,
-      appliedFor: 'Move Furniture',
-      description: 'I have a truck and experience with moving heavy items.',
-      price: 150,
-      experience: '5 years experience',
-      time: 'Yesterday'
-    },
-    {
-      id: 3,
-      name: 'Sarah Johnson',
-      initials: 'SJ',
-      color: '#8B5CF6',
-      rating: 4.9,
-      reviews: 41,
-      distance: 8,
-      appliedFor: 'Fix Kitchen Sink',
-      description: 'I have 5 years of plumbing experience and can complete this task tomorrow.',
-      price: 75,
-      experience: 'Licensed plumber',
-      time: '2 hours ago'
-    }
-  ];
+  // Filter requests based on active tab
+  const filteredRequests = activeTab === 'All' ? requests :
+    activeTab === 'New' ? requests.filter(r => r.status === 'pending') :
+    activeTab === 'Reviewed' ? requests.filter(r => r.status !== 'pending') :
+    activeTab === 'Accepted' ? requests.filter(r => r.status === 'accepted') :
+    activeTab === 'Declined' ? requests.filter(r => r.status === 'declined') : requests;
 
   const relatedTasks = [
     {
@@ -148,7 +144,7 @@ export default function RequestsPage() {
           </div>
 
           <div className="space-y-4 mb-8">
-            {requests.map((request) => (
+            {filteredRequests.map((request) => (
               <div key={request.id} className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 hover:shadow-lg transition-all">
                 <div className="flex flex-col lg:flex-row items-start gap-4">
                   <div className="flex gap-4 flex-1 w-full">
@@ -187,10 +183,26 @@ export default function RequestsPage() {
                     </div>
                   </div>
                   <div className="flex lg:flex-col items-center gap-2 md:gap-3 w-full lg:w-auto">
-                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">
+                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap"
+                      onClick={async () => {
+                        try {
+                          await apiCall(API_ENDPOINTS.REQUESTS_UPDATE(request._id), { method: 'PATCH', body: JSON.stringify({ status: 'accepted' }) });
+                          alert('Request accepted');
+                          loadRequests();
+                        } catch (err) { alert(err.message || 'Failed'); }
+                      }}
+                    >
                       Accept
                     </button>
-                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">
+                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap"
+                      onClick={async () => {
+                        try {
+                          await apiCall(API_ENDPOINTS.REQUESTS_UPDATE(request._id), { method: 'PATCH', body: JSON.stringify({ status: 'declined' }) });
+                          alert('Request declined');
+                          loadRequests();
+                        } catch (err) { alert(err.message || 'Failed'); }
+                      }}
+                    >
                       Decline
                     </button>
                     <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">

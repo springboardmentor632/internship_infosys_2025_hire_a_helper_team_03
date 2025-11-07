@@ -1,5 +1,6 @@
 import React from "react";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes, FaUser, FaEnvelope, FaPhone } from "react-icons/fa";
+import { API_ENDPOINTS, apiCall } from "../config/api";
 
 const TaskViewModal = ({ task, onClose }) => {
   if (!task) return null;
@@ -233,7 +234,21 @@ const TaskViewModal = ({ task, onClose }) => {
             >
               Close
             </button>
-            <button className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button
+              onClick={async () => {
+                try {
+                  const resp = await apiCall(API_ENDPOINTS.REQUESTS_CREATE, {
+                    method: 'POST',
+                    body: JSON.stringify({ taskId: task._id }),
+                  });
+                  alert(resp.message || 'Request sent');
+                  if (onClose) onClose();
+                } catch (err) {
+                  alert(err.message || 'Failed to send request');
+                }
+              }}
+              className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               Request Task
             </button>
           </div>

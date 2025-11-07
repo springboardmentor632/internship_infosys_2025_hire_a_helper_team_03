@@ -20,9 +20,16 @@ export const API_ENDPOINTS = {
   TASK_STATUS: (id) => `${API_BASE_URL}/api/tasks/${id}/status`,
   TASK_PUBLISH: (id) => `${API_BASE_URL}/api/tasks/${id}/publish`,
   
-  // User endpoints
-  USER_PROFILE: `${API_BASE_URL}/api/user/profile`,
-  USER_UPDATE: `${API_BASE_URL}/api/user/update`,
+  // Request endpoints
+  REQUESTS_CREATE: `${API_BASE_URL}/api/requests`,
+  REQUESTS_OWNER: `${API_BASE_URL}/api/requests/owner`,
+  REQUESTS_ME: `${API_BASE_URL}/api/requests/me`,
+  REQUESTS_UPDATE: (id) => `${API_BASE_URL}/api/requests/${id}`,
+
+  // Notifications
+  NOTIFICATIONS_LIST: `${API_BASE_URL}/api/notifications`,
+  NOTIFICATIONS_MARK_READ: (id) => `${API_BASE_URL}/api/notifications/${id}/read`,
+  NOTIFICATIONS_DELETE: (id) => `${API_BASE_URL}/api/notifications/${id}`,
 };
 
 // Helper function to get auth token

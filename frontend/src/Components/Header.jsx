@@ -16,7 +16,7 @@ const Header = ({
   return (
     <>
       {/* Header - Desktop */}
-      <header className="hidden lg:flex items-center justify-between h-[82px] bg-white border-b-2 border-gray-300 px-8 py-4 shadow-sm sticky top-0 z-40">
+      <header className="hidden lg:flex items-center justify-between h-[80px] bg-white border-b-2 border-gray-300 px-8 py-4 shadow-sm sticky top-0 z-40">
         <div className="flex-1 max-w-md relative">
           <FaSearch
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"

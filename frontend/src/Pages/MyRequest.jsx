@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header"; 
 import BottomNav from "../Components/BottomNav";
+import { API_ENDPOINTS, apiCall } from "../config/api";
 
 export default function MyRequestsPage() {
   const navigate = useNavigate();
@@ -12,22 +13,40 @@ export default function MyRequestsPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeNav, setActiveNav] = useState("myrequests");
 
-  const tabs = [
-    { name: 'All', count: 8 },
-    { name: 'Pending', count: 3 },
-    { name: 'Accepted', count: 4 },
-    { name: 'Declined', count: 1 }
-  ];
+  const [allRequests, setAllRequests] = useState([]);
 
-  const allRequests = [
-    { id: 1, task: 'Fix Kitchen Sink', status: 'pending', owner: 'John Davis', ownerInitials: 'JD', color: '#3B82F6', rating: 4.3, reviews: 12, distance: 2, price: 75, description: 'Need help fixing a leaky kitchen sink', time: '2 hours ago' },
-    { id: 2, task: 'Garden Cleaning', status: 'accepted', owner: 'Lisa Wilson', ownerInitials: 'LW', color: '#10B981', rating: 4.3, reviews: 8, distance: 5, price: 125, description: 'General garden maintenance and cleaning', time: '1 day ago' },
-    { id: 3, task: 'Furniture Assembly', status: 'pending', owner: 'Mike Brown', ownerInitials: 'MB', color: '#8B5CF6', rating: 4.7, reviews: 15, distance: 3, price: 90, description: 'Assemble IKEA furniture pieces', time: '3 hours ago' },
-    { id: 4, task: 'House Painting', status: 'accepted', owner: 'Sarah Chen', ownerInitials: 'SC', color: '#EF4444', rating: 4.8, reviews: 20, distance: 4, price: 200, description: 'Paint living room and bedroom', time: '2 days ago' },
-    { id: 5, task: 'Computer Repair', status: 'declined', owner: 'Tom Wilson', ownerInitials: 'TW', color: '#6B7280', rating: 4.1, reviews: 9, distance: 6, price: 50, description: 'Fix slow computer performance', time: '3 days ago' },
-    { id: 6, task: 'Pet Sitting', status: 'accepted', owner: 'Emma Davis', ownerInitials: 'ED', color: '#F59E0B', rating: 4.9, reviews: 32, distance: 1, price: 40, description: 'Watch my dog for the weekend', time: '1 day ago' },
-    { id: 7, task: 'Lawn Mowing', status: 'pending', owner: 'Robert Lee', ownerInitials: 'RL', color: '#14B8A6', rating: 4.5, reviews: 18, distance: 3, price: 60, description: 'Weekly lawn maintenance', time: '5 hours ago' },
-    { id: 8, task: 'Plumbing Work', status: 'accepted', owner: 'Anna Smith', ownerInitials: 'AS', color: '#EC4899', rating: 4.6, reviews: 25, distance: 2, price: 95, description: 'Fix bathroom pipes', time: '1 day ago' }
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await apiCall(API_ENDPOINTS.REQUESTS_ME);
+        const reqs = res.requests || [];
+        setAllRequests(reqs.map(r => ({ 
+          id: r._id, 
+          task: r.task ? r.task.title : 'Task', 
+          status: r.status, 
+          owner: r.owner ? `${r.owner.firstName || ''} ${r.owner.lastName || ''}`.trim() : '', 
+          ownerInitials: r.owner ? `${(r.owner.firstName||'').charAt(0)}${(r.owner.lastName||'').charAt(0)}` : 'NA', 
+          color: '#3B82F6', 
+          rating: 4.3, 
+          reviews: 12, 
+          distance: 2, 
+          price: r.task && r.task.budget ? r.task.budget : '—', 
+          description: r.task && r.task.description ? r.task.description : '', 
+          time: new Date(r.createdAt).toLocaleString() 
+        })));
+      } catch (err) {
+        console.error('Failed to load my requests', err);
+      }
+    };
+    load();
+  }, []);
+
+  // Calculate tab counts dynamically
+  const tabs = [
+    { name: 'All', count: allRequests.length },
+    { name: 'Pending', count: allRequests.filter(r => r.status === 'pending').length },
+    { name: 'Accepted', count: allRequests.filter(r => r.status === 'accepted').length },
+    { name: 'Declined', count: allRequests.filter(r => r.status === 'declined').length }
   ];
 
   const filteredRequests = activeTab === 'All' ? allRequests : allRequests.filter(req => req.status.toLowerCase() === activeTab.toLowerCase());
