@@ -23,9 +23,13 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 // Mount routes
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/task');
+const requestRoutes = require('./routes/request');
+const notificationRoutes = require('./routes/notification');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
