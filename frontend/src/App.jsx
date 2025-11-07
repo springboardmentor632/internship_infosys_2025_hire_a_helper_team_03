@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Dashboard from './Pages/Dashboard';
 import Feed from './Pages/Feed';
 import MyTask from './Pages/MyTask';
@@ -15,12 +15,15 @@ import OTPVerification from './Pages/OTPVerification';
 import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
 import Loader from './Components/Loader';
+import ProtectedRoute from './Components/ProtectedRoute';
+import PublicRoute from './Components/PublicRoute';
 
 // Pages
 
 function AppContent() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   useEffect(() => {
     // Show loader on route change
@@ -39,20 +42,51 @@ function AppContent() {
     <>
       {loading && <Loader />}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/feedPage" element={<Feed />} />
-        <Route path="/mytasks" element={<MyTask />} />
-        <Route path="/posttask" element={<PostNewTask />} />
-        <Route path="/myrequests" element={<MyRequest />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/requests" element={<Requests />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/signin" element={<LoginPage />} />
-        <Route path="/otp-verification" element={<OTPVerification />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/notifications" element={<Notifications />} />
+        {/* Public Routes - Redirect to dashboard if logged in */}
+        <Route path="/" element={
+          isLoggedIn ? <Navigate to="/dashboard" replace /> : <Home />
+        } />
+        <Route path="/signup" element={
+          <PublicRoute><SignUpPage /></PublicRoute>
+        } />
+        <Route path="/signin" element={
+          <PublicRoute><LoginPage /></PublicRoute>
+        } />
+        <Route path="/otp-verification" element={
+          <PublicRoute><OTPVerification /></PublicRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <PublicRoute><ForgotPassword /></PublicRoute>
+        } />
+        <Route path="/reset-password" element={
+          <PublicRoute><ResetPassword /></PublicRoute>
+        } />
+
+        {/* Protected Routes - Require authentication */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute><Dashboard /></ProtectedRoute>
+        } />
+        <Route path="/feedPage" element={
+          <ProtectedRoute><Feed /></ProtectedRoute>
+        } />
+        <Route path="/mytasks" element={
+          <ProtectedRoute><MyTask /></ProtectedRoute>
+        } />
+        <Route path="/posttask" element={
+          <ProtectedRoute><PostNewTask /></ProtectedRoute>
+        } />
+        <Route path="/myrequests" element={
+          <ProtectedRoute><MyRequest /></ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute><Settings /></ProtectedRoute>
+        } />
+        <Route path="/requests" element={
+          <ProtectedRoute><Requests /></ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+          <ProtectedRoute><Notifications /></ProtectedRoute>
+        } />
       </Routes>
     </>
   );
