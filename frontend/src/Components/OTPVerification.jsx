@@ -4,7 +4,7 @@ import { FaHandshakeAngle } from "react-icons/fa6";
 import { API_ENDPOINTS } from "../config/api";
 import "../Pages/signup.css";
 
-export default function OTPVerification({ email, firstName, onBack }) {
+export default function OTPVerification({ email, firstName = "", onBack }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

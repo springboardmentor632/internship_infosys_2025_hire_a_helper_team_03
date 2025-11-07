@@ -2,8 +2,9 @@ const User = require('../model/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generateOTP, sendOTPEmail, sendPasswordResetOTPEmail } = require('../utils/emailService');
+const { pendingRegistrations } = require('../utils/tempStorage');
 
-// Register user (creates account but not verified)
+// Register user (stores in temporary storage until OTP verification)
 exports.register = async (req, res) => {
     try {
         // Simulate loader delay (for frontend loader UX)
@@ -15,28 +16,49 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
         
-        // Check if user already exists
+        // Check if user already exists in database
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
+
+        // Check if email is already in pending registrations
+        if (pendingRegistrations.has(email)) {
+            // User tried to register again without verifying
+            // Delete old pending registration and create new one
+            pendingRegistrations.delete(email);
+            console.log(`Removed old pending registration for: ${email}`);
+        }
         
-        // Hash password and create user (unverified)
+        // Generate OTP
+        const otp = generateOTP();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ 
-            firstName, 
-            lastName, 
-            phone, 
-            email, 
+        
+        // Store in temporary storage (NOT in database yet)
+        pendingRegistrations.set(email, {
+            firstName,
+            lastName,
+            phone,
+            email,
             password: hashedPassword,
-            isVerified: false // Account created but not verified
+            otp,
+            otpExpiry,
+            createdAt: new Date()
         });
-        await user.save();
+
+        console.log(`Pending registration created for: ${email}`);
+        console.log(`Total pending registrations: ${pendingRegistrations.size}`);
+        
+        // Send OTP email immediately
+        await sendOTPEmail(email, otp, firstName);
         
         res.status(201).json({ 
-            message: 'Registration successful! Please verify your email.',
-            email: user.email,
-            firstName: user.firstName
+            message: 'Registration initiated! Please verify your email with the OTP sent.',
+            email: email,
+            firstName: firstName
         });
     } catch (err) {
         console.error('Registration error:', err);
@@ -44,7 +66,7 @@ exports.register = async (req, res) => {
     }
 };
 
-// Send OTP to email
+// Send OTP to email (for already registered but unverified users, or resend)
 exports.sendOTP = async (req, res) => {
     try {
         const { email } = req.body;
@@ -53,10 +75,31 @@ exports.sendOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email is required' });
         }
         
-        // Find user
+        // Check if email is in pending registrations
+        const pendingUser = pendingRegistrations.get(email);
+        if (pendingUser) {
+            // Resend OTP for pending registration
+            const otp = generateOTP();
+            const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+            
+            // Update OTP in temporary storage
+            pendingUser.otp = otp;
+            pendingUser.otpExpiry = otpExpiry;
+            pendingRegistrations.set(email, pendingUser);
+            
+            // Send OTP email
+            await sendOTPEmail(email, otp, pendingUser.firstName);
+            
+            return res.status(200).json({ 
+                message: 'New OTP sent successfully to your email',
+                email: email
+            });
+        }
+        
+        // Check if user exists in database (for already registered users)
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'No registration found for this email. Please register first.' });
         }
         
         // Check if already verified
@@ -64,7 +107,7 @@ exports.sendOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email already verified' });
         }
         
-        // Generate OTP
+        // Generate OTP for existing unverified user
         const otp = generateOTP();
         const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         
@@ -86,7 +129,7 @@ exports.sendOTP = async (req, res) => {
     }
 };
 
-// Verify OTP
+// Verify OTP and create user in database
 exports.verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -95,10 +138,52 @@ exports.verifyOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email and OTP are required' });
         }
         
-        // Find user
+        // First check if email is in pending registrations
+        const pendingUser = pendingRegistrations.get(email);
+        
+        if (pendingUser) {
+            // Verify OTP for pending registration
+            
+            // Check if OTP is expired
+            if (new Date() > pendingUser.otpExpiry) {
+                return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+            }
+            
+            // Verify OTP
+            if (pendingUser.otp !== otp) {
+                return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+            }
+            
+            // OTP verified! Now create user in database
+            const newUser = new User({
+                firstName: pendingUser.firstName,
+                lastName: pendingUser.lastName,
+                phone: pendingUser.phone,
+                email: pendingUser.email,
+                password: pendingUser.password, // Already hashed
+                isVerified: true, // Mark as verified immediately
+                otp: null,
+                otpExpiry: null
+            });
+            
+            await newUser.save();
+            
+            // Remove from pending registrations
+            pendingRegistrations.delete(email);
+            
+            console.log(`User verified and created in database: ${email}`);
+            console.log(`Remaining pending registrations: ${pendingRegistrations.size}`);
+            
+            return res.status(200).json({ 
+                message: 'Email verified successfully! Your account has been created. You can now login.',
+                verified: true
+            });
+        }
+        
+        // If not in pending, check if user exists in database (for old flow compatibility)
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'No registration found. Please register first.' });
         }
         
         // Check if already verified
@@ -145,6 +230,20 @@ exports.login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
         }
+        
+        // First check if email is in pending registrations (not verified yet)
+        const pendingUser = pendingRegistrations.get(email);
+        if (pendingUser) {
+            // User registered but hasn't verified OTP yet
+            return res.status(403).json({ 
+                message: 'Please verify your email before logging in. Check your email for the OTP.',
+                needsVerification: true,
+                email: email,
+                isPending: true
+            });
+        }
+        
+        // Check if user exists in database
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });

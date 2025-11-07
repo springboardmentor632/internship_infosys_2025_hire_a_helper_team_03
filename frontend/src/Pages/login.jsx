@@ -57,27 +57,54 @@ export default function LoginPage() {
       if (!res.ok) {
         // Check if email verification is needed
         if (data.needsVerification) {
-          setError("Email not verified. Sending OTP...");
-          setUserEmail(data.email || formData.email);
-          
-          // Send OTP
-          try {
-            const otpRes = await fetch(API_ENDPOINTS.SEND_OTP, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: formData.email }),
-            });
-            const otpData = await otpRes.json();
+          if (data.isPending) {
+            // User registered but hasn't verified - they still have pending registration
+            setError("Email not verified. Sending OTP to your email...");
+            setUserEmail(data.email || formData.email);
             
-            if (otpRes.ok) {
-              setShowOTPScreen(true);
-            } else {
-              throw new Error(otpData.message || "Failed to send OTP");
+            // Send OTP for pending registration
+            try {
+              const otpRes = await fetch(API_ENDPOINTS.SEND_OTP, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: formData.email }),
+              });
+              const otpData = await otpRes.json();
+              
+              if (otpRes.ok) {
+                // Show OTP screen
+                setShowOTPScreen(true);
+              } else {
+                setError(otpData.message || "Failed to send OTP");
+              }
+            } catch (otpErr) {
+              setError(otpErr.message);
             }
-          } catch (otpErr) {
-            setError(otpErr.message);
+            return;
+          } else {
+            // Regular verification needed
+            setError("Email not verified. Sending OTP...");
+            setUserEmail(data.email || formData.email);
+            
+            // Send OTP
+            try {
+              const otpRes = await fetch(API_ENDPOINTS.SEND_OTP, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: formData.email }),
+              });
+              const otpData = await otpRes.json();
+              
+              if (otpRes.ok) {
+                setShowOTPScreen(true);
+              } else {
+                throw new Error(otpData.message || "Failed to send OTP");
+              }
+            } catch (otpErr) {
+              setError(otpErr.message);
+            }
+            return;
           }
-          return;
         }
         throw new Error(data.message || "Login failed");
       }
