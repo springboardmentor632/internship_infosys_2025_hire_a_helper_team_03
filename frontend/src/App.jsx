@@ -11,6 +11,9 @@ import MyRequest from './Pages/MyRequest';
 import Requests from './Pages/RequestPage';
 import Settings from './Pages/SettingsPage';
 import Notifications from './Pages/NotificationsPage';
+import OTPVerification from './Pages/OTPVerification';
+import ForgotPassword from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
 import Loader from './Components/Loader';
 
 // Pages
@@ -46,6 +49,9 @@ function AppContent() {
         <Route path="/requests" element={<Requests />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<LoginPage />} />
+        <Route path="/otp-verification" element={<OTPVerification />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </>

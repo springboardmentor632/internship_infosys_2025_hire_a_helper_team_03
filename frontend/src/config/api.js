@@ -8,6 +8,11 @@ export const API_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/auth/login`,
   REGISTER: `${API_BASE_URL}/api/auth/register`,
   LOGOUT: `${API_BASE_URL}/api/auth/logout`,
+  SEND_OTP: `${API_BASE_URL}/api/auth/send-otp`,
+  VERIFY_REGISTER: `${API_BASE_URL}/api/auth/verify-register`,
+  RESEND_OTP: `${API_BASE_URL}/api/auth/resend-otp`,
+  FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
+  RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
   
   // Task endpoints
   TASKS_ALL: `${API_BASE_URL}/api/tasks/all`,

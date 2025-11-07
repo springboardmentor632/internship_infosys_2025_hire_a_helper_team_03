@@ -173,7 +173,13 @@ export default function LoginPage() {
                   />
                   <label htmlFor="remember">Remember me</label>
                 </div>
-                <a href="#" className="link" style={{ fontSize: 14 }}>Forgot password?</a>
+                <span 
+                  onClick={() => navigate("/forgot-password")} 
+                  className="link" 
+                  style={{ fontSize: 14, cursor: 'pointer' }}
+                >
+                  Forgot password?
+                </span>
               </div>
 
               <button type="submit" className="submit-btn" disabled={loading}>

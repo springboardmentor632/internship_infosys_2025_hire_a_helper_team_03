@@ -37,23 +37,31 @@ export default function SignUpPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      // Step 1: Send OTP to email
+      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
           email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
-      setSuccess("Account created successfully! Sign in to verify your account.");
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+      
+      // Step 2: Navigate to OTP verification page with registration data
+      navigate("/otp-verification", {
+        state: {
+          registrationData: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            password: formData.password,
+          },
+        },
+      });
     } catch (err) {
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
