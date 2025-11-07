@@ -27,12 +27,16 @@ const Sidebar = ({
     const loadUserInfo = () => {
       try {
         const userData = localStorage.getItem("user");
-        if (userData) {
+        const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        if (userData && isLoggedIn) {
           const user = JSON.parse(userData);
           setUserInfo(user);
+        } else {
+          setUserInfo(null);
         }
       } catch (e) {
         console.error("Error loading user data:", e);
+        setUserInfo(null);
       }
     };
 
@@ -44,10 +48,12 @@ const Sidebar = ({
 
     // Custom event for same-tab updates
     window.addEventListener("userLogin", loadUserInfo);
+    window.addEventListener("userLogout", loadUserInfo);
 
     return () => {
       window.removeEventListener("storage", loadUserInfo);
       window.removeEventListener("userLogin", loadUserInfo);
+      window.removeEventListener("userLogout", loadUserInfo);
     };
   }, []);
   const navItems = [
@@ -156,38 +162,40 @@ const Sidebar = ({
         </nav>
 
         {/* User Profile - Fixed at bottom */}
-        {!sidebarCollapsed &&
-          (() => {
-            // Build user display information from state
-            const firstName = userInfo?.firstName || "";
-            const lastName = userInfo?.lastName || "";
-            const name = `${firstName} ${lastName}`.trim() || "Guest User";
-            const email = userInfo?.email || "Not logged in";
-
-            // Get initials for avatar
-            let initials = "GU";
-            if (firstName || lastName) {
-              initials = `${firstName.charAt(0)}${lastName.charAt(
-                0
-              )}`.toUpperCase();
-            }
-
-            return (
-              <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {initials}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-sm truncate">{name}</p>
-                    <p className="text-xs text-white text-opacity-80 truncate">
-                      {email}
-                    </p>
-                  </div>
+        {!sidebarCollapsed && (
+          <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
+            {userInfo ? (
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  {`${userInfo.firstName?.charAt(0) || ''}${userInfo.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm truncate">
+                    {`${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim() || 'User'}
+                  </p>
+                  <p className="text-xs text-white text-opacity-80 truncate">
+                    {userInfo.email || ''}
+                  </p>
                 </div>
               </div>
-            );
-          })()}
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  GU
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm truncate">Guest User</p>
+                  <button
+                    onClick={() => navigate('/signin')}
+                    className="text-xs text-white text-opacity-90 hover:text-opacity-100 underline"
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </aside>
     </>
   );

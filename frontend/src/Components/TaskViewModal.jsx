@@ -1,9 +1,46 @@
 import React from "react";
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes, FaUser, FaEnvelope, FaPhone } from "react-icons/fa";
-import { API_ENDPOINTS, apiCall } from "../config/api";
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes, FaUser, FaEnvelope } from "react-icons/fa";
 
-const TaskViewModal = ({ task, onClose }) => {
+const TaskViewModal = ({ task, onClose, hasRequested, onRequestSent }) => {
   if (!task) return null;
+
+  const handleSendRequest = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please sign in to request this task');
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/requests', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ taskId: task._id })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to send request');
+      }
+
+      alert(data.message || 'Request sent successfully!');
+      
+      // Notify parent component that request was sent
+      if (onRequestSent) {
+        onRequestSent();
+      }
+      
+      if (onClose) {
+        onClose();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to send request');
+    }
+  };
 
   const getUrgencyColor = (urgency) => {
     switch (urgency?.toLowerCase()) {
@@ -234,23 +271,24 @@ const TaskViewModal = ({ task, onClose }) => {
             >
               Close
             </button>
-            <button
-              onClick={async () => {
-                try {
-                  const resp = await apiCall(API_ENDPOINTS.REQUESTS_CREATE, {
-                    method: 'POST',
-                    body: JSON.stringify({ taskId: task._id }),
-                  });
-                  alert(resp.message || 'Request sent');
-                  if (onClose) onClose();
-                } catch (err) {
-                  alert(err.message || 'Failed to send request');
-                }
-              }}
-              className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Request Task
-            </button>
+            {hasRequested ? (
+              <button
+                disabled
+                className="flex-1 px-6 py-3 bg-gray-200 text-gray-600 font-semibold rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Request Sent
+              </button>
+            ) : (
+              <button
+                onClick={handleSendRequest}
+                className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Request Task
+              </button>
+            )}
           </div>
         </div>
       </div>

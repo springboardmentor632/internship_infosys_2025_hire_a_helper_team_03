@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
 import Sidebar from "../Components/Sidebar";
 import BottomNav from "../Components/BottomNav";
-import TaskCardMobile from "../Components/TaskCardMobile";
 import TaskTable from "../Components/TaskTable";
 import TaskDetailsCard from "../Components/TaskDetailCard";
 import DraftCard from "../Components/DraftCard";
@@ -13,7 +12,6 @@ const MyTask = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeNav, setActiveNav] = useState("mytasks");
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,6 +19,9 @@ const MyTask = () => {
   const [showTaskDetails, setShowTaskDetails] = useState(false);
   const [filterView, setFilterView] = useState("all"); // all, drafts, active, completed, cancelled
   const [actionLoading, setActionLoading] = useState(false); // For publish/delete actions
+  
+  // Check if user is logged in
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   // Separate tasks by status
   const drafts = tasks.filter(task => task.status === 'draft');
@@ -398,6 +399,37 @@ const MyTask = () => {
               </p>
             </div>
 
+            {/* Show Sign-in prompt if not logged in */}
+            {!isLoggedIn ? (
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 md:p-12 text-center max-w-2xl mx-auto">
+                <div className="w-20 h-20 bg-gradient-to-br from-sky-100 to-sky-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                  Sign In to View Your Tasks
+                </h3>
+                <p className="text-gray-600 mb-8 text-base md:text-lg">
+                  Please sign in to your account to view and manage your tasks.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => navigate('/signin')}
+                    className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold py-3 px-8 rounded-lg transition-all shadow-md hover:shadow-lg"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => navigate('/signup')}
+                    className="bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold py-3 px-8 rounded-lg transition-all"
+                  >
+                    Create Account
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
             {/* Search and Filter Bar */}
             <div className="mb-6 flex flex-col md:flex-row gap-4">
               {/* Search Bar */}
@@ -651,6 +683,8 @@ const MyTask = () => {
                   </div>
                 </div>
               </div>
+            )}
+            </>
             )}
           </div>
         </main>

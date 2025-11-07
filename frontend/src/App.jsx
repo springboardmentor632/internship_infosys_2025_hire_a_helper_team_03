@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from './Pages/Dashboard';
 import Feed from './Pages/Feed';
 import MyTask from './Pages/MyTask';
@@ -23,7 +23,6 @@ import PublicRoute from './Components/PublicRoute';
 function AppContent() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   useEffect(() => {
     // Show loader on route change
@@ -42,10 +41,10 @@ function AppContent() {
     <>
       {loading && <Loader />}
       <Routes>
-        {/* Public Routes - Redirect to dashboard if logged in */}
-        <Route path="/" element={
-          isLoggedIn ? <Navigate to="/dashboard" replace /> : <Home />
-        } />
+        {/* Home Route - Always accessible, just shows different content */}
+        <Route path="/" element={<Home />} />
+        
+        {/* Auth Routes - Redirect to dashboard if logged in */}
         <Route path="/signup" element={
           <PublicRoute><SignUpPage /></PublicRoute>
         } />
@@ -62,19 +61,13 @@ function AppContent() {
           <PublicRoute><ResetPassword /></PublicRoute>
         } />
 
+        {/* Public Routes - Accessible to all, show guest user for non-logged in */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/feedPage" element={<Feed />} />
+        <Route path="/mytasks" element={<MyTask />} />
+        <Route path="/posttask" element={<PostNewTask />} />
+        
         {/* Protected Routes - Require authentication */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute><Dashboard /></ProtectedRoute>
-        } />
-        <Route path="/feedPage" element={
-          <ProtectedRoute><Feed /></ProtectedRoute>
-        } />
-        <Route path="/mytasks" element={
-          <ProtectedRoute><MyTask /></ProtectedRoute>
-        } />
-        <Route path="/posttask" element={
-          <ProtectedRoute><PostNewTask /></ProtectedRoute>
-        } />
         <Route path="/myrequests" element={
           <ProtectedRoute><MyRequest /></ProtectedRoute>
         } />

@@ -1,7 +1,7 @@
 import React from "react";
-import { FaMapMarkerAlt, FaClock, FaStar, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
 
-const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails }) => {
+const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRequested }) => {
   // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return 'Date TBD';
@@ -134,12 +134,24 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails }) => 
             <FaDollarSign size={12} />
             {task.budget || 'Negotiable'}
           </span>
-          <button 
-            onClick={() => onViewDetails(task)}
-            className="px-4 py-2 text-white font-semibold rounded-lg bg-sky-500 hover:bg-sky-600 transition-all duration-200 text-sm"
-          >
-            View Details
-          </button>
+          {hasRequested ? (
+            <button 
+              disabled
+              className="px-4 py-2 text-gray-600 font-semibold rounded-lg bg-gray-200 cursor-not-allowed text-sm flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Requested
+            </button>
+          ) : (
+            <button 
+              onClick={() => onViewDetails(task)}
+              className="px-4 py-2 text-white font-semibold rounded-lg bg-sky-500 hover:bg-sky-600 transition-all duration-200 text-sm"
+            >
+              View Details
+            </button>
+          )}
         </div>
       </div>
     </div>

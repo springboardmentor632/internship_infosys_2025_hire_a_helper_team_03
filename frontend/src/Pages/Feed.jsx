@@ -20,11 +20,34 @@ export default function Feed() {
   const [sortBy, setSortBy] = useState('recent'); // recent, price-low, price-high
   const [selectedTask, setSelectedTask] = useState(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [userRequests, setUserRequests] = useState([]); // Store user's sent requests
 
-  // Fetch all tasks on component mount
+  // Fetch all tasks and user requests on component mount
   useEffect(() => {
     fetchAllTasks();
+    fetchUserRequests();
   }, []);
+
+  const fetchUserRequests = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return; // User not logged in, skip fetching requests
+
+    try {
+      const res = await fetch('http://localhost:5000/api/requests/myrequests', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setUserRequests(data.requests || []);
+      }
+    } catch (err) {
+      console.error('Error fetching user requests:', err);
+    }
+  };
 
   const fetchAllTasks = async () => {
     try {
@@ -64,6 +87,19 @@ export default function Feed() {
   const handleCloseModal = () => {
     setShowTaskModal(false);
     setSelectedTask(null);
+  };
+
+  // Handle successful request submission
+  const handleRequestSent = () => {
+    // Refresh user requests to update button states
+    fetchUserRequests();
+  };
+
+  // Check if user has already requested a task
+  const hasRequestedTask = (taskId) => {
+    return userRequests.some(request => 
+      (request.task?._id === taskId || request.task === taskId)
+    );
   };
 
   // Get unique categories from tasks
@@ -221,6 +257,7 @@ export default function Feed() {
                   favorites={favorites} 
                   toggleFavorite={toggleFavorite}
                   onViewDetails={handleViewDetails}
+                  hasRequested={hasRequestedTask(task._id)}
                 />
               ))}
             </div>
@@ -235,6 +272,8 @@ export default function Feed() {
         <TaskViewModal
           task={selectedTask}
           onClose={handleCloseModal}
+          hasRequested={hasRequestedTask(selectedTask?._id)}
+          onRequestSent={handleRequestSent}
         />
       )}
     </div>

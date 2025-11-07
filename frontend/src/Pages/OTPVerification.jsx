@@ -170,44 +170,45 @@ export default function OTPVerification() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-white via-white to-sky-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md mx-auto">
         {/* Main Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-sky-100">
+        <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl p-6 md:p-8 border border-gray-100 md:border-sky-100 mx-auto">
           {/* Logo/Icon */}
-          <div className="flex justify-center mb-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-sky-500 to-sky-600 rounded-full flex items-center justify-center shadow-lg">
-              <MdEmail className="text-white text-5xl" />
+          <div className="flex justify-center mb-4 md:mb-6">
+            <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-sky-500 to-sky-600 rounded-full flex items-center justify-center shadow-lg">
+              <MdEmail className="text-white text-4xl md:text-5xl" />
             </div>
           </div>
 
           {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
               Verify Your Email
             </h1>
-            <p className="text-sm text-gray-600 mb-1">
+            <p className="text-xs md:text-sm text-gray-600 mb-1 px-2">
               Enter the 6-digit code sent to your email
             </p>
-            <p className="text-sm font-semibold text-sky-600 break-all">
+            <p className="text-xs md:text-sm font-semibold text-sky-600 break-all px-2">
               {email}
             </p>
           </div>
 
           {/* OTP Input Boxes */}
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div className="flex justify-center gap-2">
+          <form onSubmit={handleVerify} className="space-y-4 md:space-y-6">
+            <div className="flex justify-center gap-2 md:gap-2 px-2">
               {otp.map((digit, index) => (
                 <input
                   key={index}
                   ref={(el) => (inputRefs.current[index] = el)}
                   type="text"
+                  inputMode="numeric"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={index === 0 ? handlePaste : undefined}
-                  className="w-12 h-12 text-center text-xl font-bold text-gray-800 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all"
+                  className="w-11 h-11 md:w-12 md:h-12 text-center text-lg md:text-xl font-bold text-gray-800 bg-gray-100 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all"
                   style={{
                     borderColor: digit ? '#0284C7' : '#E5E7EB',
                     backgroundColor: digit ? '#FFFFFF' : '#F3F4F6'
@@ -219,50 +220,52 @@ export default function OTPVerification() {
 
             {/* Error/Success Messages */}
             {error && (
-              <div className="text-center">
-                <p className="text-red-500 text-sm font-medium">{error}</p>
+              <div className="text-center px-2">
+                <p className="text-red-500 text-xs md:text-sm font-medium">{error}</p>
               </div>
             )}
             {success && (
-              <div className="text-center">
-                <p className="text-green-500 text-sm font-medium">{success}</p>
+              <div className="text-center px-2">
+                <p className="text-green-500 text-xs md:text-sm font-medium">{success}</p>
               </div>
             )}
 
             {/* Timer */}
-            <div className="text-center">
+            <div className="text-center px-2">
               {resendTimer > 0 ? (
-                <p className="text-sm text-gray-600">
+                <p className="text-xs md:text-sm text-gray-600">
                   Code expires in <span className="font-bold text-sky-600">{formatTime(resendTimer)}</span>
                 </p>
               ) : (
-                <p className="text-red-600 text-sm font-semibold">OTP has expired</p>
+                <p className="text-red-600 text-xs md:text-sm font-semibold">OTP has expired</p>
               )}
             </div>
 
             {/* Verify Button */}
-            <button
-              type="submit"
-              disabled={loading || otp.join('').length !== 6}
-              className="w-full h-12 bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Verifying...
-                </span>
-              ) : (
-                'Verify Email'
-              )}
-            </button>
+            <div className="px-2">
+              <button
+                type="submit"
+                disabled={loading || otp.join('').length !== 6}
+                className="w-full h-12 md:h-12 bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm md:text-base"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verifying...
+                  </span>
+                ) : (
+                  'Verify Email'
+                )}
+              </button>
+            </div>
           </form>
 
           {/* Resend Timer */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
+          <div className="text-center mt-4 md:mt-6 px-2">
+            <p className="text-xs md:text-sm text-gray-600">
               {canResend ? (
                 <button
                   onClick={handleResendOTP}
@@ -278,10 +281,10 @@ export default function OTPVerification() {
           </div>
 
           {/* Change Email Link */}
-          <div className="text-center mt-4">
+          <div className="text-center mt-3 md:mt-4 px-2">
             <button
               onClick={handleChangeEmail}
-              className="text-sm text-sky-600 hover:text-sky-700 hover:underline transition-all"
+              className="text-xs md:text-sm text-sky-600 hover:text-sky-700 hover:underline transition-all"
             >
               Change email address
             </button>

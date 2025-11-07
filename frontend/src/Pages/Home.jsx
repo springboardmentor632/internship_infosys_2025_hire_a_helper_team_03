@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X, Clock, Star, Shield } from "lucide-react";
 import heroPageImage from "../Assets/heroPageImage.png";
 import { FaHandshakeAngle } from "react-icons/fa6";
@@ -7,6 +7,16 @@ import { useNavigate } from "react-router-dom";
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Redirect to dashboard if user is logged in
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const token = localStorage.getItem('token');
+    
+    if (isLoggedIn && token) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -262,15 +272,15 @@ export default function Home() {
             </p>
 
             <div className="flex gap-5">
-              <a href="#" className="hover:underline">
+              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
                 Privacy Policy
-              </a>
-              <a href="#" className="hover:underline">
+              </button>
+              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
                 Terms
-              </a>
-              <a href="#" className="hover:underline">
+              </button>
+              <button onClick={() => {}} className="hover:underline bg-transparent border-0 cursor-pointer text-white">
                 Contact
-              </a>
+              </button>
             </div>
             {/* Logo */}
             <div className="flex items-center gap-3">
