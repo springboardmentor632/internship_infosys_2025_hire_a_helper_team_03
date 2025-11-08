@@ -224,16 +224,28 @@ exports.verifyOTP = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
+        console.log('=== LOGIN ATTEMPT STARTED ===');
+        console.log('Timestamp:', new Date().toISOString());
+        console.log('Request body:', req.body);
+        console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+        console.log('JWT_SECRET value (first 10 chars):', process.env.JWT_SECRET ? process.env.JWT_SECRET.substring(0, 10) + '...' : 'UNDEFINED');
+        
         // Simulate loader delay (for frontend loader UX)
         await new Promise(resolve => setTimeout(resolve, 1200));
+        
         const { email, password } = req.body;
+        
+        console.log('Step 1: Validating input fields');
         if (!email || !password) {
+            console.log('Missing email or password');
             return res.status(400).json({ message: 'All fields are required' });
         }
         
+        console.log('Step 2: Checking pending registrations');
         // First check if email is in pending registrations (not verified yet)
         const pendingUser = pendingRegistrations.get(email);
         if (pendingUser) {
+            console.log('User is in pending registrations - not verified yet');
             // User registered but hasn't verified OTP yet
             return res.status(403).json({ 
                 message: 'Please verify your email before logging in. Check your email for the OTP.',
@@ -243,14 +255,21 @@ exports.login = async (req, res) => {
             });
         }
         
+        console.log('Step 3: Finding user in database');
         // Check if user exists in database
         const user = await User.findOne({ email });
+        console.log('User found in database:', !!user);
+        
         if (!user) {
+            console.log('User not found in database');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
         
+        console.log('Step 4: Checking if user is verified');
+        console.log('User isVerified status:', user.isVerified);
         // Check if email is verified
         if (!user.isVerified) {
+            console.log('User email not verified');
             return res.status(403).json({ 
                 message: 'Please verify your email before logging in',
                 needsVerification: true,
@@ -258,11 +277,29 @@ exports.login = async (req, res) => {
             });
         }
         
+        console.log('Step 5: Comparing password');
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Password match result:', isMatch);
+        
         if (!isMatch) {
+            console.log('Password does not match');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        
+        console.log('Step 6: Generating JWT token');
+        console.log('User ID for token:', user._id);
+        console.log('JWT_SECRET length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
+        
+        const token = jwt.sign(
+            { userId: user._id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1d' }
+        );
+        
+        console.log('JWT token generated successfully');
+        console.log('Token (first 20 chars):', token.substring(0, 20) + '...');
+        
+        console.log('Step 7: Sending response');
         res.json({
             token,
             user: {
@@ -274,7 +311,15 @@ exports.login = async (req, res) => {
                 isVerified: user.isVerified
             }
         });
+        
+        console.log('=== LOGIN SUCCESSFUL ===');
     } catch (err) {
+        console.error('=== LOGIN ERROR ===');
+        console.error('Error occurred at:', new Date().toISOString());
+        console.error('Error name:', err.name);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        console.error('Full error object:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -412,5 +457,88 @@ exports.resetPassword = async (req, res) => {
     } catch (err) {
         console.error('Reset password error:', err);
         res.status(500).json({ message: 'Failed to reset password. Please try again.' });
+    }
+};
+
+// ========== NEW PROFILE FUNCTIONS ==========
+
+// Get user profile
+exports.getProfile = async (req, res) => {
+    try {
+        console.log('🔥 GET PROFILE CONTROLLER HIT!');
+        console.log('User from middleware:', req.user);
+        
+        const user = await User.findById(req.user._id).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        res.json({
+            id: user._id,
+            name: `${user.firstName} ${user.lastName}`,
+            username: user.email.split('@')[0],
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            bio: user.bio || '',
+            skills: user.skills || [],
+            profilePicture: user.profilePicture || null,
+            rating: user.rating || 0,
+            isVerified: user.isVerified
+        });
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Update user profile
+exports.updateProfile = async (req, res) => {
+    try {
+        console.log('🔥 UPDATE PROFILE CONTROLLER HIT!');
+        console.log('Request body:', req.body);
+        
+        const { firstName, lastName, bio, skills, phone } = req.body;
+        
+        const user = await User.findById(req.user._id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Update fields if provided
+        if (firstName !== undefined) user.firstName = firstName;
+        if (lastName !== undefined) user.lastName = lastName;
+        if (bio !== undefined) user.bio = bio;
+        if (skills !== undefined) user.skills = skills;
+        if (phone !== undefined) user.phone = phone;
+        
+        await user.save();
+        
+        console.log('Profile updated successfully for:', user.email);
+        
+        // Return updated user
+        const updatedUser = await User.findById(user._id).select('-password');
+        res.json({
+            message: 'Profile updated successfully',
+            user: {
+                id: updatedUser._id,
+                name: `${updatedUser.firstName} ${updatedUser.lastName}`,
+                username: updatedUser.email.split('@')[0],
+                email: updatedUser.email,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                phone: updatedUser.phone,
+                bio: updatedUser.bio || '',
+                skills: updatedUser.skills || [],
+                profilePicture: updatedUser.profilePicture || null,
+                rating: updatedUser.rating || 0
+            }
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

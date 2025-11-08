@@ -28,9 +28,33 @@ const Sidebar = ({
       try {
         const userData = localStorage.getItem("user");
         const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        
+        // Also check for individual user data fields (for profile updates)
+        const userName = localStorage.getItem("userName");
+        const userEmail = localStorage.getItem("userEmail");
+        
         if (userData && isLoggedIn) {
           const user = JSON.parse(userData);
+          
+          // If we have updated name/email in localStorage, use those
+          if (userName) {
+            const nameParts = userName.split(' ');
+            user.firstName = nameParts[0] || user.firstName;
+            user.lastName = nameParts.slice(1).join(' ') || user.lastName;
+          }
+          if (userEmail) {
+            user.email = userEmail;
+          }
+          
           setUserInfo(user);
+        } else if (userName || userEmail) {
+          // Fallback: if no full user object but we have name/email
+          const nameParts = (userName || '').split(' ');
+          setUserInfo({
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            email: userEmail || ''
+          });
         } else {
           setUserInfo(null);
         }
@@ -49,13 +73,20 @@ const Sidebar = ({
     // Custom event for same-tab updates
     window.addEventListener("userLogin", loadUserInfo);
     window.addEventListener("userLogout", loadUserInfo);
+    window.addEventListener("profileUpdate", loadUserInfo); // New event for profile updates
+
+    // Refresh on window focus (when navigating back from edit profile)
+    window.addEventListener("focus", loadUserInfo);
 
     return () => {
       window.removeEventListener("storage", loadUserInfo);
       window.removeEventListener("userLogin", loadUserInfo);
       window.removeEventListener("userLogout", loadUserInfo);
+      window.removeEventListener("profileUpdate", loadUserInfo);
+      window.removeEventListener("focus", loadUserInfo);
     };
   }, []);
+
   const navItems = [
     {
       id: "dashboard",
@@ -164,7 +195,14 @@ const Sidebar = ({
         {/* User Profile - Fixed at bottom */}
         {!sidebarCollapsed && (
           <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
-            <div className="flex items-center gap-3">
+            <div 
+              className="flex items-center gap-3 cursor-pointer hover:bg-white/10 p-2 rounded-lg transition-all"
+              onClick={() => {
+                setActiveNav('profile');
+                navigate('/profile');
+                setMobileMenuOpen(false);
+              }}
+            >
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                 {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
               </div>
@@ -176,6 +214,23 @@ const Sidebar = ({
                   {userInfo?.email || ''}
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Collapsed User Profile - Fixed at bottom */}
+        {sidebarCollapsed && (
+          <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4 flex justify-center">
+            <div 
+              className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:scale-110 transition-transform"
+              onClick={() => {
+                setActiveNav('profile');
+                navigate('/profile');
+                setMobileMenuOpen(false);
+              }}
+              title={`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
+            >
+              {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
             </div>
           </div>
         )}

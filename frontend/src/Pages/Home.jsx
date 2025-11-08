@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
   // Redirect to dashboard if user is logged in
@@ -18,6 +19,20 @@ export default function Home() {
     }
   }, [navigate]);
 
+  // Handle scroll for sticky nav
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Outer Container */}
@@ -25,39 +40,53 @@ export default function Home() {
         {/* Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-50 via-white to-indigo-50 pointer-events-none z-0"></div>
 
-        {/* Navigation Bar */}
-        <nav className="relative z-50 bg-white shadow-sm">
+        {/* Navigation Bar - Sticky */}
+        <nav 
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-white shadow-lg py-3' 
+              : 'bg-white shadow-sm py-5'
+          }`}
+        >
           <div className="max-w-7xl mx-auto px-6 md:px-16">
-            <div className="flex items-center justify-between h-20">
+            <div className="flex items-center justify-between">
               {/* Logo */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-sky-600 rounded-xl flex items-center justify-center">
-                  <FaHandshakeAngle className="w-7 h-6 text-white" />
+                <div className={`transition-all duration-300 ${
+                  isScrolled ? 'w-10 h-10' : 'w-12 h-12'
+                } bg-sky-600 rounded-xl flex items-center justify-center`}>
+                  <FaHandshakeAngle className={`transition-all duration-300 ${
+                    isScrolled ? 'w-6 h-5' : 'w-7 h-6'
+                  } text-white`} />
                 </div>
-                <h1 className="text-[40px] font-bold text-sky-600 font-inter mr-0 flex">
+                <h1 className={`transition-all duration-300 ${
+                  isScrolled ? 'text-[32px]' : 'text-[40px]'
+                } font-bold text-sky-600 font-inter mr-0 flex`}>
                   Hire
-                  <h3 className="text-[29px] mt-6">Helper</h3>
+                  <h3 className={`transition-all duration-300 ${
+                    isScrolled ? 'text-[24px] mt-4' : 'text-[29px] mt-6'
+                  }`}>Helper</h3>
                 </h1>
               </div>
 
               {/* Desktop Menu */}
               <div className="hidden md:flex gap-12 items-center">
-                <a href="#about" className="text-lg font-semibold text-black">
+                <a href="#about" className="text-lg font-semibold text-black hover:text-sky-600 transition-colors">
                   About
                 </a>
                 <a
                   href="#features"
-                  className="text-lg font-semibold text-black"
+                  className="text-lg font-semibold text-black hover:text-sky-600 transition-colors"
                 >
                   Features
                 </a>
                 <a
                   href="#services"
-                  className="text-lg font-semibold text-black"
+                  className="text-lg font-semibold text-black hover:text-sky-600 transition-colors"
                 >
                   Services
                 </a>
-                <a href="#faq" className="text-lg font-semibold text-black">
+                <a href="#faq" className="text-lg font-semibold text-black hover:text-sky-600 transition-colors">
                   FAQ
                 </a>
               </div>
@@ -65,13 +94,13 @@ export default function Home() {
               {/* Buttons */}
               <div className="hidden md:flex gap-3">
                 <button
-                  className="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg"
+                  className="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-colors"
                   onClick={() => navigate("/signin")}
                 >
                   Sign In
                 </button>
                 <button
-                  className="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg"
+                  className="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-colors"
                   onClick={() => navigate("/signup")}
                 >
                   Sign Up
@@ -89,7 +118,7 @@ export default function Home() {
 
             {/* Mobile Dropdown */}
             {isMenuOpen && (
-              <div className="flex flex-col gap-4 pb-4">
+              <div className="flex flex-col gap-4 pb-4 mt-4">
                 <a href="#about" className="text-lg font-semibold text-black">
                   About
                 </a>
@@ -127,36 +156,70 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <section className="relative z-10 py-20" id="about">
-          <div className="max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 gap-12 items-center">
-            {/* Left Text */}
-            <div className="space-y-6">
-              <h1 className="text-4xl font-bold text-sky-700">
-                Hire Smarter, Faster With
-              </h1>
-              <h2 className="text-3xl font-bold text-sky-700">
-                Our Helper Hub Platform
-              </h2>
-              <p className="text-lg text-gray-800">
+        {/* Spacer for fixed nav */}
+        <div className="h-20"></div>
+
+        {/* Hero Section - Centered & Clean */}
+        <section className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)]" id="about">
+          <div className="max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 gap-10 items-center">
+            {/* Left Text - Clean Design */}
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-sky-700 leading-tight">
+                  Hire Smarter, Faster
+                </h1>
+                <h2 className="text-3xl md:text-4xl font-bold text-sky-600 leading-tight">
+                  With Our Helper Hub
+                </h2>
+              </div>
+              
+              <p className="text-lg text-gray-700 leading-relaxed">
                 Connect with trusted professionals instantly. Complete tasks
                 efficiently with our intelligent platform.
               </p>
-              <button
-                className="px-6 py-3 bg-sky-600 text-white font-semibold text-lg rounded-lg"
-                onClick={() => navigate("/signin")}
-              >
-                Get Started Now
-              </button>
+              
+              <div className="flex gap-3">
+                <button
+                  className="px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-all transform hover:scale-105 shadow-lg"
+                  onClick={() => navigate("/signin")}
+                >
+                  Get Started Now
+                </button>
+                <button
+                  className="px-6 py-3 bg-white border-2 border-sky-600 text-sky-600 font-semibold rounded-lg hover:bg-sky-50 transition-all"
+                  onClick={() => navigate("/signup")}
+                >
+                  Sign Up Free
+                </button>
+              </div>
+
+              {/* Trust Indicators - Compact */}
+              <div className="flex items-center gap-6 pt-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-sky-700">10k+</div>
+                  <div className="text-xs text-gray-600">Active Users</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-sky-700">5k+</div>
+                  <div className="text-xs text-gray-600">Verified Helpers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-sky-700">4.9★</div>
+                  <div className="text-xs text-gray-600">Average Rating</div>
+                </div>
+              </div>
             </div>
 
-            {/* Image */}
-            <div className="relative h-96 rounded-xl flex items-center justify-center">
-              <img
-                src={heroPageImage}
-                alt="Work discussion"
-                className="w-full h-full object-cover rounded-xl"
-              />
+            {/* Image - Simple & Clean */}
+            <div className="relative">
+              <div className="absolute -inset-3 bg-gradient-to-r from-sky-400 to-blue-500 rounded-xl opacity-20 blur-xl"></div>
+              <div className="relative h-[320px] md:h-[380px] rounded-xl overflow-hidden shadow-xl">
+                <img
+                  src={heroPageImage}
+                  alt="Work discussion"
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -164,29 +227,29 @@ export default function Home() {
         {/* Why Choose Section */}
         <section className="relative z-10 py-20 bg-white" id="features">
           <div className="max-w-7xl mx-auto px-6 md:px-16">
-            <h2 className="text-3xl font-semibold text-center mb-16 text-black">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-black">
               Why Choose Helper Hub?
             </h2>
 
             <div className="grid md:grid-cols-3 gap-10 place-items-center">
-              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6">
-                <Clock className="text-gray-800 mb-3" />
+              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6 hover:shadow-xl transition-shadow">
+                <Clock className="text-gray-800 mb-3 w-12 h-12" />
                 <h3 className="text-xl font-semibold mb-2">Quick Matching</h3>
                 <p className="text-gray-700 text-center">
                   Find the right helper in minutes
                 </p>
               </div>
 
-              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6">
-                <Star className="text-gray-800 mb-3" />
+              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6 hover:shadow-xl transition-shadow">
+                <Star className="text-gray-800 mb-3 w-12 h-12" />
                 <h3 className="text-xl font-semibold mb-2">Top Rated</h3>
                 <p className="text-gray-700 text-center">
                   Verified professionals with great reviews
                 </p>
               </div>
 
-              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6">
-                <Shield className="text-gray-800 mb-3" />
+              <div className="w-64 h-52 bg-white border border-black/20 shadow-md rounded-md flex flex-col items-center justify-center p-6 hover:shadow-xl transition-shadow">
+                <Shield className="text-gray-800 mb-3 w-12 h-12" />
                 <h3 className="text-xl font-semibold mb-2">Secure & Safe</h3>
                 <p className="text-gray-700 text-center">
                   Protected payments and verified identities
@@ -199,7 +262,7 @@ export default function Home() {
         {/* Services Section */}
         <section id="services" className="relative z-10 py-20 bg-sky-50">
           <div className="max-w-7xl mx-auto px-6 md:px-16">
-            <h2 className="text-3xl font-semibold text-center mb-16 text-black">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-black">
               Our Services
             </h2>
             <div className="grid md:grid-cols-3 gap-10">
@@ -219,7 +282,7 @@ export default function Home() {
               ].map((service, i) => (
                 <div
                   key={i}
-                  className="bg-white p-8 rounded-lg shadow-lg border border-gray-200"
+                  className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
                 >
                   <h3 className="text-2xl font-semibold mb-3 text-sky-700">
                     {service.title}
@@ -234,7 +297,7 @@ export default function Home() {
         {/* FAQ Section */}
         <section id="faq" className="relative z-10 py-20 bg-white">
           <div className="max-w-4xl mx-auto px-6 md:px-0">
-            <h2 className="text-3xl font-semibold text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
               Frequently Asked Questions
             </h2>
             <div className="space-y-6">
@@ -254,7 +317,7 @@ export default function Home() {
               ].map((faq, i) => (
                 <div
                   key={i}
-                  className="border border-gray-200 rounded-lg p-5 bg-gray-50"
+                  className="border border-gray-200 rounded-lg p-5 bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
                   <h3 className="text-lg font-semibold mb-2">{faq.q}</h3>
                   <p className="text-gray-700">{faq.a}</p>

@@ -109,16 +109,35 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
       
-      // Store token, user info, and login state in localStorage
+      // ========== UPDATED: Store token, user info, and login state in localStorage ==========
       if (data.token) {
         console.log('Storing token and user data');
+        
+        // Save token and login status
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
         
         if (data.user) {
+          // Save full user object
           localStorage.setItem('user', JSON.stringify(data.user));
+          
+          // Save individual fields for sidebar
+          const fullName = `${data.user.firstName} ${data.user.lastName}`;
+          localStorage.setItem('userName', fullName);
+          localStorage.setItem('userEmail', data.user.email);
+          
+          // Calculate and save initials
+          const initials = (data.user.firstName[0] + data.user.lastName[0]).toUpperCase();
+          localStorage.setItem('userInitials', initials);
+          
           // Dispatch custom event to notify sidebar of user login
           window.dispatchEvent(new Event('userLogin'));
+          
+          console.log('User data saved:', {
+            name: fullName,
+            email: data.user.email,
+            initials: initials
+          });
         }
       }
       

@@ -46,6 +46,26 @@ const userSchema = new mongoose.Schema({
 	resetPasswordOTPExpiry: {
 		type: Date,
 		default: null
+	},
+	// ========== NEW PROFILE FIELDS ==========
+	bio: {
+		type: String,
+		default: '',
+		trim: true
+	},
+	skills: {
+		type: [String],
+		default: []
+	},
+	profilePicture: {
+		type: String,
+		default: null
+	},
+	rating: {
+		type: Number,
+		default: 0,
+		min: 0,
+		max: 5
 	}
 }, { timestamps: true });
 
@@ -55,7 +75,9 @@ userSchema.pre('save', function(next) {
         id: this._id,
         email: this.email,
         firstName: this.firstName,
-        lastName: this.lastName
+        lastName: this.lastName,
+        bio: this.bio,
+        skills: this.skills
     });
     next();
 });
@@ -66,7 +88,9 @@ userSchema.post('save', function(doc) {
         id: doc._id,
         email: doc.email,
         firstName: doc.firstName,
-        lastName: doc.lastName
+        lastName: doc.lastName,
+        bio: doc.bio,
+        skills: doc.skills
     });
 });
 

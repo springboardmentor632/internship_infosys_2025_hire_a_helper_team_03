@@ -10,6 +10,8 @@ import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
 import Home from './Pages/Home';  
 import MyRequest from './Pages/MyRequest';
+import Profile from './Pages/ProfilePage';
+import EditProfile from './Pages/EditProfilePage';
 import Requests from './Pages/RequestPage';
 import Settings from './Pages/SettingsPage';
 import Notifications from './Pages/NotificationsPage';
@@ -79,6 +81,12 @@ function AppContent() {
         } />
         <Route path="/requests" element={
           <ProtectedRoute><Requests /></ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute><Profile /></ProtectedRoute>
+        } />
+        <Route path="/edit-profile" element={
+          <ProtectedRoute><EditProfile /></ProtectedRoute>
         } />
         <Route path="/notifications" element={
           <ProtectedRoute><Notifications /></ProtectedRoute>

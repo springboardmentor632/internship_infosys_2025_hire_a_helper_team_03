@@ -1,16 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSearch, FaBell, FaUser } from "react-icons/fa";
 import { FaHandshakeAngle } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-const Header = ({ 
-  sidebarCollapsed 
-}) => {
+const Header = ({ sidebarCollapsed }) => {
   const navigate = useNavigate();
-  const [unreadCount] = useState(3); // You can update this from your API/state management
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread notification count
+  const fetchUnreadCount = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:5000/api/notifications/unread-count', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadCount(data.count);
+      }
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+    }
+  };
+
+  // Fetch count on mount and set up polling
+  useEffect(() => {
+    fetchUnreadCount();
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+
+    // Listen for custom events (when notifications are read/deleted)
+    window.addEventListener('notificationUpdate', fetchUnreadCount);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('notificationUpdate', fetchUnreadCount);
+    };
+  }, []);
 
   const handleNotificationClick = () => {
     navigate('/notifications');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
   };
 
   return (
@@ -37,11 +78,14 @@ const Header = ({
             <FaBell size={20} className="text-gray-600" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {unreadCount}
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-all">
+          <button 
+            onClick={handleProfileClick}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+          >
             <FaUser size={20} className="text-gray-600" />
           </button>
         </div>
@@ -81,14 +125,17 @@ const Header = ({
             >
               <FaBell size={20} className="text-gray-600" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white"></span>
               )}
             </button>
 
             {/* Profile Picture */}
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-all">
-            <FaUser size={20} className="text-gray-600" />
-          </button>
+            <button 
+              onClick={handleProfileClick}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <FaUser size={20} className="text-gray-600" />
+            </button>
           </div>
         </div>
       </header>

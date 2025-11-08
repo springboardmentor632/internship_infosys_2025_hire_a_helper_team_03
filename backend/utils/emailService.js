@@ -1,11 +1,23 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter for Gmail
+// Create transporter for Gmail with SSL certificate handling
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false // Fix for self-signed certificate error
+    }
+});
+
+// Verify transporter configuration on startup
+transporter.verify(function (error, success) {
+    if (error) {
+        console.error('Email transporter verification failed:', error);
+    } else {
+        console.log('Email server is ready to send messages');
     }
 });
 
@@ -66,8 +78,9 @@ const sendOTPEmail = async (email, otp, firstName) => {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
         console.log('OTP email sent successfully to:', email);
+        console.log('Message ID:', info.messageId);
         return true;
     } catch (error) {
         console.error('Error sending OTP email:', error);
@@ -130,8 +143,9 @@ const sendPasswordResetOTPEmail = async (email, otp, firstName) => {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
         console.log('Password reset OTP email sent successfully to:', email);
+        console.log('Message ID:', info.messageId);
         return true;
     } catch (error) {
         console.error('Error sending password reset OTP email:', error);
