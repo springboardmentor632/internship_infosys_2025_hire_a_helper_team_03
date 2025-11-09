@@ -12,11 +12,14 @@ exports.createRequest = async (req, res) => {
 		if (!requesterId) return res.status(401).json({ message: 'Unauthorized' });
 		if (!taskId) return res.status(400).json({ message: 'taskId is required' });
 
-		const task = await Task.findById(taskId).populate('user');
+		const task = await Task.findById(taskId);
 		if (!task) return res.status(404).json({ message: 'Task not found' });
 
+		// Get task owner id directly from task.user
+		const taskOwnerId = task.user.toString();
+		
 		// prevent requesting your own task
-		if (String(task.user._id) === String(requesterId)) {
+		if (taskOwnerId === requesterId) {
 			return res.status(400).json({ message: 'Cannot request your own task' });
 		}
 
@@ -25,15 +28,27 @@ exports.createRequest = async (req, res) => {
 
 		const reqDoc = await Request.create({
 			requester: requesterId,
-			owner: task.user._id,
+			owner: taskOwnerId,
 			task: taskId,
 		});
 
 		// create notification for owner
-		const requesterUser = await User.findById(requesterId);
+		const [requesterUser, taskWithDetails] = await Promise.all([
+			User.findById(requesterId),
+			Task.findById(taskId).select('title')
+		]);
+
 		const title = 'Task Request';
-		const message = `${requesterUser.firstName || 'Someone'} ${requesterUser.lastName || ''} requested your task '${task.title}'`;
-		await Notification.create({ user: task.user._id, title, message, data: { taskId, requestId: reqDoc._id } });
+		const message = `${requesterUser?.firstName || 'Someone'} ${requesterUser?.lastName || ''} requested your task '${taskWithDetails?.title || 'Untitled Task'}'`;
+		await Notification.create({ 
+			user: taskOwnerId, 
+			title, 
+			message, 
+			data: { 
+				taskId, 
+				requestId: reqDoc._id 
+			} 
+		});
 
 		return res.status(201).json({ message: 'Request created', request: reqDoc });
 	} catch (err) {

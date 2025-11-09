@@ -33,7 +33,7 @@ export default function Feed() {
     if (!token) return; // User not logged in, skip fetching requests
 
     try {
-      const res = await fetch('http://localhost:5000/api/requests/myrequests', {
+      const res = await fetch('http://localhost:5000/api/requests/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -43,6 +43,9 @@ export default function Feed() {
       if (res.ok) {
         const data = await res.json();
         setUserRequests(data.requests || []);
+        console.log('User requests:', data.requests);
+      } else {
+        console.error('Failed to fetch requests:', await res.text());
       }
     } catch (err) {
       console.error('Error fetching user requests:', err);
@@ -248,17 +251,18 @@ export default function Feed() {
 
           {/* Task List */}
           {!loading && !error && displayTasks.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayTasks.map((task, index) => (
-                <TaskCard 
-                  key={task._id} 
-                  task={task} 
-                  index={index} 
-                  favorites={favorites} 
-                  toggleFavorite={toggleFavorite}
-                  onViewDetails={handleViewDetails}
-                  hasRequested={hasRequestedTask(task._id)}
-                />
+                <div key={task._id} className="h-full">
+                  <TaskCard 
+                    task={task} 
+                    index={index} 
+                    favorites={favorites} 
+                    toggleFavorite={toggleFavorite}
+                    onViewDetails={handleViewDetails}
+                    hasRequested={hasRequestedTask(task._id)}
+                  />
+                </div>
               ))}
             </div>
           )}

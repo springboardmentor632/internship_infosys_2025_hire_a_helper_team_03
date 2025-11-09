@@ -1,6 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes, FaUser, FaEnvelope, FaPhone } from "react-icons/fa";
-import { API_ENDPOINTS, apiCall } from "../config/api";
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes, FaUser, FaEnvelope } from "react-icons/fa";
 
 const TaskViewModal = ({ task, onClose, hasRequested, onRequestSent }) => {
   if (!task) return null;
@@ -272,7 +271,14 @@ const TaskViewModal = ({ task, onClose, hasRequested, onRequestSent }) => {
             >
               Close
             </button>
-            {hasRequested ? (
+            {getUserName() === 'You' ? (
+              <button
+                disabled
+                className="flex-1 px-6 py-3 bg-gray-200 text-gray-600 font-semibold rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                Your Task
+              </button>
+            ) : hasRequested ? (
               <button
                 disabled
                 className="flex-1 px-6 py-3 bg-gray-200 text-gray-600 font-semibold rounded-lg cursor-not-allowed flex items-center justify-center gap-2"

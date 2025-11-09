@@ -1,27 +1,38 @@
-const express = require('express');
-const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware'); // Adjust path as needed
-const { 
-	getNotificationsForUser, 
-	getUnreadCount,
-	markAsRead, 
-	markAllAsRead,
-	deleteNotification 
-} = require('../controller/notificationController');
+const mongoose = require('mongoose');
 
-// Get all notifications for user
-router.get('/', authMiddleware, getNotificationsForUser);
+const notificationSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String,
+        required: true
+    },
+    data: {
+        taskId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Task'
+        },
+        requestId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Request'
+        }
+    },
+    read: {
+        type: Boolean,
+        default: false
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
 
-// Get unread count
-router.get('/unread-count', authMiddleware, getUnreadCount);
-
-// Mark specific notification as read
-router.patch('/:id/read', authMiddleware, markAsRead);
-
-// Mark all as read
-router.patch('/mark-all-read', authMiddleware, markAllAsRead);
-
-// Delete notification
-router.delete('/:id', authMiddleware, deleteNotification);
-
-module.exports = router;
+const Notification = mongoose.model('Notification', notificationSchema);
+module.exports = Notification;

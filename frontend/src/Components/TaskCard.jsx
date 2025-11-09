@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaClock, FaStar, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
 
 const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRequested }) => {
   // Format date for display
@@ -56,9 +56,9 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden h-full flex flex-col">
       {/* Task Image */}
-      <div className="h-40 overflow-hidden relative">
+      <div className="h-48 overflow-hidden relative">
         <img
           src={taskImage}
           alt={task.title}
@@ -72,11 +72,11 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
       </div>
 
       {/* Task Content */}
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         {/* Task Header */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
+            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">
               {task.title}
             </h3>
             <span className="inline-block px-3 py-1 text-white text-sm font-semibold rounded-full bg-[#0c73c2] capitalize">
@@ -106,7 +106,7 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
         )}
 
         {/* Task Details */}
-        <div className="space-y-2 mb-4">
+        <div className="space-y-3 mb-4 flex-1">
           <div className="flex items-center gap-2 text-gray-700">
             <FaMapMarkerAlt size={16} className="text-sky-600 flex-shrink-0" />
             <span className="text-sm truncate">{task.location || 'Location not specified'}</span>
