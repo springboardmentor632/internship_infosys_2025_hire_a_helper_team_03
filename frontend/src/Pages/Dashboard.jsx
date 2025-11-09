@@ -1,27 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHandshakeAngle } from "react-icons/fa6";
 import {
-  FaSearch,
-  FaBell,
-  FaUser,
-  FaHome,
   FaPlusCircle,
-  FaEllipsisH,
-  FaEnvelope,
   FaDollarSign,
   FaUserCircle,
   FaAward,
   FaClock,
 } from "react-icons/fa";
-import {
-  MdDashboard,
-  MdList,
-  MdCheckBox,
-  MdSettings,
-  MdLaptop,
-} from "react-icons/md";
-import { IoIosArrowBack, IoIosArrowForward, IoIosClose } from "react-icons/io";
+import { MdCheckBox } from "react-icons/md";
 
 // Import components
 import Sidebar from "../Components/Sidebar";
@@ -181,13 +167,13 @@ export default function Dashboard() {
         />
 
         {/* Dashboard Content */}
-        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-8">
+        <section className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-8 max-w-[1600px] mx-auto w-full">
           {/* Page Title */}
-          <div className="mb-6">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
               Dashboard
             </h2>
-            <p className="text-xs md:text-sm lg:text-base text-gray-600">
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">
               Here's what's happening with your tasks today.
             </p>
           </div>
@@ -235,16 +221,12 @@ export default function Dashboard() {
                 <h3 className="text-base md:text-lg lg:text-xl font-bold text-gray-900">
                   Recent Activity
                 </h3>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/mytasks");
-                  }}
+                <button
+                  onClick={() => navigate("/mytasks")}
                   className="text-sky-600 hover:text-sky-700 text-xs md:text-sm font-medium"
                 >
                   View All
-                </a>
+                </button>
               </div>
 
               <div className="space-y-4">

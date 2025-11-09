@@ -217,6 +217,8 @@ export default function OTPVerification({ email, firstName = "", onBack }) {
                   gap: "12px",
                   justifyContent: "center",
                   marginBottom: 24,
+                  flexWrap: "wrap",
+                  padding: "0 8px",
                 }}
               >
                 {otp.map((digit, index) => (
@@ -224,21 +226,24 @@ export default function OTPVerification({ email, firstName = "", onBack }) {
                     key={index}
                     ref={(el) => (inputRefs.current[index] = el)}
                     type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
                     style={{
-                      width: "50px",
-                      height: "50px",
+                      width: "48px",
+                      height: "48px",
                       textAlign: "center",
-                      fontSize: "24px",
+                      fontSize: "20px",
                       fontWeight: "600",
                       border: "2px solid #E5E7EB",
                       borderRadius: "8px",
                       outline: "none",
                       transition: "all 0.2s",
+                      backgroundColor: "#FFFFFF",
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = "#667eea";

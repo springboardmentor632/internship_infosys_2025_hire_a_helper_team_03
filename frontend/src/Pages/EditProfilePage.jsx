@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
@@ -87,6 +87,9 @@ export default function EditProfilePage() {
       // Wait for the upload to complete
       const result = await uploadPromise;
       
+      console.log('Upload result:', result);
+      console.log('Image URL:', result.imageUrl);
+      
       // Update the form data with the new image URL
       setFormData(prev => ({
         ...prev,
@@ -98,10 +101,13 @@ export default function EditProfilePage() {
       
       // Update localStorage with new profile image
       const user = JSON.parse(localStorage.getItem('user') || '{}');
+      console.log('Current user in localStorage:', user);
       user.profilePicture = result.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
+      console.log('Updated user in localStorage:', user);
       
       // Trigger profile update event
+      console.log('Dispatching profileUpdate event');
       window.dispatchEvent(new Event('profileUpdate'));
     } catch (err) {
       console.error('Error uploading image:', err);
@@ -119,7 +125,7 @@ export default function EditProfilePage() {
   const [newSkill, setNewSkill] = useState("");
 
   // Fetch user profile data
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/signin');
@@ -143,8 +149,16 @@ export default function EditProfilePage() {
           phone: userData.phone || "",
           email: userData.email || "",
           bio: userData.bio || "",
-          skills: userData.skills || []
+          skills: userData.skills || [],
+          profileImage: userData.profilePicture || ""
         });
+        
+        // Also update localStorage with the latest profile picture
+        const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (userData.profilePicture) {
+          existingUser.profilePicture = userData.profilePicture;
+          localStorage.setItem('user', JSON.stringify(existingUser));
+        }
       } else {
         throw new Error('Failed to fetch profile');
       }
@@ -154,11 +168,11 @@ export default function EditProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchUserProfile();
-  }, []);
+  }, [fetchUserProfile]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -214,7 +228,7 @@ export default function EditProfilePage() {
       });
 
       if (response.ok) {
-        const result = await response.json();
+        await response.json();
         setSuccess('Profile updated successfully!');
         
         // Update localStorage for sidebar
@@ -235,7 +249,11 @@ export default function EditProfilePage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          phone: formData.phone
+          phone: formData.phone,
+          bio: formData.bio,
+          skills: formData.skills,
+          // Preserve the profile picture if it exists
+          profilePicture: existingUser.profilePicture || formData.profileImage
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         
@@ -310,7 +328,7 @@ export default function EditProfilePage() {
           sidebarCollapsed={sidebarCollapsed} 
         />
         
-        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-32 lg:pb-8">
+        <section className="flex-1 p-3 md:p-6 lg:p-8 overflow-y-auto pb-28 lg:pb-8 max-w-7xl mx-auto w-full">
           <div className="max-w-3xl mx-auto">
             <div className="mb-6">
               <button

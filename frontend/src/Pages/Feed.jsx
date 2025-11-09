@@ -157,7 +157,7 @@ export default function Feed() {
         />
 
         {/* Feed Content */}
-        <section className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 lg:pb-8">
+        <section className="flex-1 p-3 md:p-6 lg:p-8 overflow-y-auto pb-28 lg:pb-8 max-w-7xl mx-auto w-full">
           {/* Page Title */}
           <div className="mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
@@ -169,11 +169,11 @@ export default function Feed() {
           </div>
 
           {/* Filter Bar */}
-          <div className="flex flex-wrap gap-3 mb-6">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 text-sm font-medium text-gray-700 cursor-pointer"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700 cursor-pointer min-w-[120px] sm:min-w-[140px]"
             >
               <option value="recent">Most Recent</option>
               <option value="price-low">Price: Low to High</option>
@@ -183,7 +183,7 @@ export default function Feed() {
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 text-sm font-medium text-gray-700 cursor-pointer"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 text-xs sm:text-sm font-medium text-gray-700 cursor-pointer min-w-[120px] sm:min-w-[140px]"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -251,7 +251,7 @@ export default function Feed() {
 
           {/* Task List */}
           {!loading && !error && displayTasks.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
               {displayTasks.map((task, index) => (
                 <div key={task._id} className="h-full">
                   <TaskCard 

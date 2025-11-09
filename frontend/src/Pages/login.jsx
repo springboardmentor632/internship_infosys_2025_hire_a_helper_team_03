@@ -13,7 +13,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showOTPScreen, setShowOTPScreen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const [userFirstName, setUserFirstName] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -33,11 +32,6 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      console.log('Attempting login with:', { 
-        email: formData.email, 
-        password: formData.password 
-      });
-
       const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: { 
@@ -50,9 +44,7 @@ export default function LoginPage() {
         }),
       });
 
-      console.log('Response status:', res.status);
       const data = await res.json();
-      console.log('Response data:', data);
       
       if (!res.ok) {
         // Check if email verification is needed
@@ -111,8 +103,6 @@ export default function LoginPage() {
       
       // ========== UPDATED: Store token, user info, and login state in localStorage ==========
       if (data.token) {
-        console.log('Storing token and user data');
-        
         // Save token and login status
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
@@ -132,16 +122,9 @@ export default function LoginPage() {
           
           // Dispatch custom event to notify sidebar of user login
           window.dispatchEvent(new Event('userLogin'));
-          
-          console.log('User data saved:', {
-            name: fullName,
-            email: data.user.email,
-            initials: initials
-          });
         }
       }
       
-      console.log('Navigating to dashboard');
       navigate("/dashboard");
     } catch (err) {
       console.error('Login error:', err);
@@ -156,7 +139,7 @@ export default function LoginPage() {
     return (
       <OTPVerification
         email={userEmail}
-        firstName={userFirstName}
+        firstName=""
         onBack={() => setShowOTPScreen(false)}
       />
     );

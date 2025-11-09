@@ -27,57 +27,9 @@ const TaskCardMobile = ({ task, index, onViewClick }) => {
   return (
     <div
       key={task._id || index}
-      className="bg-white rounded-xl shadow-sm hover:shadow-md p-4 transition-all duration-300 border border-gray-200"
+      className="bg-white rounded-xl shadow-sm hover:shadow-md p-3 transition-all duration-300 border border-gray-200"
     >
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="text-lg font-bold text-gray-900">{task.title}</h3>
-        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-          {task.budget ? `$${task.budget}` : 'Negotiable'}
-        </span>
-      </div>
-      
-      <div className="mb-3">
-        <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-          {task.category}
-        </span>
-      </div>
-
-      <p className="text-gray-700 mb-4 line-clamp-2">
-        {task.description}
-      </p>
-
-      <div className="flex justify-between items-center mb-4">
-        <span className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${
-          task.status === 'completed' ? 'bg-green-500' : 
-          task.status === 'in-progress' ? 'bg-yellow-500' : 
-          'bg-gradient-to-r from-blue-500 to-blue-600'
-        }`}>
-          {task.status || 'Active'}
-        </span>
-        <span className="text-gray-600 text-sm">
-          {task.location}
-        </span>
-      </div>
-
-      {task.user && (
-        <div className="flex items-center gap-2 text-gray-700 mb-3">
-          {task.user.profilePicture ? (
-            <img 
-              src={task.user.profilePicture} 
-              alt="Profile" 
-              className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-              {task.user.firstName && task.user.lastName ? 
-                `${task.user.firstName[0]}${task.user.lastName[0]}` : 
-                'U'}
-            </div>
-          )}
-          <span className="text-sm truncate">Posted by {getUserName()}</span>
-        </div>
-      )}
-
+      {/* Task Image */}
       {task.imageUrl && (
         <img 
           src={task.imageUrl} 
@@ -85,16 +37,62 @@ const TaskCardMobile = ({ task, index, onViewClick }) => {
           className="w-full h-32 object-cover rounded-lg mb-3" 
         />
       )}
+      
+      {/* Header & Budget */}
+      <div className="flex justify-between items-start gap-2 mb-2">
+        <h3 className="text-base font-bold text-gray-900 line-clamp-2 flex-1">
+          {task.title}
+        </h3>
+        <div className="text-green-700 font-semibold bg-green-100 px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
+          ${task.budget || 'TBD'}
+        </div>
+      </div>
 
+      {/* Category & Status */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
+          {task.category}
+        </span>
+        <span className={`text-xs px-2 py-0.5 rounded-full text-white ${
+          task.status === 'completed' ? 'bg-green-500' : 
+          task.status === 'in-progress' ? 'bg-yellow-500' : 
+          'bg-sky-500'
+        }`}>
+          {task.status || 'Active'}
+        </span>
+      </div>
+
+      {/* Description */}
+      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+        {task.description}
+      </p>
+
+      {/* Location & User */}
+      <div className="flex items-center justify-between mb-3 text-xs text-gray-600">
+        <span>{task.location}</span>
+        <div className="flex items-center gap-1">
+          {task.user?.profilePicture ? (
+            <img 
+              src={task.user.profilePicture} 
+              alt="Profile" 
+              className="w-5 h-5 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center text-white text-xs">
+              {getUserName()[0]}
+            </div>
+          )}
+          <span>by {getUserName()}</span>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
       <div className="flex gap-2">
         <button
           onClick={() => onViewClick(task)}
-          className="flex-1 text-white text-sm font-semibold py-2 rounded-lg bg-gradient-to-r from-sky-600 to-blue-600 hover:shadow-lg transition-all"
+          className="flex-1 text-white text-xs font-semibold py-2 rounded-lg bg-sky-500 hover:bg-sky-600 transition-all"
         >
-          View
-        </button>
-        <button className="flex-1 bg-white text-gray-700 text-sm font-semibold py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all">
-          Edit
+          View Details
         </button>
       </div>
     </div>

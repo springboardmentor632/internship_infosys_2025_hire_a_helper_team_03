@@ -9,46 +9,49 @@ const BottomNav = ({ navigate, activeTab = "dashboard" }) => {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40">
-        <div className="relative pt-2 pb-3 px-2">
-          <div className="flex items-end justify-around">
+      <nav className="lg:hidden h-15 fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-40">
+        <div className="px-3 py-2">
+          <div className="flex items-center justify-around">
             {/* Dashboard */}
             <button 
               onClick={() => navigate('/dashboard')}
-              className="flex flex-col items-center gap-1 p-2 transition-all active:scale-95 min-w-[60px]"
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
             >
-              <MdDashboard size={28} className={activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"} />
-              <span className={`text-[10px] font-bold ${activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"}`}>
-                DashBoard
+              <MdDashboard size={24} className={activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"}`}>
+                Dashboard
               </span>
             </button>
 
             {/* My Tasks */}
             <button 
               onClick={() => navigate('/mytasks')}
-              className="flex flex-col items-center gap-1 p-2 transition-all active:scale-95 min-w-[60px]"
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
             >
-              <MdCheckBox size={28} className={activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"} />
-              <span className={`text-[10px] font-bold ${activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"}`}>
-                My Tasks
+              <MdCheckBox size={24} className={activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"}`}>
+                Tasks
               </span>
             </button>
 
-            {/* Floating Add Button - Centered with space */}
+            {/* Post Task Button - Small and Simple */}
             <button 
               onClick={() => navigate('/posttask')}
-              className="-mt-10 w-[70px] h-[70px] rounded-full flex items-center justify-center bg-sky-600 shadow-xl transition-all duration-200 active:scale-95 hover:bg-sky-700 ring-4 ring-white"
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
             >
-              <FaPlusCircle size={36} className="text-white" />
+              <FaPlusCircle size={22} className={`text-sky-600`} />
+              <span className="text-xs mt-1 font-medium text-gray-600">
+                Post Task
+              </span>
             </button>
 
             {/* Requests */}
             <button 
               onClick={() => navigate('/requests')}
-              className="flex flex-col items-center gap-1 p-2 transition-all active:scale-95 min-w-[60px]"
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
             >
-              <FaEnvelope size={26} className={activeTab === "requests" ? "text-sky-600" : "text-gray-600"} />
-              <span className={`text-[10px] font-bold ${activeTab === "requests" ? "text-sky-600" : "text-gray-600"}`}>
+              <FaEnvelope size={22} className={activeTab === "requests" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "requests" ? "text-sky-600" : "text-gray-600"}`}>
                 Requests
               </span>
             </button>
@@ -56,10 +59,12 @@ const BottomNav = ({ navigate, activeTab = "dashboard" }) => {
             {/* More */}
             <button 
               onClick={() => setShowMoreMenu(true)}
-              className="flex flex-col items-center gap-1 p-2 transition-all active:scale-95 min-w-[60px]"
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
             >
-              <HiDotsHorizontal size={28} className="text-gray-600 rotate-0" />
-              <span className="text-[10px] font-bold text-gray-600">More</span>
+              <HiDotsHorizontal size={24} className="text-gray-600 rotate-0" />
+              <span className="text-xs mt-1 font-medium text-gray-600">
+                More
+              </span>
             </button>
           </div>
         </div>

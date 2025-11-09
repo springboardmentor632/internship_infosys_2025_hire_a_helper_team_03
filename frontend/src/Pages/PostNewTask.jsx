@@ -16,6 +16,14 @@ export default function PostTask() {
   // Check if user is logged in
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
+  useEffect(() => {
+    // Set overflow-y-auto on body when component mounts
+    document.body.style.overflowY = 'auto';
+    return () => {
+      document.body.style.overflowY = '';
+    };
+  }, []);
+
   // Check if we're editing a task
   useEffect(() => {
     if (location.state && location.state.task) {

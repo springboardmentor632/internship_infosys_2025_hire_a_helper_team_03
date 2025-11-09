@@ -309,7 +309,8 @@ exports.login = async (req, res) => {
                 lastName: user.lastName,
                 phone: user.phone,
                 email: user.email,
-                isVerified: user.isVerified
+                isVerified: user.isVerified,
+                profilePicture: user.profilePicture || null
             }
         });
         

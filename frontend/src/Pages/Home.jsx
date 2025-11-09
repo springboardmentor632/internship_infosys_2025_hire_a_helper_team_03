@@ -160,15 +160,15 @@ export default function Home() {
         <div className="h-20"></div>
 
         {/* Hero Section - Centered & Clean */}
-        <section className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)]" id="about">
-          <div className="max-w-7xl mx-auto px-6 md:px-16 grid md:grid-cols-2 gap-10 items-center">
+        <section className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] py-10 md:py-0" id="about">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-16 grid md:grid-cols-2 gap-8 md:gap-10 items-center">
             {/* Left Text - Clean Design */}
-            <div className="space-y-5">
+            <div className="space-y-5 text-center md:text-left">
               <div className="space-y-2">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-sky-700 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-sky-700 leading-tight">
                   Hire Smarter, Faster
                 </h1>
-                <h2 className="text-3xl md:text-4xl font-bold text-sky-600 leading-tight">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-sky-600 leading-tight">
                   With Our Helper Hub
                 </h2>
               </div>
@@ -194,18 +194,18 @@ export default function Home() {
               </div>
 
               {/* Trust Indicators - Compact */}
-              <div className="flex items-center gap-6 pt-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-sky-700">10k+</div>
-                  <div className="text-xs text-gray-600">Active Users</div>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 pt-4">
+                <div className="text-center px-3">
+                  <div className="text-xl sm:text-2xl font-bold text-sky-700">10k+</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Active Users</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-sky-700">5k+</div>
-                  <div className="text-xs text-gray-600">Verified Helpers</div>
+                <div className="text-center px-3">
+                  <div className="text-xl sm:text-2xl font-bold text-sky-700">5k+</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Verified Helpers</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-sky-700">4.9★</div>
-                  <div className="text-xs text-gray-600">Average Rating</div>
+                <div className="text-center px-3">
+                  <div className="text-xl sm:text-2xl font-bold text-sky-700">4.9★</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Average Rating</div>
                 </div>
               </div>
             </div>
@@ -260,12 +260,12 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="relative z-10 py-20 bg-sky-50">
-          <div className="max-w-7xl mx-auto px-6 md:px-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-black">
+        <section id="services" className="relative z-10 py-12 sm:py-16 md:py-20 bg-sky-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 md:mb-16 text-black">
               Our Services
             </h2>
-            <div className="grid md:grid-cols-3 gap-10">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
               {[
                 {
                   title: "Home Services",
@@ -282,12 +282,12 @@ export default function Home() {
               ].map((service, i) => (
                 <div
                   key={i}
-                  className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
+                  className="bg-white p-6 sm:p-8 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
                 >
-                  <h3 className="text-2xl font-semibold mb-3 text-sky-700">
+                  <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 text-sky-700">
                     {service.title}
                   </h3>
-                  <p className="text-gray-700">{service.desc}</p>
+                  <p className="text-sm sm:text-base text-gray-700">{service.desc}</p>
                 </div>
               ))}
             </div>
@@ -328,32 +328,35 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="relative z-10 bg-gradient-to-r from-sky-600 to-sky-800 text-white py-10">
-          <div className="max-w-7xl mx-auto px-6 md:px-16 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-center md:text-left text-white/90">
-              © 2025 HelperHub. All rights reserved.
-            </p>
+        <footer className="relative z-10 bg-gradient-to-r from-sky-600 to-sky-800 text-white py-8 sm:py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-16">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <p className="text-center md:text-left text-white/90 text-sm sm:text-base order-2 md:order-1">
+                © 2025 HelperHub. All rights reserved.
+              </p>
 
-            <div className="flex gap-5">
-              <a href="#" className="hover:underline">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:underline">
-                Terms
-              </a>
-              <a href="#" className="hover:underline">
-                Contact
-              </a>
-            </div>
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-sky-600 rounded-xl flex items-center justify-center">
-                <FaHandshakeAngle className="w-7 h-6 text-white" />
+              <div className="flex gap-4 sm:gap-5 order-3 md:order-2">
+                <button className="hover:underline text-sm sm:text-base bg-transparent border-0 cursor-pointer text-white">
+                  Privacy Policy
+                </button>
+                <button className="hover:underline text-sm sm:text-base bg-transparent border-0 cursor-pointer text-white">
+                  Terms
+                </button>
+                <button className="hover:underline text-sm sm:text-base bg-transparent border-0 cursor-pointer text-white">
+                  Contact
+                </button>
               </div>
-              <h1 className="text-[40px] font-bold text-white font-inter mr-0 flex">
-                Hire
-                <h3 className="text-[29px] mt-6">Helper</h3>
-              </h1>
+              
+              {/* Logo */}
+              <div className="flex items-center gap-2 sm:gap-3 order-1 md:order-3 mb-4 md:mb-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-600 rounded-xl flex items-center justify-center">
+                  <FaHandshakeAngle className="w-6 h-5 sm:w-7 sm:h-6 text-white" />
+                </div>
+                <h1 className="text-[32px] sm:text-[40px] font-bold text-white font-inter mr-0 flex">
+                  Hire
+                  <h3 className="text-[24px] sm:text-[29px] mt-5 sm:mt-6">Helper</h3>
+                </h1>
+              </div>
             </div>
           </div>
         </footer>

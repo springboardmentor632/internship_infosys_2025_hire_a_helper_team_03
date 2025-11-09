@@ -27,10 +27,17 @@ const MobileMenu = ({ isOpen, onClose, navigate }) => {
       color: "text-gray-700"
     },
     {
-      id: "history",
+      id: "requests",
       icon: FaHistory,
-      label: "History",
-      path: "/history",
+      label: "My Requests",
+      path: "/requests",
+      color: "text-gray-700"
+    },
+    {
+      id: "mytasks",
+      icon: FaHistory,
+      label: "My Tasks",
+      path: "/mytasks",
       color: "text-gray-700"
     },
     {
@@ -51,7 +58,7 @@ const MobileMenu = ({ isOpen, onClose, navigate }) => {
       id: "logout",
       icon: MdExitToApp,
       label: "Logout",
-      path: "/signin",
+      path: "/",
       color: "text-red-600"
     }
   ];
@@ -59,11 +66,12 @@ const MobileMenu = ({ isOpen, onClose, navigate }) => {
   const handleItemClick = (item) => {
     if (item.id === "logout") {
       localStorage.clear();
-      navigate(item.path);
+      onClose();
+      navigate('/'); // Navigate to home page
     } else {
       navigate(item.path);
+      onClose();
     }
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -77,16 +85,16 @@ const MobileMenu = ({ isOpen, onClose, navigate }) => {
       />
 
       {/* Drawer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden transform transition-transform duration-300 ease-out max-h-[70vh] overflow-y-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm rounded-t-3xl z-50 lg:hidden transform transition-transform duration-300 ease-out max-h-[80vh] overflow-y-auto shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-3xl">
+        <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 rounded-t-3xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-900">More Options</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">More Options</h3>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-all"
+              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-all"
             >
-              <IoIosClose size={28} className="text-gray-600" />
+              <IoIosClose size={24} className="text-gray-600" />
             </button>
           </div>
         </div>

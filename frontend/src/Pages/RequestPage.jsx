@@ -10,7 +10,7 @@ import { API_ENDPOINTS, apiCall } from "../config/api";
 export default function RequestsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeNav, setActiveNav] = useState("requests");

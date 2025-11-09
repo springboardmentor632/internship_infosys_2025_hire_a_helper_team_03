@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
 import Sidebar from "../Components/Sidebar";
 import BottomNav from "../Components/BottomNav";
-import TaskCardMobile from "../Components/TaskCardMobile";
+
 import TaskTable from "../Components/TaskTable";
 import TaskDetailsCard from "../Components/TaskDetailCard";
 import DraftCard from "../Components/DraftCard";
@@ -13,7 +13,7 @@ const MyTask = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeNav, setActiveNav] = useState("mytasks");
   const [searchQuery, setSearchQuery] = useState("");
@@ -389,14 +389,19 @@ const MyTask = () => {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8">
+        <main className="flex-1 p-3 md:p-6 lg:p-8 pb-28 lg:pb-8">
           <div className="max-w-7xl mx-auto">
             {/* Page Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                My Tasks
-              </h1>
-              <p className="text-gray-600">
+            <div className="mb-6 md:mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
+                  My Tasks
+                </h1>
+                <span className="px-3 py-1 bg-sky-100 text-sky-700 text-sm font-semibold rounded-full">
+                  {tasks.length}
+                </span>
+              </div>
+              <p className="text-gray-600 text-sm md:text-base">
                 Manage and track all your posted tasks
               </p>
             </div>
@@ -433,20 +438,20 @@ const MyTask = () => {
             ) : (
               <>
             {/* Search and Filter Bar */}
-            <div className="mb-6 flex flex-col md:flex-row gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-3 mb-6">
               {/* Search Bar */}
-              <div className="flex-1 max-w-md relative">
+              <div className="relative flex-1 max-w-md">
                 <input
                   type="text"
-                  placeholder="Search your tasks..."
+                  placeholder="Search tasks..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-gray-700 bg-white shadow-sm"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-gray-700 bg-white shadow-sm text-sm"
                 />
                 <svg
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -458,11 +463,11 @@ const MyTask = () => {
               </div>
 
               {/* Filter Dropdown */}
-              <div className="relative">
+              <div className="relative sm:max-w-[180px]">
                 <select
                   value={filterView}
                   onChange={(e) => setFilterView(e.target.value)}
-                  className="appearance-none px-6 py-3 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-gray-700 bg-white shadow-sm font-medium cursor-pointer hover:border-gray-400 transition-colors"
+                  className="w-full appearance-none px-4 py-2 pr-8 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 text-gray-700 bg-white shadow-sm font-medium text-sm cursor-pointer hover:border-gray-400 transition-colors"
                 >
                   <option value="all">All Tasks</option>
                   <option value="drafts">Drafts</option>
@@ -473,14 +478,25 @@ const MyTask = () => {
                 </select>
                 <svg
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
+
+              {/* Create Task Button */}
+              <button
+                onClick={() => navigate('/posttask')}
+                className="inline-flex items-center justify-center px-4 py-2 bg-sky-500 text-white text-sm font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-sm hover:shadow-md gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New Task
+              </button>
             </div>
 
             {/* Error Message */}
@@ -501,55 +517,47 @@ const MyTask = () => {
               </div>
             )}
 
-            {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <button
-                  onClick={() => navigate('/posttask')}
-                  className="px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Create New Task
-                </button>
-              </div>
-
-              {/* Tasks Count and Filter Info */}
-              <div className="flex items-center flex-wrap gap-3 text-sm">
-                {searchQuery && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full font-medium">
-                    {filteredTasks.length} result{filteredTasks.length !== 1 ? 's' : ''} for "{searchQuery}"
-                  </span>
-                )}
-                {filterView === 'all' ? (
-                  <>
-                    <span className="text-gray-600 font-medium">
-                      {tasks.length} total task{tasks.length !== 1 ? 's' : ''}
+            {/* Tasks Count and Filter Info */}
+            <div className="flex flex-wrap items-center gap-2 text-xs mb-6">
+              {searchQuery && (
+                <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full font-medium">
+                  {filteredTasks.length} result{filteredTasks.length !== 1 ? 's' : ''} for "{searchQuery}"
+                </span>
+              )}
+              {filterView === 'all' ? (
+                <>
+                  {drafts.length > 0 && (
+                    <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
+                      {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
                     </span>
-                    {drafts.length > 0 && (
-                      <span className="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full font-medium">
-                        {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {activeTasks.length > 0 && (
-                      <span className="bg-sky-100 text-sky-700 px-3 py-1.5 rounded-full font-medium">
-                        {activeTasks.length} active
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className={`px-3 py-1.5 rounded-full font-medium ${
-                    filterView === 'drafts' ? 'bg-amber-100 text-amber-700' :
-                    filterView === 'active' ? 'bg-sky-100 text-sky-700' :
-                    filterView === 'completed' ? 'bg-green-100 text-green-700' :
-                    filterView === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                    'bg-gray-100 text-gray-700'
-                  }`}>
-                    {filteredTasks.length} {filterView === 'in-progress' ? 'in progress' : filterView}
-                  </span>
-                )}
-              </div>
+                  )}
+                  {activeTasks.length > 0 && (
+                    <span className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full font-medium">
+                      {activeTasks.length} active
+                    </span>
+                  )}
+                  {inProgressTasks.length > 0 && (
+                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                      {inProgressTasks.length} in progress
+                    </span>
+                  )}
+                  {completedTasks.length > 0 && (
+                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                      {completedTasks.length} completed
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className={`px-2 py-1 rounded-full font-medium ${
+                  filterView === 'drafts' ? 'bg-amber-100 text-amber-700' :
+                  filterView === 'active' ? 'bg-sky-100 text-sky-700' :
+                  filterView === 'completed' ? 'bg-green-100 text-green-700' :
+                  filterView === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {filteredTasks.length} {filterView === 'in-progress' ? 'in progress' : filterView}
+                </span>
+              )}
             </div>
 
             {/* Drafts Section - Only show when viewing "All" */}

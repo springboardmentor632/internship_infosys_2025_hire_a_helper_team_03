@@ -22,6 +22,47 @@ const Sidebar = ({
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
 
+  // Fetch profile from backend to get the latest profile picture
+  const fetchProfileFromBackend = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Sidebar - Fetched profile from backend:', userData);
+        
+        // Update localStorage with the latest profile picture
+        const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
+        existingUser.profilePicture = userData.profilePicture;
+        existingUser.firstName = userData.firstName;
+        existingUser.lastName = userData.lastName;
+        existingUser.email = userData.email;
+        localStorage.setItem('user', JSON.stringify(existingUser));
+        
+        // Update state with fresh data
+        setUserInfo({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          profilePicture: userData.profilePicture || null
+        });
+        
+        console.log('Sidebar - Updated with profilePicture:', userData.profilePicture);
+      }
+    } catch (error) {
+      console.error('Sidebar - Error fetching profile:', error);
+    }
+  };
+
   // Load user info from localStorage when component mounts
   useEffect(() => {
     const loadUserInfo = () => {
@@ -70,25 +111,43 @@ const Sidebar = ({
 
     // Load initially
     loadUserInfo();
+    
+    // Fetch profile from backend to ensure we have the latest profile picture
+    fetchProfileFromBackend();
 
     // Listen for storage changes (in case user logs in from another tab)
     window.addEventListener("storage", loadUserInfo);
 
     // Custom event for same-tab updates
-    window.addEventListener("userLogin", loadUserInfo);
-    window.addEventListener("userLogout", loadUserInfo);
-    window.addEventListener("profileUpdate", loadUserInfo); // New event for profile updates
+    const handleUserLogin = () => {
+      loadUserInfo();
+      fetchProfileFromBackend();
+    };
+    
+    const handleUserLogout = () => {
+      loadUserInfo();
+    };
+    
+    const handleProfileUpdate = () => {
+      loadUserInfo();
+      fetchProfileFromBackend();
+    };
+
+    window.addEventListener("userLogin", handleUserLogin);
+    window.addEventListener("userLogout", handleUserLogout);
+    window.addEventListener("profileUpdate", handleProfileUpdate);
 
     // Refresh on window focus (when navigating back from edit profile)
     window.addEventListener("focus", loadUserInfo);
 
     return () => {
       window.removeEventListener("storage", loadUserInfo);
-      window.removeEventListener("userLogin", loadUserInfo);
-      window.removeEventListener("userLogout", loadUserInfo);
-      window.removeEventListener("profileUpdate", loadUserInfo);
+      window.removeEventListener("userLogin", handleUserLogin);
+      window.removeEventListener("userLogout", handleUserLogout);
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
       window.removeEventListener("focus", loadUserInfo);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const navItems = [
