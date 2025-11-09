@@ -30,6 +30,9 @@ const Header = ({ sidebarCollapsed }) => {
     }
   };
 
+  // Force re-render when profile is updated
+  const [profileUpdateKey, setProfileUpdateKey] = useState(0);
+
   // Fetch count on mount and set up polling
   useEffect(() => {
     fetchUnreadCount();
@@ -37,12 +40,14 @@ const Header = ({ sidebarCollapsed }) => {
     // Refresh count every 30 seconds
     const interval = setInterval(fetchUnreadCount, 30000);
 
-    // Listen for custom events (when notifications are read/deleted)
+    // Listen for custom events
     window.addEventListener('notificationUpdate', fetchUnreadCount);
+    window.addEventListener('profileUpdate', () => setProfileUpdateKey(key => key + 1));
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('notificationUpdate', fetchUnreadCount);
+      window.removeEventListener('profileUpdate', () => setProfileUpdateKey(key => key + 1));
     };
   }, []);
 
@@ -84,9 +89,19 @@ const Header = ({ sidebarCollapsed }) => {
           </button>
           <button 
             onClick={handleProfileClick}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+            className="relative w-10 h-10 hover:ring-2 hover:ring-sky-500/30 rounded-full transition-all overflow-hidden"
           >
-            <FaUser size={20} className="text-gray-600" />
+            {localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).profilePicture ? (
+              <img 
+                src={JSON.parse(localStorage.getItem('user')).profilePicture} 
+                alt="Profile" 
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                {localStorage.getItem('userInitials') || 'U'}
+              </div>
+            )}
           </button>
         </div>
       </header>
@@ -132,9 +147,19 @@ const Header = ({ sidebarCollapsed }) => {
             {/* Profile Picture */}
             <button 
               onClick={handleProfileClick}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-all"
+              className="relative w-10 h-10 hover:ring-2 hover:ring-sky-500/30 rounded-full transition-all overflow-hidden"
             >
-              <FaUser size={20} className="text-gray-600" />
+              {localStorage.getItem('user') && JSON.parse(localStorage.getItem('user')).profilePicture ? (
+                <img 
+                  src={JSON.parse(localStorage.getItem('user')).profilePicture} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                  {localStorage.getItem('userInitials') || 'U'}
+                </div>
+              )}
             </button>
           </div>
         </div>

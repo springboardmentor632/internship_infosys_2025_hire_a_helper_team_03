@@ -21,8 +21,100 @@ export default function EditProfilePage() {
     phone: "",
     email: "",
     bio: "",
-    skills: []
+    skills: [],
+    profileImage: ""
   });
+
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Reset states
+    setError("");
+    setSuccess("");
+    setUploadProgress(0);
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:5000/api/auth/upload-profile-image', true);
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
+      
+      // Track upload progress
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentCompleted = Math.round((event.loaded * 100) / event.total);
+          setUploadProgress(percentCompleted);
+        }
+      };
+
+      // Handle the upload response
+      const uploadPromise = new Promise((resolve, reject) => {
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const response = JSON.parse(xhr.responseText);
+            resolve(response);
+          } else {
+            try {
+              const errorResponse = JSON.parse(xhr.responseText);
+              reject(new Error(errorResponse.message || 'Upload failed'));
+            } catch {
+              reject(new Error('Upload failed'));
+            }
+          }
+        };
+        xhr.onerror = () => reject(new Error('Network Error'));
+      });
+
+      xhr.send(formData);
+      
+      // Wait for the upload to complete
+      const result = await uploadPromise;
+      
+      // Update the form data with the new image URL
+      setFormData(prev => ({
+        ...prev,
+        profileImage: result.imageUrl
+      }));
+
+      // Set success message
+      setSuccess('Profile image uploaded successfully');
+      
+      // Update localStorage with new profile image
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      user.profilePicture = result.imageUrl;
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      // Trigger profile update event
+      window.dispatchEvent(new Event('profileUpdate'));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      setError(err.message || 'Failed to upload image');
+      // Reset the file input
+      e.target.value = '';
+    } finally {
+      // Reset upload progress after a short delay to show completion
+      setTimeout(() => {
+        setUploadProgress(0);
+      }, 1000);
+    }
+  };
 
   const [newSkill, setNewSkill] = useState("");
 
@@ -248,6 +340,52 @@ export default function EditProfilePage() {
               )}
 
               <form onSubmit={handleSubmit}>
+                {/* Profile Image Upload */}
+                <div className="mb-8 text-center">
+                  <div className="relative inline-block group">
+                    {formData.profileImage ? (
+                      <img 
+                        src={formData.profileImage} 
+                        alt="Profile" 
+                        className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center border-4 border-white shadow-lg">
+                        <span className="text-white text-4xl font-bold">
+                          {formData.firstName && formData.lastName 
+                            ? `${formData.firstName[0]}${formData.lastName[0]}`
+                            : 'U'}
+                        </span>
+                      </div>
+                    )}
+                    <label className="absolute inset-0 rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
+                      <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <div className="text-white text-sm font-medium flex flex-col items-center">
+                        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Change Photo
+                      </div>
+                    </label>
+                  </div>
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-4">
+                      <div className="w-48 h-2 bg-gray-200 rounded-full mx-auto overflow-hidden">
+                        <div 
+                          className="h-full bg-sky-600 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                    </div>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">

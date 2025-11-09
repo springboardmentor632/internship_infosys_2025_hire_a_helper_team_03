@@ -46,6 +46,9 @@ const Sidebar = ({
             user.email = userEmail;
           }
           
+          // Make sure to keep the profile picture if it exists
+          user.profilePicture = user.profilePicture || null;
+          
           setUserInfo(user);
         } else if (userName || userEmail) {
           // Fallback: if no full user object but we have name/email
@@ -53,7 +56,8 @@ const Sidebar = ({
           setUserInfo({
             firstName: nameParts[0] || '',
             lastName: nameParts.slice(1).join(' ') || '',
-            email: userEmail || ''
+            email: userEmail || '',
+            profilePicture: null
           });
         } else {
           setUserInfo(null);
@@ -203,9 +207,17 @@ const Sidebar = ({
                 setMobileMenuOpen(false);
               }}
             >
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
-              </div>
+              {userInfo?.profilePicture ? (
+                <img 
+                  src={userInfo.profilePicture} 
+                  alt="Profile"
+                  className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-white/20"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 border-2 border-white/20">
+                  {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-sm truncate">
                   {`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
@@ -222,7 +234,7 @@ const Sidebar = ({
         {sidebarCollapsed && (
           <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4 flex justify-center">
             <div 
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:scale-110 transition-transform"
+              className="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform overflow-hidden border-2 border-white/20"
               onClick={() => {
                 setActiveNav('profile');
                 navigate('/profile');
@@ -230,7 +242,17 @@ const Sidebar = ({
               }}
               title={`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
             >
-              {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+              {userInfo?.profilePicture ? (
+                <img 
+                  src={userInfo.profilePicture} 
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                  {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                </div>
+              )}
             </div>
           </div>
         )}

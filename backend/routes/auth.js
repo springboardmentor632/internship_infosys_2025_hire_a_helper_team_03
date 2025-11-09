@@ -12,7 +12,8 @@ const {
   verifyResetPasswordOTP, 
   resetPassword,
   getProfile,
-  updateProfile
+  updateProfile,
+  uploadProfileImage
 } = require('../controller/authController');
 
 // Authentication Middleware
@@ -102,6 +103,18 @@ router.put('/profile', authMiddleware, (req, res, next) => {
   console.log('🔥 UPDATE PROFILE ROUTE HIT!');
   next();
 }, updateProfile);
+
+// Upload profile image route
+const upload = require('../config/multer');
+router.post('/upload-profile-image', 
+  authMiddleware,
+  (req, res, next) => {
+    console.log('🔥 UPLOAD PROFILE IMAGE ROUTE HIT!');
+    next();
+  },
+  upload.single('image'),
+  uploadProfileImage
+);
 
 // Debug endpoint to check users (remove in production)
 router.get('/debug/users', async (req, res) => {

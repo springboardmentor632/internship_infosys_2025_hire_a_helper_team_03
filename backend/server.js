@@ -31,9 +31,34 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Create uploads directory if it doesn't exist
+const fs = require('fs');
+const path = require('path');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
+  
+  // Handle multer errors
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        message: 'File is too large. Maximum size is 5MB'
+      });
+    }
+    return res.status(400).json({
+      message: 'File upload error',
+      error: err.message
+    });
+  }
+
+  // Handle other errors
   res.status(500).json({
     message: 'Internal server error',
     error: err.message

@@ -120,9 +120,19 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
           </div>
           {task.user && (
             <div className="flex items-center gap-2 text-gray-700">
-              <svg className="w-4 h-4 text-sky-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
+              {task.user.profilePicture ? (
+                <img 
+                  src={task.user.profilePicture} 
+                  alt="Profile" 
+                  className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  {task.user.firstName && task.user.lastName ? 
+                    `${task.user.firstName[0]}${task.user.lastName[0]}` : 
+                    'U'}
+                </div>
+              )}
               <span className="text-sm truncate">Posted by {getUserName()}</span>
             </div>
           )}

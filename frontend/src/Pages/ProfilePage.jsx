@@ -194,19 +194,21 @@ export default function ProfilePage() {
             <div className="bg-gradient-to-br from-sky-100 to-blue-200 rounded-3xl p-6 md:p-12 shadow-lg">
               <div className="text-center mb-8">
                 <div className="relative inline-block mb-6">
-                  {profileData.image ? (
-                    <img 
-                      src={profileData.image} 
-                      alt={profileData.name} 
-                      className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl object-cover" 
-                    />
-                  ) : (
-                    <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-4xl md:text-5xl font-bold">
-                        {getInitials(profileData.name)}
-                      </span>
-                    </div>
-                  )}
+                  <div className="relative">
+                    {userData.profilePicture ? (
+                      <img 
+                        src={userData.profilePicture} 
+                        alt={profileData.name} 
+                        className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl object-cover" 
+                      />
+                    ) : (
+                      <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+                        <span className="text-white text-4xl md:text-5xl font-bold">
+                          {getInitials(profileData.name)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{profileData.name}</h1>
                 <p className="text-lg text-sky-700 font-medium">{profileData.email}</p>

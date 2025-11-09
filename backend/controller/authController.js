@@ -1,6 +1,7 @@
 const User = require('../model/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cloudinary = require('../config/cloudinary');
 const { generateOTP, sendOTPEmail, sendPasswordResetOTPEmail } = require('../utils/emailService');
 const { pendingRegistrations } = require('../utils/tempStorage');
 
@@ -491,6 +492,53 @@ exports.getProfile = async (req, res) => {
     } catch (error) {
         console.error('Get profile error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Upload profile image
+exports.uploadProfileImage = async (req, res) => {
+    try {
+        console.log('🔥 Upload Profile Image Controller');
+        console.log('Request file:', req.file);
+        
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image file provided' });
+        }
+
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get the Cloudinary URL from the uploaded file
+        const imageUrl = req.file.path; // For multer-storage-cloudinary
+
+        console.log('🖼️ Image URL:', imageUrl);
+
+        // Update user's profile picture URL
+        user.profilePicture = imageUrl;
+        await user.save();
+
+        res.json({
+            message: 'Profile image uploaded successfully',
+            imageUrl: imageUrl,
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                profilePicture: imageUrl
+            }
+        });
+
+    } catch (error) {
+        console.error('Profile image upload error:', error);
+        res.status(500).json({ 
+            message: 'Failed to upload profile image',
+            error: error.message 
+        });
     }
 };
 
