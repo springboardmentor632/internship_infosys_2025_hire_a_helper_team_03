@@ -14,32 +14,59 @@ export default function MyRequestsPage() {
   const [activeNav, setActiveNav] = useState("myrequests");
 
   const [allRequests, setAllRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const loadRequests = async () => {
+    try {
+      const res = await apiCall(API_ENDPOINTS.REQUESTS_ME);
+      const reqs = res.requests || [];
+      setAllRequests(reqs.map(r => ({ 
+        id: r._id, 
+        task: r.task ? r.task.title : 'Task',
+        taskData: r.task,  // Store full task data
+        status: r.status, 
+        owner: r.owner ? `${r.owner.firstName || ''} ${r.owner.lastName || ''}`.trim() : '', 
+        ownerData: r.owner,  // Store full owner data
+        ownerInitials: r.owner ? `${(r.owner.firstName||'').charAt(0)}${(r.owner.lastName||'').charAt(0)}` : 'NA', 
+        color: '#3B82F6', 
+        rating: 4.3, 
+        reviews: 12, 
+        distance: 2, 
+        price: r.task && r.task.budget ? r.task.budget : '—', 
+        description: r.task && r.task.description ? r.task.description : '', 
+        time: new Date(r.createdAt).toLocaleString() 
+      })));
+    } catch (err) {
+      console.error('Failed to load my requests', err);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await apiCall(API_ENDPOINTS.REQUESTS_ME);
-        const reqs = res.requests || [];
-        setAllRequests(reqs.map(r => ({ 
-          id: r._id, 
-          task: r.task ? r.task.title : 'Task', 
-          status: r.status, 
-          owner: r.owner ? `${r.owner.firstName || ''} ${r.owner.lastName || ''}`.trim() : '', 
-          ownerInitials: r.owner ? `${(r.owner.firstName||'').charAt(0)}${(r.owner.lastName||'').charAt(0)}` : 'NA', 
-          color: '#3B82F6', 
-          rating: 4.3, 
-          reviews: 12, 
-          distance: 2, 
-          price: r.task && r.task.budget ? r.task.budget : '—', 
-          description: r.task && r.task.description ? r.task.description : '', 
-          time: new Date(r.createdAt).toLocaleString() 
-        })));
-      } catch (err) {
-        console.error('Failed to load my requests', err);
-      }
-    };
-    load();
+    loadRequests();
   }, []);
+
+  const handleWithdrawRequest = async (requestId) => {
+    try {
+      const result = await apiCall(`${API_ENDPOINTS.REQUESTS_UPDATE(requestId)}`, {
+        method: 'DELETE'
+      });
+      
+      // Remove the withdrawn request from state
+      setAllRequests(prev => prev.filter(req => req.id !== requestId));
+      
+      // Show success message
+      alert(result.message || 'Request withdrawn successfully');
+    } catch (err) {
+      console.error('Error withdrawing request:', err);
+      alert(err.message || 'Failed to withdraw request. Please try again.');
+    }
+  };
+
+  const handleViewDetails = (request) => {
+    setSelectedRequest(request);
+    setShowDetails(true);
+  };
 
   // Calculate tab counts dynamically
   const tabs = [
@@ -138,15 +165,28 @@ export default function MyRequestsPage() {
                     </div>
                   </div>
 
-                  <div className="flex lg:flex-col items-center gap-2 md:gap-3 w-full lg:w-auto">
-                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">
+                  <div className="grid lg:grid-cols-1 grid-cols-3 gap-2 md:gap-3 w-full lg:w-48">
+                    <button 
+                      onClick={() => handleViewDetails(request)}
+                      className="h-12 px-4 bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap flex items-center justify-center"
+                    >
                       View Details
                     </button>
-                    <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">
+                    <button 
+                      onClick={() => navigate(`/messages/${request.ownerData?._id}`)}
+                      className="h-12 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap flex items-center justify-center"
+                    >
                       Message Owner
                     </button>
                     {request.status === 'pending' && (
-                      <button className="flex-1 lg:flex-none px-4 md:px-6 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap">
+                      <button 
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to withdraw this request?')) {
+                            handleWithdrawRequest(request.id);
+                          }
+                        }}
+                        className="h-12 px-4 bg-red-100 hover:bg-red-200 text-red-700 font-medium text-sm md:text-base rounded-lg transition-all whitespace-nowrap flex items-center justify-center"
+                      >
                         Withdraw
                       </button>
                     )}
@@ -156,6 +196,91 @@ export default function MyRequestsPage() {
             ))}
           </div>
         </section>
+
+        {/* Task Details Modal */}
+        {showDetails && selectedRequest && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedRequest.task}</h2>
+                  <button
+                    onClick={() => setShowDetails(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(selectedRequest.status)}`}>
+                  {selectedRequest.status.charAt(0).toUpperCase() + selectedRequest.status.slice(1)}
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 space-y-6">
+                {/* Task Details */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Task Details</h3>
+                  <p className="text-gray-700">{selectedRequest.description}</p>
+                </div>
+
+                {/* Task Info */}
+                <div className="grid grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Price</p>
+                    <p className="font-semibold text-gray-900">${selectedRequest.price}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Requested On</p>
+                    <p className="font-semibold text-gray-900">{selectedRequest.time}</p>
+                  </div>
+                </div>
+
+                {/* Owner Info */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Task Owner</h3>
+                  <div className="flex items-center gap-3 bg-blue-50 rounded-lg p-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg" style={{ background: selectedRequest.color }}>
+                      {selectedRequest.ownerInitials}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{selectedRequest.owner}</p>
+                      <p className="text-sm text-gray-600">{selectedRequest.ownerData?.email}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 bg-white border-t border-gray-200 rounded-b-2xl p-6">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => setShowDetails(false)}
+                    className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all"
+                  >
+                    Close
+                  </button>
+                  {selectedRequest.status === 'pending' && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to withdraw this request?')) {
+                          handleWithdrawRequest(selectedRequest.id);
+                          setShowDetails(false);
+                        }
+                      }}
+                      className="flex-1 px-6 py-3 bg-red-100 text-red-700 font-semibold rounded-lg hover:bg-red-200 transition-all"
+                    >
+                      Withdraw Request
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <BottomNav navigate={navigate} activeTab="myrequests" />
       </main>

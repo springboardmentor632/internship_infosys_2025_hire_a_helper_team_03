@@ -15,4 +15,7 @@ router.get('/me', auth, requestController.getRequestsForRequester);
 // Update request status (accept/decline)
 router.patch('/:id', auth, requestController.updateRequestStatus);
 
+// Delete/withdraw request
+router.delete('/:id', auth, requestController.deleteRequest);
+
 module.exports = router;

@@ -113,3 +113,42 @@ exports.updateRequestStatus = async (req, res) => {
 		return res.status(500).json({ message: 'Server error' });
 	}
 };
+
+// Delete/withdraw a request - only requester can delete their own request if it's pending
+exports.deleteRequest = async (req, res) => {
+	try {
+		const requesterId = req.user && req.user.id;
+		const { id } = req.params;
+
+		if (!requesterId) return res.status(401).json({ message: 'Unauthorized' });
+
+		const request = await Request.findById(id).populate('task');
+		if (!request) return res.status(404).json({ message: 'Request not found' });
+		
+		// Only allow deletion if user is the requester and request is pending
+		if (String(request.requester) !== String(requesterId)) {
+			return res.status(403).json({ message: 'Forbidden - you can only withdraw your own requests' });
+		}
+		
+		if (request.status !== 'pending') {
+			return res.status(400).json({ message: 'Can only withdraw pending requests' });
+		}
+
+		await Request.findByIdAndDelete(id);
+
+		// Notify the owner about withdrawal
+		const title = 'Request Withdrawn';
+		const message = `A request for your task '${request.task.title}' has been withdrawn`;
+		await Notification.create({ 
+			user: request.owner, 
+			title, 
+			message, 
+			data: { taskId: request.task._id } 
+		});
+
+		return res.json({ message: 'Request withdrawn successfully' });
+	} catch (err) {
+		console.error('deleteRequest error:', err);
+		return res.status(500).json({ message: 'Server error' });
+	}
+};
