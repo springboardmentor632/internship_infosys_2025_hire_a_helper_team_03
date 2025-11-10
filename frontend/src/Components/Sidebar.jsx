@@ -22,34 +22,134 @@ const Sidebar = ({
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
 
+  // Fetch profile from backend to get the latest profile picture
+  const fetchProfileFromBackend = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Sidebar - Fetched profile from backend:', userData);
+        
+        // Update localStorage with the latest profile picture
+        const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
+        existingUser.profilePicture = userData.profilePicture;
+        existingUser.firstName = userData.firstName;
+        existingUser.lastName = userData.lastName;
+        existingUser.email = userData.email;
+        localStorage.setItem('user', JSON.stringify(existingUser));
+        
+        // Update state with fresh data
+        setUserInfo({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          profilePicture: userData.profilePicture || null
+        });
+        
+        console.log('Sidebar - Updated with profilePicture:', userData.profilePicture);
+      }
+    } catch (error) {
+      console.error('Sidebar - Error fetching profile:', error);
+    }
+  };
+
   // Load user info from localStorage when component mounts
   useEffect(() => {
     const loadUserInfo = () => {
       try {
         const userData = localStorage.getItem("user");
-        if (userData) {
+        const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        
+        // Also check for individual user data fields (for profile updates)
+        const userName = localStorage.getItem("userName");
+        const userEmail = localStorage.getItem("userEmail");
+        
+        if (userData && isLoggedIn) {
           const user = JSON.parse(userData);
+          
+          // If we have updated name/email in localStorage, use those
+          if (userName) {
+            const nameParts = userName.split(' ');
+            user.firstName = nameParts[0] || user.firstName;
+            user.lastName = nameParts.slice(1).join(' ') || user.lastName;
+          }
+          if (userEmail) {
+            user.email = userEmail;
+          }
+          
+          // Make sure to keep the profile picture if it exists
+          user.profilePicture = user.profilePicture || null;
+          
           setUserInfo(user);
+        } else if (userName || userEmail) {
+          // Fallback: if no full user object but we have name/email
+          const nameParts = (userName || '').split(' ');
+          setUserInfo({
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            email: userEmail || '',
+            profilePicture: null
+          });
+        } else {
+          setUserInfo(null);
         }
       } catch (e) {
         console.error("Error loading user data:", e);
+        setUserInfo(null);
       }
     };
 
     // Load initially
     loadUserInfo();
+    
+    // Fetch profile from backend to ensure we have the latest profile picture
+    fetchProfileFromBackend();
 
     // Listen for storage changes (in case user logs in from another tab)
     window.addEventListener("storage", loadUserInfo);
 
     // Custom event for same-tab updates
-    window.addEventListener("userLogin", loadUserInfo);
+    const handleUserLogin = () => {
+      loadUserInfo();
+      fetchProfileFromBackend();
+    };
+    
+    const handleUserLogout = () => {
+      loadUserInfo();
+    };
+    
+    const handleProfileUpdate = () => {
+      loadUserInfo();
+      fetchProfileFromBackend();
+    };
+
+    window.addEventListener("userLogin", handleUserLogin);
+    window.addEventListener("userLogout", handleUserLogout);
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+
+    // Refresh on window focus (when navigating back from edit profile)
+    window.addEventListener("focus", loadUserInfo);
 
     return () => {
       window.removeEventListener("storage", loadUserInfo);
-      window.removeEventListener("userLogin", loadUserInfo);
+      window.removeEventListener("userLogin", handleUserLogin);
+      window.removeEventListener("userLogout", handleUserLogout);
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+      window.removeEventListener("focus", loadUserInfo);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const navItems = [
     {
       id: "dashboard",
@@ -81,7 +181,7 @@ const Sidebar = ({
 
       {/* Sidebar - Desktop & Mobile */}
       <aside
-        className={`flex flex-col text-white flex-shrink-0 h-screen shadow-2xl z-50 bg-gradient-to-b from-sky-600 to-sky-700 transition-all duration-300 ${
+        className={`flex flex-col text-white flex-shrink-0 h-screen max-h-screen shadow-2xl z-50 bg-gradient-to-b from-sky-600 to-sky-700 transition-all duration-300 ${
           mobileMenuOpen
             ? "fixed left-0 top-0 w-64"
             : "hidden lg:flex lg:fixed lg:left-0 lg:top-0"
@@ -102,14 +202,14 @@ const Sidebar = ({
         {/* Close Button Mobile */}
         <button
           onClick={() => setMobileMenuOpen(false)}
-          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg"
+          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg z-10"
         >
           <IoIosClose size={24} />
         </button>
 
-        {/* Logo */}
-        <div className="px-2 pt-2 pb-2">
-          <div className="flex items-center gap-3 mb-4">
+        {/* Logo - Fixed at top */}
+        <div className="flex-shrink-0 px-2 pt-4 pb-3">
+          <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
               <FaHandshakeAngle className="text-2xl text-white" />
             </div>
@@ -122,11 +222,11 @@ const Sidebar = ({
               </div>
             )}
           </div>
+          <div className="w-full h-px bg-white/30"></div>
         </div>
-        <div className="w-full h-px bg-white/30"></div>
 
-        {/* Navigation */}
-        <nav className="flex-1 pt-6 px-3 space-y-1">
+        {/* Navigation - Scrollable middle section */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden pt-4 px-3 space-y-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30">
           {navItems.map((item) => (
             <div
               key={item.id}
@@ -155,39 +255,66 @@ const Sidebar = ({
           ))}
         </nav>
 
-        {/* User Profile */}
-        {!sidebarCollapsed &&
-          (() => {
-            // Build user display information from state
-            const firstName = userInfo?.firstName || "";
-            const lastName = userInfo?.lastName || "";
-            const name = `${firstName} ${lastName}`.trim() || "Guest User";
-            const email = userInfo?.email || "Not logged in";
-
-            // Get initials for avatar
-            let initials = "GU";
-            if (firstName || lastName) {
-              initials = `${firstName.charAt(0)}${lastName.charAt(
-                0
-              )}`.toUpperCase();
-            }
-
-            return (
-              <div className="border-t border-white border-opacity-30 p-4 mt-auto">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {initials}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">{name}</p>
-                    <p className="text-xs text-white text-opacity-80 truncate">
-                      {email}
-                    </p>
-                  </div>
+        {/* User Profile - Fixed at bottom */}
+        {!sidebarCollapsed && (
+          <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4">
+            <div 
+              className="flex items-center gap-3 cursor-pointer hover:bg-white/10 p-2 rounded-lg transition-all"
+              onClick={() => {
+                setActiveNav('profile');
+                navigate('/profile');
+                setMobileMenuOpen(false);
+              }}
+            >
+              {userInfo?.profilePicture ? (
+                <img 
+                  src={userInfo.profilePicture} 
+                  alt="Profile"
+                  className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-white/20"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 border-2 border-white/20">
+                  {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
                 </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm truncate">
+                  {`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
+                </p>
+                <p className="text-xs text-white text-opacity-80 truncate">
+                  {userInfo?.email || ''}
+                </p>
               </div>
-            );
-          })()}
+            </div>
+          </div>
+        )}
+
+        {/* Collapsed User Profile - Fixed at bottom */}
+        {sidebarCollapsed && (
+          <div className="flex-shrink-0 border-t border-white border-opacity-30 p-4 flex justify-center">
+            <div 
+              className="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform overflow-hidden border-2 border-white/20"
+              onClick={() => {
+                setActiveNav('profile');
+                navigate('/profile');
+                setMobileMenuOpen(false);
+              }}
+              title={`${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim() || 'User'}
+            >
+              {userInfo?.profilePicture ? (
+                <img 
+                  src={userInfo.profilePicture} 
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                  {`${userInfo?.firstName?.charAt(0) || ''}${userInfo?.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </aside>
     </>
   );

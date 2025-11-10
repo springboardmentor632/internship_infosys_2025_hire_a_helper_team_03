@@ -1,11 +1,91 @@
 const express = require('express');
 const router = express.Router();
 const parser = require('../config/multer');
-const { createTask, getUserTasks } = require('../controller/taskController');
+const { createTask, getUserTasks, deleteTask, updateTaskStatus, saveDraft, publishDraft, updateTask, getAllTasks } = require('../controller/taskController');
 const auth = require('../middleware/auth');
 
-// Apply auth middleware to both routes
-router.post('/create', auth, parser.single('image'), createTask);
+// Route-specific logging middleware
+router.use((req, res, next) => {
+  console.log('=== Task Route Request ===');
+  console.log(`${req.method} ${req.originalUrl}`);
+  console.log('Params:', req.params);
+  console.log('Query:', req.query);
+  console.log('Body:', req.body);
+  next();
+});
+
+// Get all active tasks for feed (public or authenticated users) - MUST BE FIRST
+router.get('/all', getAllTasks);
+
+// Get user's own tasks
 router.get('/mytasks', auth, getUserTasks);
+
+// Task routes - Order matters! More specific routes first
+router.post('/create', auth, (req, res, next) => {
+  parser.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(400).json({ 
+        message: 'Error uploading image', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, createTask);
+
+// Save draft
+router.post('/draft', auth, (req, res, next) => {
+  parser.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(400).json({ 
+        message: 'Error uploading image', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, saveDraft);
+
+// Publish draft - must be before generic /:id routes
+router.patch('/:id/publish', auth, publishDraft);
+
+// Update task status - must be before generic /:id routes
+router.patch('/:id/status', auth, updateTaskStatus);
+
+// Update task - must be before delete route
+router.put('/:id', auth, (req, res, next) => {
+  parser.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(400).json({ 
+        message: 'Error uploading image', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, updateTask);
+
+// Delete task
+router.delete('/:id', auth, deleteTask);
+
+// Route not found handler for task routes
+router.use((req, res) => {
+  console.log('Task route not found:', req.method, req.originalUrl);
+  res.status(404).json({
+    message: `Task route not found: ${req.method} ${req.originalUrl}`
+  });
+});
+
+// Error handler for task routes
+router.use((err, req, res, next) => {
+  console.error('Task route error:', err);
+  res.status(500).json({
+    message: 'Error in task operation',
+    error: err.message
+  });
+});
 
 module.exports = router;

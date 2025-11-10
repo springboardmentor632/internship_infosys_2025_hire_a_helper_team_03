@@ -1,0 +1,52 @@
+const multer = require('multer');
+const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('./cloudinary');
+
+// Configure Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'profile_images',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+    transformation: [
+      { width: 500, height: 500, crop: 'fill', gravity: 'face' },
+      { quality: 'auto:good' }
+    ],
+    public_id: (req, file) => {
+      const userId = req.user ? req.user._id : 'unknown';
+      const timestamp = Date.now();
+      const extension = path.extname(file.originalname);
+      return `profile_${userId}_${timestamp}${extension}`;
+    }
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // Check file type
+  if (!file.mimetype.startsWith('image/')) {
+    cb(new Error('Only image files are allowed!'), false);
+    return;
+  }
+
+  // Allow specific image formats
+  const allowedFormats = ['.jpg', '.jpeg', '.png', '.gif'];
+  const extension = path.extname(file.originalname).toLowerCase();
+  if (!allowedFormats.includes(extension)) {
+    cb(new Error('Invalid file format. Allowed formats: JPG, JPEG, PNG, GIF'), false);
+    return;
+  }
+
+  cb(null, true);
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+    files: 1 // Only allow 1 file per request
+  },
+  fileFilter: fileFilter
+});
+
+module.exports = upload;

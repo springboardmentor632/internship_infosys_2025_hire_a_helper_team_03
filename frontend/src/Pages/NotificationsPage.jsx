@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaEnvelope, FaDollarSign, FaUserCircle, FaStar, FaBriefcase,
@@ -10,20 +10,13 @@ import { IoIosClose } from "react-icons/io";
 import Sidebar   from "../Components/Sidebar";
 import Header    from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
+import { API_ENDPOINTS, apiCall } from "../config/api";
 
 /* ------------------------------------------------------------------ */
 /* Static data & helpers                                              */
 /* ------------------------------------------------------------------ */
 
-const NOTIFICATIONS = [
-  { id: 1, icon: FaBriefcase,  title: "New Job Application", message: "Sarah Johnson applied for House Cleaning position",  time: "5 minutes ago",  read: false, bg: "from-blue-100 to-indigo-100",   color: "text-blue-600"    },
-  { id: 2, icon: FaEnvelope,   title: "New Message",         message: "You have a new message from John regarding the gardening job", time: "1 hour ago",    read: false, bg: "from-green-100 to-emerald-100", color: "text-green-600"   },
-  { id: 3, icon: FaDollarSign, title: "Payment Received",    message: "Payment of $150 received for plumbing services",               time: "3 hours ago",   read: false, bg: "from-emerald-100 to-green-100", color: "text-emerald-600" },
-  { id: 4, icon: MdCheckBox,   title: "Job Completed",       message: "Mike marked the electrical work job as completed",              time: "5 hours ago",   read: true,  bg: "from-purple-100 to-pink-100",   color: "text-purple-600"  },
-  { id: 5, icon: FaUserCircle, title: "Profile View",        message: "Emma viewed your helper profile",                               time: "1 day ago",     read: true,  bg: "from-indigo-100 to-purple-100",  color: "text-indigo-600"  },
-  { id: 6, icon: FaStar,       title: "Review Received",     message: "Tom left you a 5-star review for painting services",            time: "2 days ago",    read: true,  bg: "from-yellow-100 to-orange-100",   color: "text-yellow-600"  },
-  { id: 7, icon: FaBriefcase,  title: "Task Request",        message: "Lisa wants to hire you for 'Fix Kitchen Sink' task",            time: "3 days ago",    read: true,  bg: "from-sky-100 to-blue-100",        color: "text-sky-600"     },
-];
+const NOTIFICATIONS = [];
 
 const TABS = ["all", "unread", "read"];
 
@@ -108,9 +101,45 @@ export default function NotificationsPage() {
   const [filter, setFilter]               = useState("all");
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
 
-  const markAsRead   = id => setNotifications(n => n.map(x => x.id === id ? { ...x, read: true } : x));
-  const markAllRead  = ()  => setNotifications(n => n.map(x => ({ ...x, read: true })));
-  const remove       = id => setNotifications(n => n.filter(x => x.id !== id));
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await apiCall(API_ENDPOINTS.NOTIFICATIONS_LIST);
+        const notifs = (res.notifications || []).map(x => ({ 
+          id: x._id, 
+          icon: FaBriefcase,
+          title: x.title, 
+          message: x.message, 
+          time: new Date(x.createdAt).toLocaleString(), 
+          read: x.read, 
+          data: x.data,
+          bg: 'from-blue-100 to-indigo-100',
+          color: 'text-blue-600'
+        }));
+        setNotifications(notifs);
+      } catch (err) {
+        console.error('Failed to load notifications', err);
+      }
+    };
+    load();
+  }, []);
+
+  const markAsRead   = async id => {
+    try {
+      await apiCall(API_ENDPOINTS.NOTIFICATIONS_MARK_READ(id), { method: 'PATCH' });
+      setNotifications(n => n.map(x => x.id === id ? { ...x, read: true } : x));
+    } catch (err) { console.error(err); }
+  };
+  const markAllRead  = async ()  => {
+    // naive local mark; could call API individually
+    setNotifications(n => n.map(x => ({ ...x, read: true })));
+  };
+  const remove       = async id => {
+    try {
+      await apiCall(API_ENDPOINTS.NOTIFICATIONS_DELETE(id), { method: 'DELETE' });
+      setNotifications(n => n.filter(x => x.id !== id));
+    } catch (err) { console.error(err); }
+  };
 
   const unread = notifications.filter(n => !n.read).length;
   const shown  = notifications.filter(n =>
@@ -179,7 +208,7 @@ export default function NotificationsPage() {
           </div>
         </section>
 
-        <BottomNav {...{ navigate }} />
+        <BottomNav navigate={navigate} activeTab="notifications" />
       </main>
     </div>
   );

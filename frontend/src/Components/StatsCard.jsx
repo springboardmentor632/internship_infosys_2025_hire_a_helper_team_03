@@ -4,16 +4,16 @@ const StatsCard = ({ stat, index }) => {
   const IconComponent = stat.icon;
   
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md p-4 md:p-6 transition-all duration-300 border border-gray-200">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-md p-3 md:p-4 lg:p-5 transition-all duration-300 border border-gray-100">
       <div
-        className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 shadow-sm`}
+        className={`w-7 h-7 md:w-9 md:h-9 rounded-md bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-2 md:mb-3 shadow-sm`}
       >
-        <IconComponent size={20} className="text-white" />
+        <IconComponent size={16} className="text-white md:w-5 md:h-5" />
       </div>
-      <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+      <p className="text-base md:text-xl lg:text-2xl font-bold text-gray-900 mb-0.5 md:mb-1">
         {stat.value}
       </p>
-      <p className="text-xs md:text-sm text-gray-600 font-medium">
+      <p className="text-[10px] md:text-xs lg:text-sm text-gray-600 font-semibold leading-tight">
         {stat.label}
       </p>
     </div>

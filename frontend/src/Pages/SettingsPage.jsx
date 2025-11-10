@@ -15,6 +15,19 @@ export default function SettingsPage() {
   const [messages, setMessages] = useState(true);
   const [recommendations, setRecommendations] = useState(true);
 
+  const handleLogout = () => {
+    // Clear all auth data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    
+    // Dispatch logout event
+    window.dispatchEvent(new Event('userLogout'));
+    
+    // Navigate to home page
+    navigate('/', { replace: true });
+  };
+
   const settingsOptions = [
     { icon: FaUser, title: "Profile", description: "Manage Your Personal Information", color: "#3B82F6", path: "/profile" },
     { icon: IoNotificationsOutline, title: "Notifications", description: "Configure Notification Preferences", color: "#8B5CF6", path: "/notifications" },
@@ -123,14 +136,17 @@ export default function SettingsPage() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <button className="w-full flex items-center justify-center gap-3 p-4 hover:bg-red-50 rounded-xl transition-all text-red-600 font-semibold">
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-3 p-4 hover:bg-red-50 rounded-xl transition-all text-red-600 font-semibold"
+            >
               <FaSignOutAlt size={20} />
               <span>Logout</span>
             </button>
           </div>
         </section>
 
-        <BottomNav navigate={navigate} />
+        <BottomNav navigate={navigate} activeTab="settings" />
       </main>
     </div>
   );

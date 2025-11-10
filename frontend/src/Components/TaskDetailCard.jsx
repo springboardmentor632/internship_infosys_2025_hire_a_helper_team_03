@@ -1,8 +1,20 @@
 import React from "react";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
-const TaskDetailsCard = ({ task, onClose }) => {
+const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
   if (!task) return null;
+
+  const handleMarkComplete = () => {
+    if (onMarkComplete) {
+      onMarkComplete(task);
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(task);
+    }
+  };
 
   const getUrgencyColor = (urgency) => {
     switch (urgency) {
@@ -184,11 +196,22 @@ const TaskDetailsCard = ({ task, onClose }) => {
             >
               Close
             </button>
-            <button className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button 
+              onClick={handleEdit}
+              className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               Edit Task
             </button>
-            <button className="flex-1 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-all duration-200 shadow-lg hover:shadow-xl">
-              Mark as Complete
+            <button 
+              onClick={handleMarkComplete}
+              disabled={task.status === 'completed'}
+              className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl ${
+                task.status === 'completed'
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-green-500 text-white hover:bg-green-600'
+              }`}
+            >
+              {task.status === 'completed' ? 'Completed ✓' : 'Mark as Complete'}
             </button>
           </div>
         </div>

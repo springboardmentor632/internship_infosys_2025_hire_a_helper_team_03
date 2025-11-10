@@ -1,39 +1,82 @@
-import React from "react";
-import { FaHome, FaPlusCircle, FaEnvelope, FaEllipsisH } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
+import React, { useState } from "react";
+import { FaPlusCircle, FaEnvelope } from "react-icons/fa";
+import { MdDashboard, MdCheckBox } from "react-icons/md";
+import { HiDotsHorizontal } from "react-icons/hi";
+import MobileMenu from "./MobileMenu";
 
-const BottomNav = ({ navigate }) => {
+const BottomNav = ({ navigate, activeTab = "dashboard" }) => {
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-300 px-2 py-3 shadow-2xl z-50">
-      <div className="flex items-center justify-around relative">
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110"
-        >
-          <MdDashboard size={24} className="text-gray-500" />
-          <span className="text-xs font-medium text-gray-500">Dashboard</span>
-        </button>
+    <>
+      <nav className="lg:hidden h-15 fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-40">
+        <div className="px-3 py-2">
+          <div className="flex items-center justify-around">
+            {/* Dashboard */}
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
+            >
+              <MdDashboard size={24} className={activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "dashboard" ? "text-sky-600" : "text-gray-600"}`}>
+                Dashboard
+              </span>
+            </button>
 
-        <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
-          <FaHome size={24} className="text-sky-600" />
-          <span className="text-xs font-bold text-sky-600">Home</span>
-        </button>
+            {/* My Tasks */}
+            <button 
+              onClick={() => navigate('/mytasks')}
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
+            >
+              <MdCheckBox size={24} className={activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "mytasks" ? "text-sky-600" : "text-gray-600"}`}>
+                Tasks
+              </span>
+            </button>
 
-        <button className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full flex items-center justify-center bg-sky-500 shadow-2xl transition-all duration-200 hover:scale-110">
-          <FaPlusCircle size={32} className="text-white" />
-        </button>
+            {/* Post Task Button - Small and Simple */}
+            <button 
+              onClick={() => navigate('/posttask')}
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
+            >
+              <FaPlusCircle size={22} className={`text-sky-600`} />
+              <span className="text-xs mt-1 font-medium text-gray-600">
+                Post Task
+              </span>
+            </button>
 
-        <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
-          <FaEnvelope size={24} className="text-gray-500" />
-          <span className="text-xs font-medium text-gray-500">Request</span>
-        </button>
+            {/* Requests */}
+            <button 
+              onClick={() => navigate('/requests')}
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
+            >
+              <FaEnvelope size={22} className={activeTab === "requests" ? "text-sky-600" : "text-gray-600"} />
+              <span className={`text-xs mt-1 font-medium ${activeTab === "requests" ? "text-sky-600" : "text-gray-600"}`}>
+                Requests
+              </span>
+            </button>
 
-        <button className="flex flex-col items-center gap-1 p-2 transition-all hover:scale-110">
-          <FaEllipsisH size={24} className="text-gray-500" />
-          <span className="text-xs font-medium text-gray-500">More</span>
-        </button>
-      </div>
-    </nav>
+            {/* More */}
+            <button 
+              onClick={() => setShowMoreMenu(true)}
+              className="flex flex-col items-center py-1 px-3 transition-colors hover:text-sky-600"
+            >
+              <HiDotsHorizontal size={24} className="text-gray-600 rotate-0" />
+              <span className="text-xs mt-1 font-medium text-gray-600">
+                More
+              </span>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Drawer */}
+      <MobileMenu 
+        isOpen={showMoreMenu} 
+        onClose={() => setShowMoreMenu(false)} 
+        navigate={navigate}
+      />
+    </>
   );
 };
 
