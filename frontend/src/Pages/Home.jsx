@@ -297,7 +297,7 @@ export default function Home() {
         {/* FAQ Section */}
         <section id="faq" className="relative z-10 py-24 md:py-32 bg-white">
           <div className="max-w-5xl mx-auto px-6 md:px-12">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-16 md:mb-20">
+            <h2 className="text-5xl md:text-6xl lg:text-5xl font-bold text-center mb-16 md:mb-20">
               Frequently Asked Questions
             </h2>
             <div className="space-y-8">
