@@ -1,3 +1,7 @@
+// ============================================
+// COMPLETE FIXED authController.js (Backend)
+// ============================================
+
 const User = require('../model/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -5,10 +9,11 @@ const cloudinary = require('../config/cloudinary');
 const { generateOTP, sendOTPEmail, sendPasswordResetOTPEmail } = require('../utils/emailService');
 const { pendingRegistrations } = require('../utils/tempStorage');
 
+// ========== REGISTRATION & AUTHENTICATION ==========
+
 // Register user (stores in temporary storage until OTP verification)
 exports.register = async (req, res) => {
     try {
-        // Simulate loader delay (for frontend loader UX)
         await new Promise(resolve => setTimeout(resolve, 1200));
         
         const { firstName, lastName, phone, email, password } = req.body;
@@ -17,28 +22,20 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
         
-        // Check if user already exists in database
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
 
-        // Check if email is already in pending registrations
         if (pendingRegistrations.has(email)) {
-            // User tried to register again without verifying
-            // Delete old pending registration and create new one
             pendingRegistrations.delete(email);
             console.log(`Removed old pending registration for: ${email}`);
         }
         
-        // Generate OTP
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-        
-        // Hash password
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // Store in temporary storage (NOT in database yet)
         pendingRegistrations.set(email, {
             firstName,
             lastName,
@@ -51,9 +48,7 @@ exports.register = async (req, res) => {
         });
 
         console.log(`Pending registration created for: ${email}`);
-        console.log(`Total pending registrations: ${pendingRegistrations.size}`);
         
-        // Send OTP email immediately
         await sendOTPEmail(email, otp, firstName);
         
         res.status(201).json({ 
@@ -67,7 +62,7 @@ exports.register = async (req, res) => {
     }
 };
 
-// Send OTP to email (for already registered but unverified users, or resend)
+// Send OTP to email
 exports.sendOTP = async (req, res) => {
     try {
         const { email } = req.body;
@@ -76,19 +71,15 @@ exports.sendOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email is required' });
         }
         
-        // Check if email is in pending registrations
         const pendingUser = pendingRegistrations.get(email);
         if (pendingUser) {
-            // Resend OTP for pending registration
             const otp = generateOTP();
-            const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+            const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             
-            // Update OTP in temporary storage
             pendingUser.otp = otp;
             pendingUser.otpExpiry = otpExpiry;
             pendingRegistrations.set(email, pendingUser);
             
-            // Send OTP email
             await sendOTPEmail(email, otp, pendingUser.firstName);
             
             return res.status(200).json({ 
@@ -97,27 +88,22 @@ exports.sendOTP = async (req, res) => {
             });
         }
         
-        // Check if user exists in database (for already registered users)
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'No registration found for this email. Please register first.' });
         }
         
-        // Check if already verified
         if (user.isVerified) {
             return res.status(400).json({ message: 'Email already verified' });
         }
         
-        // Generate OTP for existing unverified user
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
         
-        // Save OTP to user
         user.otp = otp;
         user.otpExpiry = otpExpiry;
         await user.save();
         
-        // Send OTP email
         await sendOTPEmail(email, otp, user.firstName);
         
         res.status(200).json({ 
@@ -139,41 +125,32 @@ exports.verifyOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email and OTP are required' });
         }
         
-        // First check if email is in pending registrations
         const pendingUser = pendingRegistrations.get(email);
         
         if (pendingUser) {
-            // Verify OTP for pending registration
-            
-            // Check if OTP is expired
             if (new Date() > pendingUser.otpExpiry) {
                 return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
             }
             
-            // Verify OTP
             if (pendingUser.otp !== otp) {
                 return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
             }
             
-            // OTP verified! Now create user in database
             const newUser = new User({
                 firstName: pendingUser.firstName,
                 lastName: pendingUser.lastName,
                 phone: pendingUser.phone,
                 email: pendingUser.email,
-                password: pendingUser.password, // Already hashed
-                isVerified: true, // Mark as verified immediately
+                password: pendingUser.password,
+                isVerified: true,
                 otp: null,
                 otpExpiry: null
             });
             
             await newUser.save();
-            
-            // Remove from pending registrations
             pendingRegistrations.delete(email);
             
             console.log(`User verified and created in database: ${email}`);
-            console.log(`Remaining pending registrations: ${pendingRegistrations.size}`);
             
             return res.status(200).json({ 
                 message: 'Email verified successfully! Your account has been created. You can now login.',
@@ -181,33 +158,27 @@ exports.verifyOTP = async (req, res) => {
             });
         }
         
-        // If not in pending, check if user exists in database (for old flow compatibility)
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'No registration found. Please register first.' });
         }
         
-        // Check if already verified
         if (user.isVerified) {
             return res.status(400).json({ message: 'Email already verified' });
         }
         
-        // Check if OTP exists
         if (!user.otp) {
             return res.status(400).json({ message: 'No OTP found. Please request a new one.' });
         }
         
-        // Check if OTP is expired
         if (new Date() > user.otpExpiry) {
             return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
         }
         
-        // Verify OTP
         if (user.otp !== otp) {
             return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
         }
         
-        // Mark as verified and clear OTP
         user.isVerified = true;
         user.otp = null;
         user.otpExpiry = null;
@@ -223,31 +194,21 @@ exports.verifyOTP = async (req, res) => {
     }
 };
 
+// Login
 exports.login = async (req, res) => {
     try {
         console.log('=== LOGIN ATTEMPT STARTED ===');
-        console.log('Timestamp:', new Date().toISOString());
-        console.log('Request body:', req.body);
-        console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-        console.log('JWT_SECRET value (first 10 chars):', process.env.JWT_SECRET ? process.env.JWT_SECRET.substring(0, 10) + '...' : 'UNDEFINED');
         
-        // Simulate loader delay (for frontend loader UX)
         await new Promise(resolve => setTimeout(resolve, 1200));
         
         const { email, password } = req.body;
         
-        console.log('Step 1: Validating input fields');
         if (!email || !password) {
-            console.log('Missing email or password');
             return res.status(400).json({ message: 'All fields are required' });
         }
         
-        console.log('Step 2: Checking pending registrations');
-        // First check if email is in pending registrations (not verified yet)
         const pendingUser = pendingRegistrations.get(email);
         if (pendingUser) {
-            console.log('User is in pending registrations - not verified yet');
-            // User registered but hasn't verified OTP yet
             return res.status(403).json({ 
                 message: 'Please verify your email before logging in. Check your email for the OTP.',
                 needsVerification: true,
@@ -256,21 +217,13 @@ exports.login = async (req, res) => {
             });
         }
         
-        console.log('Step 3: Finding user in database');
-        // Check if user exists in database
         const user = await User.findOne({ email });
-        console.log('User found in database:', !!user);
         
         if (!user) {
-            console.log('User not found in database');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
         
-        console.log('Step 4: Checking if user is verified');
-        console.log('User isVerified status:', user.isVerified);
-        // Check if email is verified
         if (!user.isVerified) {
-            console.log('User email not verified');
             return res.status(403).json({ 
                 message: 'Please verify your email before logging in',
                 needsVerification: true,
@@ -278,18 +231,11 @@ exports.login = async (req, res) => {
             });
         }
         
-        console.log('Step 5: Comparing password');
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log('Password match result:', isMatch);
         
         if (!isMatch) {
-            console.log('Password does not match');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        
-        console.log('Step 6: Generating JWT token');
-        console.log('User ID for token:', user._id);
-        console.log('JWT_SECRET length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
         
         const token = jwt.sign(
             { userId: user._id }, 
@@ -297,10 +243,6 @@ exports.login = async (req, res) => {
             { expiresIn: '1d' }
         );
         
-        console.log('JWT token generated successfully');
-        console.log('Token (first 20 chars):', token.substring(0, 20) + '...');
-        
-        console.log('Step 7: Sending response');
         res.json({
             token,
             user: {
@@ -316,15 +258,12 @@ exports.login = async (req, res) => {
         
         console.log('=== LOGIN SUCCESSFUL ===');
     } catch (err) {
-        console.error('=== LOGIN ERROR ===');
-        console.error('Error occurred at:', new Date().toISOString());
-        console.error('Error name:', err.name);
-        console.error('Error message:', err.message);
-        console.error('Error stack:', err.stack);
-        console.error('Full error object:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        console.error('=== LOGIN ERROR ===', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// ========== PASSWORD RESET ==========
 
 // Send Password Reset OTP
 exports.sendResetPasswordOTP = async (req, res) => {
@@ -335,27 +274,22 @@ exports.sendResetPasswordOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email is required' });
         }
         
-        // Find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'No account found with this email' });
         }
         
-        // Check if user is verified
         if (!user.isVerified) {
             return res.status(403).json({ message: 'Please verify your email first before resetting password' });
         }
         
-        // Generate OTP
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
         
-        // Save reset OTP to user
         user.resetPasswordOTP = otp;
         user.resetPasswordOTPExpiry = otpExpiry;
         await user.save();
         
-        // Send password reset OTP email
         await sendPasswordResetOTPEmail(email, otp, user.firstName);
         
         res.status(200).json({ 
@@ -377,23 +311,19 @@ exports.verifyResetPasswordOTP = async (req, res) => {
             return res.status(400).json({ message: 'Email and OTP are required' });
         }
         
-        // Find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // Check if reset OTP exists
         if (!user.resetPasswordOTP) {
             return res.status(400).json({ message: 'No reset code found. Please request a new one.' });
         }
         
-        // Check if OTP is expired
         if (new Date() > user.resetPasswordOTPExpiry) {
             return res.status(400).json({ message: 'Reset code has expired. Please request a new one.' });
         }
         
-        // Verify OTP
         if (user.resetPasswordOTP !== otp) {
             return res.status(400).json({ message: 'Invalid reset code. Please try again.' });
         }
@@ -417,36 +347,29 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ message: 'Email, OTP, and new password are required' });
         }
         
-        // Validate password length
         if (newPassword.length < 6) {
             return res.status(400).json({ message: 'Password must be at least 6 characters long' });
         }
         
-        // Find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // Check if reset OTP exists
         if (!user.resetPasswordOTP) {
             return res.status(400).json({ message: 'No reset code found. Please request a new one.' });
         }
         
-        // Check if OTP is expired
         if (new Date() > user.resetPasswordOTPExpiry) {
             return res.status(400).json({ message: 'Reset code has expired. Please request a new one.' });
         }
         
-        // Verify OTP
         if (user.resetPasswordOTP !== otp) {
             return res.status(400).json({ message: 'Invalid reset code. Please try again.' });
         }
         
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         
-        // Update password and clear reset OTP
         user.password = hashedPassword;
         user.resetPasswordOTP = null;
         user.resetPasswordOTPExpiry = null;
@@ -462,9 +385,9 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-// ========== NEW PROFILE FUNCTIONS ==========
+// ========== PROFILE FUNCTIONS WITH LOCATION FIX ==========
 
-// Get user profile
+// ✅ Get user profile - NOW INCLUDES LOCATION
 exports.getProfile = async (req, res) => {
     try {
         console.log('🔥 GET PROFILE CONTROLLER HIT!');
@@ -487,6 +410,7 @@ exports.getProfile = async (req, res) => {
             bio: user.bio || '',
             skills: user.skills || [],
             profilePicture: user.profilePicture || null,
+            location: user.location || '', // ✅ NOW RETURNS LOCATION
             rating: user.rating || 0,
             isVerified: user.isVerified
         });
@@ -513,12 +437,9 @@ exports.uploadProfileImage = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Get the Cloudinary URL from the uploaded file
-        const imageUrl = req.file.path; // For multer-storage-cloudinary
-
+        const imageUrl = req.file.path;
         console.log('🖼️ Image URL:', imageUrl);
 
-        // Update user's profile picture URL
         user.profilePicture = imageUrl;
         await user.save();
 
@@ -543,13 +464,13 @@ exports.uploadProfileImage = async (req, res) => {
     }
 };
 
-// Update user profile
+// ✅ Update user profile - NOW HANDLES LOCATION
 exports.updateProfile = async (req, res) => {
     try {
         console.log('🔥 UPDATE PROFILE CONTROLLER HIT!');
         console.log('Request body:', req.body);
         
-        const { firstName, lastName, bio, skills, phone } = req.body;
+        const { firstName, lastName, bio, skills, phone, location } = req.body; // ✅ Added location
         
         const user = await User.findById(req.user._id);
         
@@ -563,12 +484,13 @@ exports.updateProfile = async (req, res) => {
         if (bio !== undefined) user.bio = bio;
         if (skills !== undefined) user.skills = skills;
         if (phone !== undefined) user.phone = phone;
+        if (location !== undefined) user.location = location; // ✅ NOW UPDATES LOCATION
         
         await user.save();
         
-        console.log('Profile updated successfully for:', user.email);
+        console.log('✅ Profile updated successfully for:', user.email);
+        console.log('✅ Location saved:', user.location);
         
-        // Return updated user
         const updatedUser = await User.findById(user._id).select('-password');
         res.json({
             message: 'Profile updated successfully',
@@ -583,11 +505,12 @@ exports.updateProfile = async (req, res) => {
                 bio: updatedUser.bio || '',
                 skills: updatedUser.skills || [],
                 profilePicture: updatedUser.profilePicture || null,
+                location: updatedUser.location || '', // ✅ NOW RETURNS LOCATION
                 rating: updatedUser.rating || 0
             }
         });
     } catch (error) {
-        console.error('Update profile error:', error);
+        console.error('❌ Update profile error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
