@@ -65,7 +65,7 @@ export default function Dashboard() {
     .reduce((sum, task) => sum + (parseFloat(task.budget) || 0), 0);
 
   // Calculate average rating (placeholder - you'll need to implement rating system)
-  const averageRating = "4.6"; // This should come from actual ratings when implemented
+  const averageRating = "4.5"; // This should come from actual ratings when implemented
 
   // Get active tasks for display
   const activeTasks = tasks

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaStar, FaMapMarkerAlt, FaCheckCircle, FaClock, FaEdit, FaTrophy, FaAward } from "react-icons/fa";
+import { FaStar, FaMapMarkerAlt, FaCheckCircle, FaClock, FaEdit, FaTrophy, FaAward, FaPlus } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
@@ -63,6 +63,17 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchUserProfile();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchUserProfile();
+    };
+
+    window.addEventListener('profileUpdate', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('profileUpdate', handleProfileUpdate);
+    };
   }, [fetchUserProfile]);
 
   const completedTasksCount = tasks.filter(task => task.status === 'completed').length;
@@ -83,22 +94,10 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-        <Sidebar 
-          activeNav={activeNav} 
-          setActiveNav={setActiveNav} 
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          sidebarCollapsed={sidebarCollapsed} 
-          setSidebarCollapsed={setSidebarCollapsed} 
-          navigate={navigate} 
-        />
+        <Sidebar {...{activeNav, setActiveNav, mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed, setSidebarCollapsed, navigate}} />
         
         <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
-          <Header 
-            mobileMenuOpen={mobileMenuOpen} 
-            setMobileMenuOpen={setMobileMenuOpen} 
-            sidebarCollapsed={sidebarCollapsed} 
-          />
+          <Header {...{mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed}} />
           
           <section className="flex-1 flex items-center justify-center">
             <div className="text-center">
@@ -114,22 +113,10 @@ export default function ProfilePage() {
   if (!userData) {
     return (
       <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-        <Sidebar 
-          activeNav={activeNav} 
-          setActiveNav={setActiveNav} 
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          sidebarCollapsed={sidebarCollapsed} 
-          setSidebarCollapsed={setSidebarCollapsed} 
-          navigate={navigate} 
-        />
+        <Sidebar {...{activeNav, setActiveNav, mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed, setSidebarCollapsed, navigate}} />
         
         <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
-          <Header 
-            mobileMenuOpen={mobileMenuOpen} 
-            setMobileMenuOpen={setMobileMenuOpen} 
-            sidebarCollapsed={sidebarCollapsed} 
-          />
+          <Header {...{mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed}} />
           
           <section className="flex-1 flex items-center justify-center p-4">
             <div className="text-center max-w-md">
@@ -140,10 +127,7 @@ export default function ProfilePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Unable to Load Profile</h3>
               <p className="text-gray-600 mb-4">Please sign in again to view your profile.</p>
-              <button
-                onClick={() => navigate('/signin')}
-                className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all"
-              >
+              <button onClick={() => navigate('/signin')} className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all">
                 Sign In
               </button>
             </div>
@@ -161,60 +145,35 @@ export default function ProfilePage() {
     tasksCompleted: completedTasksCount,
     recommended: recommendedPercentage,
     bio: userData.bio || "No bio added yet. Click 'Edit profile' to add information about yourself.",
-    location: userData.location || "Tiruppur, Tamil Nadu"
+    location: userData.location || null
   };
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)}></div>}
 
-      <Sidebar 
-        activeNav={activeNav} 
-        setActiveNav={setActiveNav} 
-        mobileMenuOpen={mobileMenuOpen} 
-        setMobileMenuOpen={setMobileMenuOpen} 
-        sidebarCollapsed={sidebarCollapsed} 
-        setSidebarCollapsed={setSidebarCollapsed} 
-        navigate={navigate} 
-      />
+      <Sidebar {...{activeNav, setActiveNav, mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed, setSidebarCollapsed, navigate}} />
       
       <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
-        <Header 
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          sidebarCollapsed={sidebarCollapsed} 
-        />
+        <Header {...{mobileMenuOpen, setMobileMenuOpen, sidebarCollapsed}} />
         
         <section className="flex-1 overflow-y-auto pb-32 lg:pb-8">
-          {/* Header Section with Cover */}
           <div className="bg-white shadow-md overflow-hidden">
-            {/* Cover Image */}
             <div className="h-20 md:h-20 relative">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJhIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMiIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNhKSIvPjwvc3ZnPg==')] opacity-30"></div>
-              <button 
-                onClick={() => navigate('/edit-profile')}
-                className="absolute top-4 right-4 bg-sky-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10"
-              >
+              <button onClick={() => navigate('/edit-profile')} className="absolute top-4 right-4 bg-sky-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10">
                 <FaEdit /> Edit Profile
               </button>
             </div>
 
-            {/* Profile Info */}
             <div className="px-4 md:px-8 pb-6 pt-8">
               <div className="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6 -mt-14 md:-mt-20">
-                {/* Profile Picture */}
                 <div className="relative flex-shrink-0">
                   {userData.profilePicture ? (
-                    <img 
-                      src={userData.profilePicture} 
-                      alt={profileData.name} 
-                      className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-2xl object-cover" 
-                    />
+                    <img src={userData.profilePicture} alt={profileData.name} className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-2xl object-cover" />
                   ) : (
                     <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-3xl md:text-4xl font-bold">
-                        {getInitials(profileData.name)}
-                      </span>
+                      <span className="text-white text-3xl md:text-4xl font-bold">{getInitials(profileData.name)}</span>
                     </div>
                   )}
                   {profileData.rating >= 4.5 && (
@@ -224,14 +183,20 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {/* Name and Details */}
                 <div className="flex-1 text-center md:text-left">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{profileData.name}</h1>
                   <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 text-sm md:text-base text-gray-600 mb-2">
-                    <span className="flex items-center gap-1.5">
-                      <FaMapMarkerAlt className="text-sky-600" size={14} />
-                      {profileData.location}
-                    </span>
+                    {profileData.location ? (
+                      <span className="flex items-center gap-1.5">
+                        <FaMapMarkerAlt className="text-sky-600" size={14} />
+                        {profileData.location}
+                      </span>
+                    ) : (
+                      <button onClick={() => navigate('/edit-profile')} className="flex items-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-full text-sm font-medium transition-all border border-sky-200">
+                        <FaPlus size={12} />
+                        Add Location
+                      </button>
+                    )}
                     <span className="hidden md:inline">•</span>
                     <span className="flex items-center gap-1.5">
                       <FaCheckCircle className="text-green-600" size={14} />
@@ -240,7 +205,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Quick Stats */}
                 <div className="flex gap-8 bg-gray-50 px-6 py-3 rounded-lg">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900 flex items-center gap-1">
@@ -260,9 +224,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-4 md:px-6 lg:px-8 mt-4 max-w-7xl mx-auto">
-            {/* Left Column */}
             <div className="lg:col-span-2 space-y-4">
-              {/* About Section */}
               <div className="bg-white shadow-md p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,17 +235,13 @@ export default function ProfilePage() {
                 <p className="text-gray-700 leading-relaxed text-sm">{profileData.bio}</p>
               </div>
 
-              {/* Skills Section */}
               <div className="bg-white shadow-md p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     <FaAward className="text-sky-600" />
                     Skills & Expertise
                   </h3>
-                  <button 
-                    onClick={() => navigate('/edit-profile')}
-                    className="text-sky-600 hover:text-sky-700 text-xs font-medium flex items-center gap-1"
-                  >
+                  <button onClick={() => navigate('/edit-profile')} className="text-sky-600 hover:text-sky-700 text-xs font-medium flex items-center gap-1">
                     <FaEdit size={12} /> Edit
                   </button>
                 </div>
@@ -301,35 +259,26 @@ export default function ProfilePage() {
                       <FaAward className="text-sky-600 text-xl" />
                     </div>
                     <p className="text-gray-500 text-sm mb-2">No skills added yet</p>
-                    <button
-                      onClick={() => navigate('/edit-profile')}
-                      className="px-4 py-1.5 bg-sky-600 text-white text-sm font-semibold rounded-lg hover:bg-sky-700 transition-all"
-                    >
+                    <button onClick={() => navigate('/edit-profile')} className="px-4 py-1.5 bg-sky-600 text-white text-sm font-semibold rounded-lg hover:bg-sky-700 transition-all">
                       Add Your Skills
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Reviews Section */}
               <div className="bg-white shadow-md p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <FaStar className="text-yellow-500" />
                   Reviews & Ratings
                 </h3>
                 
-                {/* Rating Breakdown */}
                 <div className="mb-4 p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
                   <div className="flex items-center gap-4">
                     <div className="text-center">
                       <div className="text-4xl font-bold text-gray-900">{profileData.rating.toFixed(1)}</div>
                       <div className="flex justify-center gap-0.5 mt-1">
                         {[...Array(5)].map((_, i) => (
-                          <FaStar 
-                            key={i} 
-                            className={i < Math.floor(profileData.rating) ? "text-yellow-500" : "text-gray-300"} 
-                            size={14}
-                          />
+                          <FaStar key={i} className={i < Math.floor(profileData.rating) ? "text-yellow-500" : "text-gray-300"} size={14} />
                         ))}
                       </div>
                       <p className="text-xs text-gray-600 mt-1">Overall Rating</p>
@@ -340,10 +289,7 @@ export default function ProfilePage() {
                           <span className="text-xs text-gray-600 w-2">{star}</span>
                           <FaStar className="text-yellow-500" size={10} />
                           <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-gradient-to-r from-yellow-400 to-orange-500"
-                              style={{ width: star === 5 ? '70%' : star === 4 ? '20%' : '10%' }}
-                            ></div>
+                            <div className="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style={{ width: star === 5 ? '70%' : star === 4 ? '20%' : '10%' }}></div>
                           </div>
                         </div>
                       ))}
@@ -363,9 +309,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Right Column */}
             <div className="space-y-4">
-              {/* Statistics Card */}
               <div className="bg-white shadow-md p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-3">Performance Stats</h3>
                 <div className="space-y-3">
@@ -416,16 +360,12 @@ export default function ProfilePage() {
                       <p className="text-xs text-gray-500">Success Rate</p>
                     </div>
                     <div className="h-1.5 bg-purple-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                        style={{ width: `${recommendedPercentage}%` }}
-                      ></div>
+                      <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500" style={{ width: `${recommendedPercentage}%` }}></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Achievements */}
               <div className="bg-white shadow-md p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <FaTrophy className="text-yellow-500" />
