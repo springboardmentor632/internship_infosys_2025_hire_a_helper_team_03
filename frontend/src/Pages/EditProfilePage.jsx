@@ -53,7 +53,7 @@ export default function EditProfilePage() {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'http://localhost:5000/api/auth/upload-profile-image', true);
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
-      
+     
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentCompleted = Math.round((event.loaded * 100) / event.total);
@@ -79,20 +79,20 @@ export default function EditProfilePage() {
       });
 
       xhr.send(formData);
-      
+     
       const result = await uploadPromise;
-      
+     
       setFormData(prev => ({
         ...prev,
         profileImage: result.imageUrl
       }));
 
       setSuccess('Profile image uploaded successfully');
-      
+     
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       user.profilePicture = result.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
-      
+     
       window.dispatchEvent(new Event('profileUpdate'));
     } catch (err) {
       console.error('Error uploading image:', err);
@@ -132,7 +132,7 @@ export default function EditProfilePage() {
           skills: userData.skills || [],
           profileImage: userData.profilePicture || ""
         });
-        
+       
         const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
         if (userData.profilePicture) {
           existingUser.profilePicture = userData.profilePicture;
@@ -209,16 +209,16 @@ export default function EditProfilePage() {
       if (response.ok) {
         await response.json();
         setSuccess('Profile updated successfully!');
-        
+       
         const fullName = `${formData.firstName} ${formData.lastName}`;
         localStorage.setItem('userName', fullName);
         localStorage.setItem('userEmail', formData.email);
-        
-        const initials = formData.firstName && formData.lastName 
+       
+        const initials = formData.firstName && formData.lastName
           ? (formData.firstName[0] + formData.lastName[0]).toUpperCase()
           : fullName.substring(0, 2).toUpperCase();
         localStorage.setItem('userInitials', initials);
-        
+       
         const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
         const updatedUser = {
           ...existingUser,
@@ -231,9 +231,9 @@ export default function EditProfilePage() {
           profilePicture: existingUser.profilePicture || formData.profileImage
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+       
         window.dispatchEvent(new Event('profileUpdate'));
-        
+       
         setTimeout(() => {
           navigate('/profile');
         }, 2000);
@@ -252,23 +252,23 @@ export default function EditProfilePage() {
   if (loading) {
     return (
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
-        <Sidebar 
-          activeNav={activeNav} 
-          setActiveNav={setActiveNav} 
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          sidebarCollapsed={sidebarCollapsed} 
-          setSidebarCollapsed={setSidebarCollapsed} 
-          navigate={navigate} 
+        <Sidebar
+          activeNav={activeNav}
+          setActiveNav={setActiveNav}
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+          navigate={navigate}
         />
-        
+       
         <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
-          <Header 
-            mobileMenuOpen={mobileMenuOpen} 
-            setMobileMenuOpen={setMobileMenuOpen} 
-            sidebarCollapsed={sidebarCollapsed} 
+          <Header
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={setMobileMenuOpen}
+            sidebarCollapsed={sidebarCollapsed}
           />
-          
+         
           <section className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
@@ -291,31 +291,31 @@ export default function EditProfilePage() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)}></div>}
 
-      <Sidebar 
-        activeNav={activeNav} 
-        setActiveNav={setActiveNav} 
-        mobileMenuOpen={mobileMenuOpen} 
-        setMobileMenuOpen={setMobileMenuOpen} 
-        sidebarCollapsed={sidebarCollapsed} 
-        setSidebarCollapsed={setSidebarCollapsed} 
-        navigate={navigate} 
+      <Sidebar
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        navigate={navigate}
       />
-      
+     
       <main className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
-        <Header 
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          sidebarCollapsed={sidebarCollapsed} 
+        <Header
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+          sidebarCollapsed={sidebarCollapsed}
         />
-        
+       
         <section className="flex-1 overflow-y-auto pb-32 lg:pb-8">
           {/* Header Section with Cover */}
           <div className="bg-white shadow-md overflow-hidden">
-            <div className="h-32 md:h-40 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-600 relative">
+            <div className="h-20 md:h-25 relative">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJhIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMiIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNhKSIvPjwvc3ZnPg==')] opacity-30"></div>
-              <button 
+              <button
                 onClick={() => navigate('/profile')}
-                className="absolute top-4 left-4 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10"
+                className="absolute top-4 left-4 bg-sky-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -325,12 +325,12 @@ export default function EditProfilePage() {
             </div>
 
             <div className="px-4 md:px-8 pb-6">
-              <div className="flex flex-col items-center -mt-12">
+              <div className="flex flex-col items-center -mt-16">
                 <div className="relative group">
                   {formData.profileImage ? (
-                    <img 
-                      src={formData.profileImage} 
-                      alt="Profile" 
+                    <img
+                      src={formData.profileImage}
+                      alt="Profile"
                       className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-4 border-white shadow-2xl"
                     />
                   ) : (
@@ -341,7 +341,7 @@ export default function EditProfilePage() {
                     </div>
                   )}
                   <label className="absolute inset-0 rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
-                    <input 
+                    <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
@@ -353,7 +353,7 @@ export default function EditProfilePage() {
                 {uploadProgress > 0 && uploadProgress < 100 && (
                   <div className="mt-3 w-48">
                     <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-sky-600 rounded-full transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
@@ -394,7 +394,7 @@ export default function EditProfilePage() {
                     <FaEdit className="text-sky-600" />
                     Personal Information
                   </h3>
-                  
+                 
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -481,7 +481,7 @@ export default function EditProfilePage() {
                     </svg>
                     Skills & Expertise
                   </h3>
-                  
+                 
                   <div className="flex gap-2 mb-3">
                     <input
                       type="text"
@@ -499,7 +499,7 @@ export default function EditProfilePage() {
                       <FaPlus size={12} /> Add
                     </button>
                   </div>
-                  
+                 
                   {formData.skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {formData.skills.map((skill, index) => (
@@ -581,7 +581,7 @@ export default function EditProfilePage() {
             </div>
           </form>
         </section>
-        
+       
         <BottomNav navigate={navigate} activeTab="profile" />
       </main>
     </div>

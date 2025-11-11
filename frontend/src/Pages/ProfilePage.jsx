@@ -189,19 +189,19 @@ export default function ProfilePage() {
           {/* Header Section with Cover */}
           <div className="bg-white shadow-md overflow-hidden">
             {/* Cover Image */}
-            <div className="h-40 md:h-56 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-600 relative">
+            <div className="h-20 md:h-20 relative">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJhIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMiIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNhKSIvPjwvc3ZnPg==')] opacity-30"></div>
               <button 
                 onClick={() => navigate('/edit-profile')}
-                className="absolute top-4 right-4 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10"
+                className="absolute top-4 right-4 bg-sky-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-all shadow-lg z-10"
               >
                 <FaEdit /> Edit Profile
               </button>
             </div>
 
             {/* Profile Info */}
-            <div className="px-4 md:px-8 pb-6">
-              <div className="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6 -mt-14 md:-mt-16">
+            <div className="px-4 md:px-8 pb-6 pt-8">
+              <div className="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6 -mt-14 md:-mt-20">
                 {/* Profile Picture */}
                 <div className="relative flex-shrink-0">
                   {userData.profilePicture ? (
