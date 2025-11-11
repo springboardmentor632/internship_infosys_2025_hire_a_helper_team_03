@@ -24,10 +24,10 @@ export default function MyRequestsPage() {
       setAllRequests(reqs.map(r => ({ 
         id: r._id, 
         task: r.task ? r.task.title : 'Task',
-        taskData: r.task,  // Store full task data
+        taskData: r.task,
         status: r.status, 
         owner: r.owner ? `${r.owner.firstName || ''} ${r.owner.lastName || ''}`.trim() : '', 
-        ownerData: r.owner,  // Store full owner data
+        ownerData: r.owner,
         ownerInitials: r.owner ? `${(r.owner.firstName||'').charAt(0)}${(r.owner.lastName||'').charAt(0)}` : 'NA', 
         color: '#3B82F6', 
         rating: 4.3, 
@@ -52,10 +52,7 @@ export default function MyRequestsPage() {
         method: 'DELETE'
       });
       
-      // Remove the withdrawn request from state
       setAllRequests(prev => prev.filter(req => req.id !== requestId));
-      
-      // Show success message
       alert(result.message || 'Request withdrawn successfully');
     } catch (err) {
       console.error('Error withdrawing request:', err);
@@ -68,7 +65,6 @@ export default function MyRequestsPage() {
     setShowDetails(true);
   };
 
-  // Calculate tab counts dynamically
   const tabs = [
     { name: 'All', count: allRequests.length },
     { name: 'Pending', count: allRequests.filter(r => r.status === 'pending').length },
@@ -197,7 +193,7 @@ export default function MyRequestsPage() {
           </div>
         </section>
 
-        {/* Task Details Modal */}
+        {/* Details Modal */}
         {showDetails && selectedRequest && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -223,32 +219,89 @@ export default function MyRequestsPage() {
               <div className="p-6 space-y-6">
                 {/* Task Details */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Task Details</h3>
-                  <p className="text-gray-700">{selectedRequest.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Task Description</h3>
+                  <p className="text-gray-700 bg-gray-50 rounded-lg p-4">{selectedRequest.description || 'No description provided'}</p>
                 </div>
 
                 {/* Task Info */}
-                <div className="grid grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Price</p>
-                    <p className="font-semibold text-gray-900">${selectedRequest.price}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-sky-50 rounded-lg p-4 border border-sky-200">
+                    <p className="text-sm text-sky-600 font-medium mb-1">Budget</p>
+                    <p className="text-2xl font-bold text-gray-900">${selectedRequest.price}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Requested On</p>
-                    <p className="font-semibold text-gray-900">{selectedRequest.time}</p>
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <p className="text-sm text-blue-600 font-medium mb-1">Requested On</p>
+                    <p className="text-sm font-semibold text-gray-900">{selectedRequest.time}</p>
                   </div>
                 </div>
 
-                {/* Owner Info */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Task Owner</h3>
-                  <div className="flex items-center gap-3 bg-blue-50 rounded-lg p-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg" style={{ background: selectedRequest.color }}>
+                {/* Owner Profile Section */}
+                <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl p-5 border border-sky-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Task Owner Profile
+                  </h3>
+                  
+                  {/* Owner Basic Info */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg" style={{ background: selectedRequest.color }}>
                       {selectedRequest.ownerInitials}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{selectedRequest.owner}</p>
-                      <p className="text-sm text-gray-600">{selectedRequest.ownerData?.email}</p>
+                      <p className="text-xl font-bold text-gray-900">{selectedRequest.owner}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <FaMapMarkerAlt className="text-sky-600" size={14} />
+                        <span className="text-sm text-gray-600">{selectedRequest.distance} miles away</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="bg-white rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-gray-900">{selectedRequest.rating}</div>
+                        <div className="flex items-center justify-center gap-1 mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar 
+                              key={i} 
+                              className={i < Math.floor(selectedRequest.rating) ? "text-yellow-500" : "text-gray-300"} 
+                              size={14}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="h-10 w-px bg-gray-300"></div>
+                      <div>
+                        <p className="text-2xl font-bold text-gray-900">{selectedRequest.reviews}</p>
+                        <p className="text-sm text-gray-600">Reviews</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skills */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <svg className="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                      Skills & Expertise
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRequest.ownerData?.skills && selectedRequest.ownerData.skills.length > 0 ? (
+                        selectedRequest.ownerData.skills.map((skill, index) => (
+                          <span 
+                            key={index} 
+                            className="px-3 py-1 bg-white text-sky-700 rounded-full text-sm font-medium border border-sky-300"
+                          >
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">No skills listed</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -262,6 +315,15 @@ export default function MyRequestsPage() {
                     className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all"
                   >
                     Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDetails(false);
+                      navigate(`/messages/${selectedRequest.ownerData?._id}`);
+                    }}
+                    className="flex-1 px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-all"
+                  >
+                    Message Owner
                   </button>
                   {selectedRequest.status === 'pending' && (
                     <button
