@@ -4,7 +4,7 @@ import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
-import TaskCard from "../Components/TaskCard";
+import ProfileCard from "../Components/ProfileCard";
 import { API_ENDPOINTS, apiCall } from "../config/api";
 
 export default function RequestsPage() {
@@ -14,14 +14,8 @@ export default function RequestsPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeNav, setActiveNav] = useState("requests");
-  const [favorites, setFavorites] = useState([false, false, false]);
   const [selectedProfile, setSelectedProfile] = useState(null);
 
-  const toggleFavorite = (index) => {
-    const newFavorites = [...favorites];
-    newFavorites[index] = !newFavorites[index];
-    setFavorites(newFavorites);
-  };
 
   const [requests, setRequests] = useState([]);
 
@@ -45,6 +39,7 @@ export default function RequestsPage() {
         time: new Date(r.createdAt).toLocaleString(),
         status: r.status,
         _id: r._id,
+        requester: r.requester, // Preserve the full requester object for ProfileCard
       })));
     } catch (err) {
       console.error('Failed to load requests', err);
@@ -259,152 +254,16 @@ export default function RequestsPage() {
               </div>
             ))}
           </div>
-          <div className="mt-12">
-            <div className="mb-6">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Your Tasks with Pending Requests</h3>
-              <p className="text-sm md:text-base text-gray-600">Tasks that have helpers waiting for your response</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeTasks.length > 0 ? (
-                activeTasks.map((task, index) => (
-                  <TaskCard 
-                    key={task.id} 
-                    task={task} 
-                    index={index} 
-                    favorites={favorites} 
-                    toggleFavorite={toggleFavorite}
-                    onViewDetails={() => navigate(`/task/${task.id}`)}
-                    hasRequested={false}
-                  >
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      {task.pendingRequests} {task.pendingRequests === 1 ? 'Request' : 'Requests'}
-                    </div>
-                  </TaskCard>
-                ))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No tasks with pending requests found</p>
-                  <button
-                    onClick={() => navigate('/post-new-task')}
-                    className="mt-4 px-6 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg transition-all"
-                  >
-                    Post a New Task
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
         </section>
         <BottomNav navigate={navigate} activeTab="requests" />
       </main>
 
-      {/* Profile Modal */}
-      {selectedProfile && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-            {/* Modal Header */}
-            <div className="relative p-6 pb-4 border-b border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900">Helper Profile</h3>
-              <button 
-                onClick={() => setSelectedProfile(null)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-gray-500"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Profile Content */}
-            <div className="p-6">
-              {/* Profile Header */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full bg-sky-600 flex items-center justify-center text-white text-2xl font-bold">
-                  {`${selectedProfile.firstName?.[0] || ''}${selectedProfile.lastName?.[0] || ''}`}
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-gray-900">
-                    {`${selectedProfile.firstName || ''} ${selectedProfile.lastName || ''}`}
-                  </h4>
-                  <p className="text-gray-600">{selectedProfile.email}</p>
-                </div>
-              </div>
-
-              {/* Profile Details */}
-              <div className="space-y-6">
-                {/* Contact Info */}
-                <div>
-                  <h5 className="text-sm font-semibold text-gray-600 mb-2">Contact Information</h5>
-                  <div className="grid gap-2">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <span>{selectedProfile.email}</span>
-                    </div>
-                    {selectedProfile.phone && (
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <span>{selectedProfile.phone}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div>
-                  <h5 className="text-sm font-semibold text-gray-600 mb-2">Rating & Reviews</h5>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center">
-                      <FaStar className="w-5 h-5 text-yellow-400" />
-                      <span className="ml-1 font-semibold">4.8</span>
-                    </div>
-                    <span className="text-gray-600">(23 reviews)</span>
-                  </div>
-                </div>
-
-                {/* Tasks Completed */}
-                <div>
-                  <h5 className="text-sm font-semibold text-gray-600 mb-2">Experience</h5>
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">12</p>
-                      <p className="text-sm text-gray-600">Tasks Completed</p>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">98%</p>
-                      <p className="text-sm text-gray-600">Success Rate</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-6 bg-gray-50 border-t border-gray-200">
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setSelectedProfile(null)}
-                  className="flex-1 px-6 py-3 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => {
-                    navigate(`/messages/${selectedProfile._id}`);
-                    setSelectedProfile(null);
-                  }}
-                  className="flex-1 px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-all"
-                >
-                  Message
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Profile Card Component */}
+      <ProfileCard 
+        profile={selectedProfile}
+        onClose={() => setSelectedProfile(null)}
+        onMessage={(userId) => navigate(`/messages/${userId}`)}
+      />
     </div>
   );
 }

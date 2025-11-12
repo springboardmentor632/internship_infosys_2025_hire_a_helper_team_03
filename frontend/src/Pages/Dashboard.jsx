@@ -208,7 +208,7 @@ export default function Dashboard() {
                 className="bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 font-bold py-3 px-4 md:px-6 rounded-lg transition-all sm:flex-1 text-sm md:text-base"
                 onClick={() => navigate("/mytasks")}
               >
-                View Earnings
+                View Your Tasks
               </button>
             </div>
           </div>

@@ -106,7 +106,6 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick, onEditClick }) => {
                   <td className="py-3 lg:py-4 px-4 lg:px-6">
                     <div>
                       <p className="font-bold text-sm lg:text-base text-gray-900">{task.title}</p>
-                      <p className="text-xs lg:text-sm text-gray-600 mt-1 line-clamp-2 max-w-md">{task.description}</p>
                     </div>
                   </td>
                   <td className="py-3 lg:py-4 px-4 lg:px-6">

@@ -311,7 +311,7 @@ export default function ProfilePage() {
 
             <div className="space-y-4">
               <div className="bg-white shadow-md p-5">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Performance Stats</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Task Stats</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-center gap-2">
