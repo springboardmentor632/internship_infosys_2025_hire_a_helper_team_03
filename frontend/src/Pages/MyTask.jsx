@@ -102,6 +102,17 @@ const MyTask = () => {
     fetchUserTasks();
   }, []);
 
+  // Refetch tasks when page regains focus (user returns from edit)
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('Page regained focus, refetching tasks...');
+      fetchUserTasks();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -305,7 +316,7 @@ const MyTask = () => {
   // Handle edit task
   const handleEditTask = (task) => {
     // Navigate to post task page with task data
-    navigate('/posttask', { state: { task: task } });
+    navigate('/posttask', { state: { task: task, returnToMyTasks: true } });
   };
 
   // Handle delete draft
@@ -474,7 +485,6 @@ const MyTask = () => {
                   <option value="active">Active</option>
                   <option value="in-progress">In Progress</option>
                   <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
                 </select>
                 <svg
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"

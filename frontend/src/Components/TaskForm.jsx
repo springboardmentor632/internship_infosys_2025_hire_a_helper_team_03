@@ -25,6 +25,9 @@ const TaskForm = ({ navigate, editTask = null }) => {
   // Load task data if editing
   useEffect(() => {
     if (editTask) {
+      console.log('Loading task for edit:', editTask);
+      console.log('Task budget value:', editTask.budget, 'Type:', typeof editTask.budget);
+      
       setIsEditMode(true);
       setFormData({
         title: editTask.title || "",
@@ -35,7 +38,7 @@ const TaskForm = ({ navigate, editTask = null }) => {
         startTime: editTask.startTime || "",
         endDate: editTask.endDate ? new Date(editTask.endDate).toISOString().split('T')[0] : "",
         endTime: editTask.endTime || "",
-        budget: editTask.budget || "",
+        budget: editTask.budget !== undefined && editTask.budget !== null ? String(editTask.budget) : "",
         urgency: editTask.urgency || "",
         image: null,
       });
@@ -43,6 +46,8 @@ const TaskForm = ({ navigate, editTask = null }) => {
       // Set image preview if task has an image
       if (editTask.imageUrl) {
         setImagePreview(editTask.imageUrl);
+      } else if (editTask.images && editTask.images.length > 0) {
+        setImagePreview(editTask.images[0]);
       }
     }
   }, [editTask]);
@@ -170,12 +175,19 @@ const handleSubmit = async () => {
   if (formData.startTime) submitData.append('startTime', formData.startTime);
   if (formData.endDate) submitData.append('endDate', formData.endDate);
   if (formData.endTime) submitData.append('endTime', formData.endTime);
-  if (formData.budget) submitData.append('budget', formData.budget);
+  
+  // Always append budget when editing (to allow clearing), only append if has value when creating
+  if (isEditMode) {
+    submitData.append('budget', formData.budget || '');
+  } else if (formData.budget) {
+    submitData.append('budget', formData.budget);
+  }
+  
   if (formData.urgency) submitData.append('urgency', formData.urgency);
   
-  // Set status as active when posting
-  if (isEditMode) {
-    submitData.append('status', 'active');
+  // Preserve the original status when editing, or set as draft for new tasks
+  if (isEditMode && editTask.status) {
+    submitData.append('status', editTask.status);
   }
   
   // Append image if exists
@@ -188,8 +200,11 @@ const handleSubmit = async () => {
       title: formData.title,
       category: formData.category,
       location: formData.location,
+      budget: formData.budget,
+      urgency: formData.urgency,
       hasImage: !!formData.image,
-      isEditMode: isEditMode
+      isEditMode: isEditMode,
+      taskId: isEditMode ? editTask._id : 'new'
     });
 
     // Use update endpoint if editing, otherwise create new task
