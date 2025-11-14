@@ -6,8 +6,10 @@ import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
 import ProfileCard from "../Components/ProfileCard";
 import { API_ENDPOINTS, apiCall } from "../config/api";
+import { useAlert } from "../Components/AlertContainer";
 
 export default function RequestsPage() {
+  const { showSuccess, showError, showWarning, showInfo } = useAlert();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
 
@@ -43,6 +45,7 @@ export default function RequestsPage() {
       })));
     } catch (err) {
       console.error('Failed to load requests', err);
+      showError('Failed to load requests. Please try again.');
     }
   };
 
@@ -103,6 +106,7 @@ export default function RequestsPage() {
       setActiveTasks(activeTasks);
     } catch (err) {
       console.error('Failed to load active tasks:', err);
+      showError('Failed to load active tasks. Please try again.');
     }
   };
 
@@ -195,8 +199,11 @@ export default function RequestsPage() {
                               method: 'PATCH', 
                               body: JSON.stringify({ status: 'accepted' }) 
                             });
+                            showSuccess(`Request from ${request.name} accepted successfully!`);
                             loadRequests();
-                          } catch (err) { alert(err.message || 'Failed'); }
+                          } catch (err) { 
+                            showError(err.message || 'Failed to accept request');
+                          }
                         }}
                       >
                         Accept
@@ -222,8 +229,11 @@ export default function RequestsPage() {
                               method: 'PATCH', 
                               body: JSON.stringify({ status: 'declined' }) 
                             });
+                            showInfo(`Request from ${request.name} declined.`);
                             loadRequests();
-                          } catch (err) { alert(err.message || 'Failed'); }
+                          } catch (err) { 
+                            showError(err.message || 'Failed to decline request');
+                          }
                         }}
                       >
                         Decline

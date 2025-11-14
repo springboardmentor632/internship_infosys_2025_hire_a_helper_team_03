@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
 import Sidebar from "../Components/Sidebar";
 import BottomNav from "../Components/BottomNav";
+import { useAlert } from "../Components/AlertContainer";
 
 import TaskTable from "../Components/TaskTable";
 import TaskDetailsCard from "../Components/TaskDetailCard";
@@ -10,6 +11,7 @@ import DraftCard from "../Components/DraftCard";
 
 const MyTask = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError, showWarning, showInfo } = useAlert();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -147,7 +149,7 @@ const MyTask = () => {
     console.log('Task ID value:', task._id);
     
     if (!task._id) {
-      alert('Invalid task ID');
+      showError('Invalid task ID');
       return;
     }
 
@@ -191,13 +193,13 @@ const MyTask = () => {
       });
       
       // Show success message
-      alert(response?.message || 'Task deleted successfully');
+      showSuccess(response?.message || 'Task deleted successfully');
 
       // Refresh the task list
       fetchUserTasks();
     } catch (err) {
       console.error('Error deleting task:', err);
-      alert('Failed to delete task: ' + err.message);
+      showError('Failed to delete task: ' + err.message);
     }
   };
 
@@ -210,7 +212,7 @@ const MyTask = () => {
     }
 
     if (!task._id) {
-      alert('Invalid task ID');
+      showError('Invalid task ID');
       return;
     }
 
@@ -246,10 +248,10 @@ const MyTask = () => {
         setSelectedTask({ ...selectedTask, status: 'completed' });
       }
       
-      alert('Task marked as completed!');
+      showSuccess('Task marked as completed!');
     } catch (err) {
       console.error('Error updating task status:', err);
-      alert('Failed to update task: ' + err.message);
+      showError('Failed to update task: ' + err.message);
     }
   };
 
@@ -261,12 +263,12 @@ const MyTask = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Please login to publish drafts');
+      showError('Please login to publish drafts');
       return;
     }
 
     if (!draft._id) {
-      alert('Invalid draft ID');
+      showError('Invalid draft ID');
       return;
     }
 
@@ -297,11 +299,11 @@ const MyTask = () => {
         )
       );
       
-      alert('Draft published successfully!');
+      showSuccess('Draft published successfully!');
       fetchUserTasks(); // Refresh the list
     } catch (err) {
       console.error('Error publishing draft:', err);
-      alert('Failed to publish draft: ' + err.message);
+      showError('Failed to publish draft: ' + err.message);
     } finally {
       setActionLoading(false);
     }
@@ -327,12 +329,12 @@ const MyTask = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Please login to delete drafts');
+      showError('Please login to delete drafts');
       return;
     }
 
     if (!draft._id) {
-      alert('Invalid draft ID');
+      showError('Invalid draft ID');
       return;
     }
 
@@ -356,11 +358,11 @@ const MyTask = () => {
       // Remove the deleted draft from the state
       setTasks(prevTasks => prevTasks.filter(t => t._id !== draft._id));
       
-      alert('Draft deleted successfully');
+      showSuccess('Draft deleted successfully');
       fetchUserTasks(); // Refresh the list
     } catch (err) {
       console.error('Error deleting draft:', err);
-      alert('Failed to delete draft: ' + err.message);
+      showError('Failed to delete draft: ' + err.message);
     } finally {
       setActionLoading(false);
     }

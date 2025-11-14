@@ -5,8 +5,10 @@ import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header"; 
 import BottomNav from "../Components/BottomNav";
 import { API_ENDPOINTS, apiCall } from "../config/api";
+import { useAlert } from "../Components/AlertContainer";
 
 export default function MyRequestsPage() {
+  const { showSuccess, showError, showWarning, showInfo } = useAlert();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -39,6 +41,7 @@ export default function MyRequestsPage() {
       })));
     } catch (err) {
       console.error('Failed to load my requests', err);
+      showError('Failed to load your requests. Please try again.');
     }
   };
 
@@ -53,10 +56,13 @@ export default function MyRequestsPage() {
       });
       
       setAllRequests(prev => prev.filter(req => req.id !== requestId));
-      alert(result.message || 'Request withdrawn successfully');
+      showSuccess(result.message || 'Request withdrawn successfully');
+      
+      // Dispatch custom event to notify other pages (like Feed) to refresh
+      window.dispatchEvent(new CustomEvent('requestWithdrawn', { detail: { requestId } }));
     } catch (err) {
       console.error('Error withdrawing request:', err);
-      alert(err.message || 'Failed to withdraw request. Please try again.');
+      showError(err.message || 'Failed to withdraw request. Please try again.');
     }
   };
 

@@ -8,8 +8,10 @@ import { FaEdit, FaTimes, FaPlus, FaCamera, FaMapMarkerAlt } from "react-icons/f
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
+import { useAlert } from "../Components/AlertContainer";
 
 export default function EditProfilePage() {
+  const { showSuccess, showError, showWarning, showInfo } = useAlert();
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,14 +38,14 @@ export default function EditProfilePage() {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setError("Please upload an image file (JPG, PNG, etc.)");
+      showError("Please upload an image file (JPG, PNG, etc.)");
       e.target.value = "";
       return;
     }
 
     // Validate file size
     if (file.size > 5 * 1024 * 1024) {
-      setError("Image size should be less than 5MB");
+      showError("Image size should be less than 5MB");
       e.target.value = "";
       return;
     }
@@ -94,6 +96,7 @@ export default function EditProfilePage() {
 
       setFormData(prev => ({ ...prev, profileImage: result.imageUrl }));
       setSuccess("Profile image uploaded successfully!");
+      showSuccess("Profile image uploaded successfully!");
 
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       user.profilePicture = result.imageUrl;
@@ -104,6 +107,7 @@ export default function EditProfilePage() {
     } catch (err) {
       console.error("Image upload error:", err);
       setError(err.message || "Failed to upload image. Please try again.");
+      showError(err.message || "Failed to upload image. Please try again.");
       e.target.value = "";
     } finally {
       setTimeout(() => setUploadProgress(0), 1000);
@@ -172,14 +176,17 @@ export default function EditProfilePage() {
   const handleAddSkill = () => {
     const skill = newSkill.trim();
     if (!skill) {
+      showWarning("Please enter a skill");
       setError("Please enter a skill");
       return;
     }
     if (formData.skills.includes(skill)) {
+      showWarning("This skill is already added");
       setError("This skill is already added");
       return;
     }
     if (formData.skills.length >= 10) {
+      showWarning("You can add maximum 10 skills");
       setError("You can add maximum 10 skills");
       return;
     }
@@ -239,13 +246,16 @@ export default function EditProfilePage() {
 
           setFormData(prev => ({ ...prev, location: loc }));
           setSuccess("Location updated successfully!");
+          showSuccess("Location updated successfully!");
           setTimeout(() => setSuccess(""), 3000);
         } catch (err) {
           console.error("Geocoding error:", err);
           if (err.name === 'AbortError') {
             setError("Location request timed out. Please try again.");
+            showError("Location request timed out. Please try again.");
           } else {
             setError("Could not fetch your address. Please type it manually.");
+            showWarning("Could not fetch your address. Please type it manually.");
           }
         } finally {
           setLocationLoading(false);
@@ -270,6 +280,7 @@ export default function EditProfilePage() {
         }
         
         setError(errorMessage);
+        showError(errorMessage);
         setLocationLoading(false);
       },
       {
@@ -355,6 +366,7 @@ export default function EditProfilePage() {
       }
 
       setSuccess("Profile updated successfully!");
+      showSuccess("Profile updated successfully! Redirecting...");
 
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       const initials = formData.firstName && formData.lastName
@@ -378,6 +390,7 @@ export default function EditProfilePage() {
     } catch (err) {
       console.error("Profile update error:", err);
       setError(err.message || "Failed to update profile. Please try again.");
+      showError(err.message || "Failed to update profile. Please try again.");
     } finally {
       setSaving(false);
     }

@@ -26,6 +26,27 @@ export default function Feed() {
   useEffect(() => {
     fetchAllTasks();
     fetchUserRequests();
+
+    // Listen for request withdrawn event from MyRequest page
+    const handleRequestWithdrawn = () => {
+      console.log('Request withdrawn event received, refreshing user requests...');
+      fetchUserRequests();
+    };
+
+    // Listen for request sent event from TaskViewModal
+    const handleRequestSent = () => {
+      console.log('Request sent event received, refreshing user requests...');
+      fetchUserRequests();
+    };
+
+    window.addEventListener('requestWithdrawn', handleRequestWithdrawn);
+    window.addEventListener('requestSent', handleRequestSent);
+
+    // Cleanup listeners on component unmount
+    return () => {
+      window.removeEventListener('requestWithdrawn', handleRequestWithdrawn);
+      window.removeEventListener('requestSent', handleRequestSent);
+    };
   }, []);
 
   const fetchUserRequests = async () => {

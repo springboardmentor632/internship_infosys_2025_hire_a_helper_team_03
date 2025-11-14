@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
+import { useAlert } from "./AlertContainer";
 
 const TaskForm = ({ navigate, editTask = null }) => {
+  const { showSuccess, showError, showWarning } = useAlert();
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -68,7 +70,7 @@ const TaskForm = ({ navigate, editTask = null }) => {
       reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      alert("File size must be less than 5MB");
+      showError("File size must be less than 5MB");
     }
   };
 
@@ -80,7 +82,7 @@ const TaskForm = ({ navigate, editTask = null }) => {
   const handleSaveDraft = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Please login to save a draft');
+      showError('Please login to save a draft');
       navigate('/login');
       return;
     }
@@ -134,12 +136,12 @@ const TaskForm = ({ navigate, editTask = null }) => {
         throw new Error(result.message || result.error || 'Failed to save draft');
       }
 
-      alert(isEditMode ? 'Draft updated successfully!' : 'Draft saved successfully!');
+      showSuccess(isEditMode ? 'Draft updated successfully!' : 'Draft saved successfully!');
       navigate('/mytasks');
       
     } catch (err) {
       console.error('Error saving draft:', err);
-      alert('Error saving draft: ' + err.message);
+      showError('Error saving draft: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -150,13 +152,13 @@ const TaskForm = ({ navigate, editTask = null }) => {
 const handleSubmit = async () => {
   // Validate required fields
   if (!formData.title || !formData.category || !formData.description || !formData.location) {
-    alert('Please fill in all required fields');
+    showWarning('Please fill in all required fields');
     return;
   }
 
   const token = localStorage.getItem('token');
   if (!token) {
-    alert('Please login to post a task');
+    showError('Please login to post a task');
     navigate('/login');
     return;
   }
@@ -230,12 +232,12 @@ const handleSubmit = async () => {
       throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to ${isEditMode ? 'update' : 'post'} task`);
     }
 
-    alert(isEditMode ? 'Task updated successfully!' : 'Task posted successfully!');
+    showSuccess(isEditMode ? 'Task updated successfully!' : 'Task posted successfully!');
     navigate('/mytasks');
     
   } catch (err) {
     console.error('Error posting task:', err);
-    alert('Error posting task: ' + err.message);
+    showError('Error posting task: ' + err.message);
   } finally {
     setLoading(false);
   }

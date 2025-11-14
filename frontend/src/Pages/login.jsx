@@ -4,9 +4,11 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaHandshakeAngle } from "react-icons/fa6";
 import OTPVerification from "../Components/OTPVerification";
 import { API_ENDPOINTS } from "../config/api";
+import { useAlert } from "../Components/AlertContainer";
 import "./signup.css";
 
 export default function LoginPage() {
+  const { showSuccess, showError, showWarning, showInfo } = useAlert();
   const [formData, setFormData] = useState({ email: "", password: "", remember: false });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -88,6 +90,7 @@ export default function LoginPage() {
               const otpData = await otpRes.json();
               
               if (otpRes.ok) {
+                showInfo("OTP sent to your email. Please verify to continue.");
                 setShowOTPScreen(true);
               } else {
                 throw new Error(otpData.message || "Failed to send OTP");
@@ -125,7 +128,8 @@ export default function LoginPage() {
         }
       }
       
-      navigate("/dashboard");
+      showSuccess('Login successful! Welcome back.');
+      setTimeout(() => navigate("/dashboard"), 500);
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message);
