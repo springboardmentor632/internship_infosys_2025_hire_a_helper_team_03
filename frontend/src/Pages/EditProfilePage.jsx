@@ -11,7 +11,7 @@ import BottomNav from "../Components/BottomNav";
 import { useAlert } from "../Components/AlertContainer";
 
 export default function EditProfilePage() {
-  const { showSuccess, showError, showWarning, showInfo } = useAlert();
+  const { showSuccess, showError, showWarning } = useAlert();
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

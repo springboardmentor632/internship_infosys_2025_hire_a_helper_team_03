@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaPlusCircle,
-  FaDollarSign,
+  FaRupeeSign,
   FaUserCircle,
   FaAward,
   FaClock,
@@ -75,7 +75,7 @@ export default function Dashboard() {
       title: task.title,
       location: task.location,
       requests: task.requests ? `${task.requests.length} requests` : "0 requests",
-      price: `$${task.budget}`,
+      price: `₹${task.budget}`,
       button1: "View",
       button2: "Edit",
       gradient: "from-sky-600 to-blue-600",
@@ -99,9 +99,9 @@ export default function Dashboard() {
     },
     {
       label: "Total Earning",
-      value: loading ? "..." : `$${totalEarnings.toFixed(0)}`,
+      value: loading ? "..." : `₹${totalEarnings.toFixed(0)}`,
       color: "#8B5CF6",
-      icon: FaDollarSign,
+      icon: FaRupeeSign,
       gradient: "from-purple-500 to-purple-700",
     },
     {
@@ -129,8 +129,8 @@ export default function Dashboard() {
       iconColor: "text-purple-600",
     },
     {
-      icon: FaDollarSign,
-      text: `Payment received: $${totalEarnings > 0 ? totalEarnings.toFixed(0) : '0'}`,
+      icon: FaRupeeSign,
+      text: `Payment received: ₹${totalEarnings > 0 ? totalEarnings.toFixed(0) : '0'}`,
       time: "Yesterday",
       bgColor: "bg-gradient-to-br from-green-100 to-emerald-100",
       iconColor: "text-green-600",

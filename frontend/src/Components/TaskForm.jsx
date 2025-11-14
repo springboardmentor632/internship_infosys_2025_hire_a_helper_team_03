@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign } from "react-icons/fa";
+import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaRupeeSign } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useAlert } from "./AlertContainer";
 
@@ -20,7 +20,6 @@ const TaskForm = ({ navigate, editTask = null }) => {
   });
 
   const [imagePreview, setImagePreview] = useState(null);
-  const [focusedField, setFocusedField] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -296,8 +295,6 @@ const handleSubmit = async () => {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              onFocus={() => setFocusedField('title')}
-              onBlur={() => setFocusedField(null)}
               placeholder="e.g., Help moving furniture"
               className="w-full px-4 py-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-gray-700"
             />
@@ -312,8 +309,6 @@ const handleSubmit = async () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              onFocus={() => setFocusedField('description')}
-              onBlur={() => setFocusedField(null)}
               rows={4}
               placeholder="Describe what help you need, any requirements, and what you'll provide..."
               className="w-full px-4 py-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-gray-700 resize-none"
@@ -440,7 +435,7 @@ const handleSubmit = async () => {
                 Budget (Optional)
               </label>
               <div className="relative">
-                <FaDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                <FaRupeeSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
                   type="number"
                   name="budget"

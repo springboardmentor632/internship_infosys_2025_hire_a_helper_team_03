@@ -44,7 +44,7 @@ const TaskCardMobile = ({ task, index, onViewClick }) => {
           {task.title}
         </h3>
         <div className="text-green-700 font-semibold bg-green-100 px-2 py-0.5 rounded-full text-xs whitespace-nowrap">
-          ${task.budget || 'TBD'}
+          ₹{task.budget || 'TBD'}
         </div>
       </div>
 

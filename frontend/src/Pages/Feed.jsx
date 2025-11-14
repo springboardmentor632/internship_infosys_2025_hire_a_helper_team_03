@@ -5,7 +5,7 @@ import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 import BottomNav from "../Components/BottomNav";
 import TaskCard from "../Components/TaskCard";
-import TaskViewModal from "../Components/TaskViewModal";
+import TaskDetailCard from "../Components/TaskDetailCard";
 
 export default function Feed() {
   const navigate = useNavigate();
@@ -294,7 +294,7 @@ export default function Feed() {
 
       {/* Task View Modal */}
       {showTaskModal && (
-        <TaskViewModal
+        <TaskDetailCard
           task={selectedTask}
           onClose={handleCloseModal}
           hasRequested={hasRequestedTask(selectedTask?._id)}

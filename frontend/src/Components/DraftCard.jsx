@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaCalendarAlt, FaDollarSign, FaTrash } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaRupeeSign, FaTrash } from 'react-icons/fa';
 import { MdEdit, MdPublish } from 'react-icons/md';
 
 const DraftCard = ({ draft, onPublish, onDelete, onEdit }) => {
@@ -81,8 +81,8 @@ const DraftCard = ({ draft, onPublish, onDelete, onEdit }) => {
         )}
         {draft.budget && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <FaDollarSign className="text-gray-400" />
-            <span>${draft.budget}</span>
+            <FaRupeeSign className="text-gray-400" />
+            <span>₹{draft.budget}</span>
           </div>
         )}
         {draft.urgency && (

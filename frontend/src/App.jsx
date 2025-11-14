@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from './Pages/Dashboard';
 import Feed from './Pages/Feed';
 import MyTask from './Pages/MyTask';
@@ -19,14 +19,12 @@ import Loader from './Components/Loader';
 import ProtectedRoute from './Components/ProtectedRoute';
 import PublicRoute from './Components/PublicRoute';
 import { AlertProvider } from './Components/AlertContainer';
-import AlertDemo from './Components/AlertDemo';
 
 // Pages
 
 function AppContent() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   useEffect(() => {
     // Show loader on route change
@@ -47,9 +45,6 @@ function AppContent() {
       <Routes>
         {/* Home Route - Always accessible, just shows different content */}
         <Route path="/" element={<Home />} />
-        
-        {/* Alert Demo - For testing alerts */}
-        <Route path="/alert-demo" element={<AlertDemo />} />
         
         {/* Auth Routes - Redirect to dashboard if logged in */}
         <Route path="/signup" element={

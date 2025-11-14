@@ -9,7 +9,7 @@ import { API_ENDPOINTS, apiCall } from "../config/api";
 import { useAlert } from "../Components/AlertContainer";
 
 export default function RequestsPage() {
-  const { showSuccess, showError, showWarning, showInfo } = useAlert();
+  const { showSuccess, showError, showInfo } = useAlert();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
 
@@ -52,6 +52,7 @@ export default function RequestsPage() {
   useEffect(() => {
     loadRequests();
     loadActiveTasks();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate tab counts dynamically
@@ -70,8 +71,6 @@ export default function RequestsPage() {
     activeTab === 'Accepted' ? requests.filter(r => r.status === 'accepted') :
     activeTab === 'Declined' ? requests.filter(r => r.status === 'declined') : requests;
 
-  const [activeTasks, setActiveTasks] = useState([]);
-  
   const loadActiveTasks = async () => {
     try {
       // Fetch tasks from MyTask endpoint
@@ -103,7 +102,8 @@ export default function RequestsPage() {
           pendingRequests: task.requests ? task.requests.filter(req => req.status === 'pending').length : 0,
           status: task.status
         }));
-      setActiveTasks(activeTasks);
+      // Note: activeTasks is used only within this function for filtering, no need to set state
+      console.log('Active tasks with requests:', activeTasks);
     } catch (err) {
       console.error('Failed to load active tasks:', err);
       showError('Failed to load active tasks. Please try again.');
@@ -183,7 +183,7 @@ export default function RequestsPage() {
                       <p className="text-sm md:text-base text-gray-700 mb-4 italic">"{request.description}"</p>
 
                       <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600">
-                        <span className="font-semibold text-sky-600">${request.price}</span>
+                        <span className="font-semibold text-sky-600">₹{request.price}</span>
                         <span>• {request.experience}</span>
                         <span>• {request.time}</span>
                       </div>

@@ -11,7 +11,7 @@ import DraftCard from "../Components/DraftCard";
 
 const MyTask = () => {
   const navigate = useNavigate();
-  const { showSuccess, showError, showWarning, showInfo } = useAlert();
+  const { showSuccess, showError } = useAlert();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

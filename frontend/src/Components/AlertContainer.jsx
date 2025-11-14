@@ -17,6 +17,10 @@ export const useAlert = () => {
 export const AlertProvider = ({ children }) => {
   const [alerts, setAlerts] = useState([]);
 
+  const removeAlert = useCallback((id) => {
+    setAlerts(prev => prev.filter(alert => alert.id !== id));
+  }, []);
+
   const showAlert = useCallback((message, type = 'info', duration = 5000) => {
     const id = Date.now() + Math.random();
     const newAlert = {
@@ -36,11 +40,7 @@ export const AlertProvider = ({ children }) => {
     }
 
     return id;
-  }, []);
-
-  const removeAlert = useCallback((id) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== id));
-  }, []);
+  }, [removeAlert]);
 
   // Convenience methods
   const showSuccess = useCallback((message, duration) => {

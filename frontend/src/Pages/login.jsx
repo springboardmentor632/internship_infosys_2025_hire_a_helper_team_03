@@ -8,7 +8,7 @@ import { useAlert } from "../Components/AlertContainer";
 import "./signup.css";
 
 export default function LoginPage() {
-  const { showSuccess, showError, showWarning, showInfo } = useAlert();
+  const { showSuccess, showInfo } = useAlert();
   const [formData, setFormData] = useState({ email: "", password: "", remember: false });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
