@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaHeart, FaDollarSign, FaCalendarAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaHeart, FaRupeeSign, FaCalendarAlt } from "react-icons/fa";
 
 const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRequested }) => {
   // Format date for display
@@ -141,7 +141,7 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
         {/* Price and Action Button */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <span className="px-2 py-1 text-sm font-bold text-green-700 bg-green-100 rounded flex items-center gap-1">
-            <FaDollarSign size={12} />
+            <FaRupeeSign size={12} />
             {task.budget || 'Negotiable'}
           </span>
           {hasRequested ? (

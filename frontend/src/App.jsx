@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from './Pages/Dashboard';
 import Feed from './Pages/Feed';
 import MyTask from './Pages/MyTask';
@@ -18,13 +18,13 @@ import Notifications from './Pages/NotificationsPage';
 import Loader from './Components/Loader';
 import ProtectedRoute from './Components/ProtectedRoute';
 import PublicRoute from './Components/PublicRoute';
+import { AlertProvider } from './Components/AlertContainer';
 
 // Pages
 
 function AppContent() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   useEffect(() => {
     // Show loader on route change
@@ -100,7 +100,9 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <AppContent />
+        <AlertProvider>
+          <AppContent />
+        </AlertProvider>
       </Router>
     </div>
   );

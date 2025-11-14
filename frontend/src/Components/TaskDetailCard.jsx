@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaDollarSign, FaTag, FaExclamationTriangle, FaTimes } from "react-icons/fa";
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaRupeeSign, FaTag, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
 const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
   if (!task) return null;
@@ -129,11 +129,11 @@ const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
             {task.budget && (
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FaDollarSign size={14} className="text-green-600" />
+                  <FaRupeeSign size={14} className="text-green-600" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Budget</p>
-                  <p className="text-gray-900 font-medium">${task.budget}</p>
+                  <p className="text-gray-900 font-medium">₹{task.budget}</p>
                 </div>
               </div>
             )}

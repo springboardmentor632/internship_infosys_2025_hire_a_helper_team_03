@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign } from "react-icons/fa";
+import { FaUpload, FaLightbulb, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaRupeeSign } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
+import { useAlert } from "./AlertContainer";
 
 const TaskForm = ({ navigate, editTask = null }) => {
+  const { showSuccess, showError, showWarning } = useAlert();
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -18,7 +20,6 @@ const TaskForm = ({ navigate, editTask = null }) => {
   });
 
   const [imagePreview, setImagePreview] = useState(null);
-  const [focusedField, setFocusedField] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -68,7 +69,7 @@ const TaskForm = ({ navigate, editTask = null }) => {
       reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      alert("File size must be less than 5MB");
+      showError("File size must be less than 5MB");
     }
   };
 
@@ -80,7 +81,7 @@ const TaskForm = ({ navigate, editTask = null }) => {
   const handleSaveDraft = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Please login to save a draft');
+      showError('Please login to save a draft');
       navigate('/login');
       return;
     }
@@ -134,12 +135,12 @@ const TaskForm = ({ navigate, editTask = null }) => {
         throw new Error(result.message || result.error || 'Failed to save draft');
       }
 
-      alert(isEditMode ? 'Draft updated successfully!' : 'Draft saved successfully!');
+      showSuccess(isEditMode ? 'Draft updated successfully!' : 'Draft saved successfully!');
       navigate('/mytasks');
       
     } catch (err) {
       console.error('Error saving draft:', err);
-      alert('Error saving draft: ' + err.message);
+      showError('Error saving draft: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -150,13 +151,13 @@ const TaskForm = ({ navigate, editTask = null }) => {
 const handleSubmit = async () => {
   // Validate required fields
   if (!formData.title || !formData.category || !formData.description || !formData.location) {
-    alert('Please fill in all required fields');
+    showWarning('Please fill in all required fields');
     return;
   }
 
   const token = localStorage.getItem('token');
   if (!token) {
-    alert('Please login to post a task');
+    showError('Please login to post a task');
     navigate('/login');
     return;
   }
@@ -230,12 +231,12 @@ const handleSubmit = async () => {
       throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to ${isEditMode ? 'update' : 'post'} task`);
     }
 
-    alert(isEditMode ? 'Task updated successfully!' : 'Task posted successfully!');
+    showSuccess(isEditMode ? 'Task updated successfully!' : 'Task posted successfully!');
     navigate('/mytasks');
     
   } catch (err) {
     console.error('Error posting task:', err);
-    alert('Error posting task: ' + err.message);
+    showError('Error posting task: ' + err.message);
   } finally {
     setLoading(false);
   }
@@ -294,8 +295,6 @@ const handleSubmit = async () => {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              onFocus={() => setFocusedField('title')}
-              onBlur={() => setFocusedField(null)}
               placeholder="e.g., Help moving furniture"
               className="w-full px-4 py-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-gray-700"
             />
@@ -310,8 +309,6 @@ const handleSubmit = async () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              onFocus={() => setFocusedField('description')}
-              onBlur={() => setFocusedField(null)}
               rows={4}
               placeholder="Describe what help you need, any requirements, and what you'll provide..."
               className="w-full px-4 py-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-gray-700 resize-none"
@@ -438,7 +435,7 @@ const handleSubmit = async () => {
                 Budget (Optional)
               </label>
               <div className="relative">
-                <FaDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                <FaRupeeSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
                   type="number"
                   name="budget"

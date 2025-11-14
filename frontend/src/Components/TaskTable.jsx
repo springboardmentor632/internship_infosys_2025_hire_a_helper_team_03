@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaTag, FaDollarSign } from "react-icons/fa";
+import { FaMapMarkerAlt, FaTag, FaRupeeSign } from "react-icons/fa";
 
 const TaskTable = ({ tasks, onViewClick, onDeleteClick, onEditClick }) => {
   const getStatusStyle = (status) => {
@@ -55,7 +55,7 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick, onEditClick }) => {
                 <span className="text-xs sm:text-sm truncate">{task.location}</span>
               </div>
               <div className="flex items-center gap-1.5 text-green-600 font-medium col-span-2 sm:col-span-1">
-                <FaDollarSign size={12} className="shrink-0" />
+                <FaRupeeSign size={12} className="shrink-0" />
                 <span className="text-xs sm:text-sm">{task.budget || 'Negotiable'}</span>
               </div>
             </div>
@@ -123,7 +123,7 @@ const TaskTable = ({ tasks, onViewClick, onDeleteClick, onEditClick }) => {
                   </td>
                   <td className="py-3 lg:py-4 px-4 lg:px-6 text-center">
                     <span className="px-2.5 lg:px-4 py-1 lg:py-2 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 rounded-lg font-bold shadow-md inline-block min-w-[80px] lg:min-w-[100px] text-xs lg:text-sm">
-                      {task.budget ? `$${task.budget}` : 'Negotiable'}
+                      {task.budget ? `₹${task.budget}` : 'Negotiable'}
                     </span>
                   </td>
                   <td className="py-3 lg:py-4 px-4 lg:px-6">

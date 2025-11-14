@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaEnvelope, FaDollarSign, FaUserCircle, FaStar, FaBriefcase,
+  FaBriefcase,
   FaBell, FaCheckCircle, FaClock,
 } from "react-icons/fa";
-import { MdCheckBox } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
 
 import Sidebar   from "../Components/Sidebar";

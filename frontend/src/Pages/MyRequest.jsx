@@ -5,8 +5,10 @@ import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header"; 
 import BottomNav from "../Components/BottomNav";
 import { API_ENDPOINTS, apiCall } from "../config/api";
+import { useAlert } from "../Components/AlertContainer";
 
 export default function MyRequestsPage() {
+  const { showSuccess, showError } = useAlert();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -39,11 +41,13 @@ export default function MyRequestsPage() {
       })));
     } catch (err) {
       console.error('Failed to load my requests', err);
+      showError('Failed to load your requests. Please try again.');
     }
   };
 
   useEffect(() => {
     loadRequests();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleWithdrawRequest = async (requestId) => {
@@ -53,10 +57,13 @@ export default function MyRequestsPage() {
       });
       
       setAllRequests(prev => prev.filter(req => req.id !== requestId));
-      alert(result.message || 'Request withdrawn successfully');
+      showSuccess(result.message || 'Request withdrawn successfully');
+      
+      // Dispatch custom event to notify other pages (like Feed) to refresh
+      window.dispatchEvent(new CustomEvent('requestWithdrawn', { detail: { requestId } }));
     } catch (err) {
       console.error('Error withdrawing request:', err);
-      alert(err.message || 'Failed to withdraw request. Please try again.');
+      showError(err.message || 'Failed to withdraw request. Please try again.');
     }
   };
 
@@ -155,7 +162,7 @@ export default function MyRequestsPage() {
                       <p className="text-sm md:text-base text-gray-700 mb-4 italic">"{request.description}"</p>
 
                       <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600">
-                        <span className="font-semibold text-sky-600">${request.price}</span>
+                        <span className="font-semibold text-sky-600">₹{request.price}</span>
                         <span>• {request.time}</span>
                       </div>
                     </div>
@@ -227,7 +234,7 @@ export default function MyRequestsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-sky-50 rounded-lg p-4 border border-sky-200">
                     <p className="text-sm text-sky-600 font-medium mb-1">Budget</p>
-                    <p className="text-2xl font-bold text-gray-900">${selectedRequest.price}</p>
+                    <p className="text-2xl font-bold text-gray-900">₹{selectedRequest.price}</p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <p className="text-sm text-blue-600 font-medium mb-1">Requested On</p>
