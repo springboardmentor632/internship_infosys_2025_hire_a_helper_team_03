@@ -13,16 +13,18 @@ The application facilitates task posting, request management, user authenticatio
 - [✨ Features](#features)
 - [🛠️ Tech Stack](#tech-stack)
 - [⚙️ Installation](#installation)
-- [💡 Usage](#usage)
+- [📸 Screenshots](#example-screenshots)
 - [📁 Project Structure](#project-structure)
 - [🔌 API Endpoints](#api-endpoints)
 - [🔐 Environment Variables](#environment-variables)
 - [👥 Contact/Authors](#contactauthors)
 - [🗺️ Roadmap](#roadmap)
 - [🙏 Acknowledgments](#acknowledgments)
+- [🎉 Conclusion](#conclusion)
 
 ---
 
+<a id="features"></a>
 ## ✨ Features
 
 - **🔒 User Authentication & Authorization**
@@ -63,6 +65,7 @@ The application facilitates task posting, request management, user authenticatio
 
 ---
 
+<a id="tech-stack"></a>
 ## 🛠️ Tech Stack
 
 ### 🎨 Frontend
@@ -89,6 +92,7 @@ The application facilitates task posting, request management, user authenticatio
 | **CORS** | Latest | Cross-origin resource sharing |
 ---
 
+<a id="installation"></a>
 ## ⚙️ Installation
 
 ### 📋 Prerequisites
@@ -184,44 +188,8 @@ Before you begin, ensure you have the following installed:
    - Add it to the `MONGO_URI` in your backend `.env` file
 
 ---
-<!-- 
-## Usage
 
-### Getting Started
-
-1. **Sign Up**
-   - Navigate to the signup page
-   - Enter your email, password, and other required details
-   - Verify your email with the OTP sent to your inbox
-
-2. **Login**
-   - Use your credentials to log in
-   - You'll be redirected to the dashboard
-
-3. **Post a Task**
-   - Click on "Post Task" from the navigation menu
-   - Fill in task details (title, description, location, budget)
-   - Save as draft or publish immediately
-
-4. **Browse Tasks**
-   - Visit the Feed page to see all available tasks
-   - Filter tasks by status
-   - Click on a task to view details
-
-5. **Send a Request**
-   - From the task detail page, click "Send Request"
-   - Wait for the task owner to accept or reject
-
-6. **Manage Requests**
-   - View incoming requests on your tasks
-   - Accept or reject helper requests
-   - Track your outgoing requests
-
-7. **Update Profile**
-   - Navigate to your profile
-   - Click "Edit Profile"
-   - Upload a profile picture and update your information -->
-
+<a id="example-screenshots"></a>
 ### 📸 Example Screenshots
 
 #### 🏠 Home Screen
@@ -241,6 +209,7 @@ Before you begin, ensure you have the following installed:
 *Grid view of available tasks with filter tabs for different task statuses and task cards showing key information*
 
 
+<a id="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -307,6 +276,7 @@ internship_infosys_2025_hire_a_helper_team_03/
 
 ---
 
+<a id="api-endpoints"></a>
 ## 🔌 API Endpoints
 
 ### 🔐 Authentication
@@ -352,6 +322,7 @@ internship_infosys_2025_hire_a_helper_team_03/
 
 ---
 
+<a id="environment-variables"></a>
 ## 🔐 Environment Variables
 
 ### 🔧 Backend (.env)
@@ -390,7 +361,8 @@ REACT_APP_API_URL=http://localhost:5000
 
 ---
 
-## 👥 Contact/Authors
+<a id="contactauthors"></a>
+## 👥 Authors
 
 This project was created as part of the **Infosys Internship 2025** by **Team 03**. 🎓
 
@@ -399,11 +371,12 @@ This project was created as part of the **Infosys Internship 2025** by **Team 03
 | Role | Name |
 |------|------|
 | **Developer** | Ankita Prajapati |
-| **Developer** | Hasin |
+| **Developer** | Hasin Jishan |
 | **Project Mentor** | Springboard Mentor 632 |
 
 ---
 
+<a id="roadmap"></a>
 ## 🗺️ Roadmap
 
 ### 🎯 Current Version (v1.0)
@@ -437,6 +410,7 @@ This project was created as part of the **Infosys Internship 2025** by **Team 03
 
 ---
 
+<a id="acknowledgments"></a>
 ## 🙏 Acknowledgments
 
 - **🎓 Infosys Springboard**: For providing the internship opportunity and mentorshiphip
@@ -448,6 +422,7 @@ This project was created as part of the **Infosys Internship 2025** by **Team 03
 - **🌟 All Contributors**: Special thanks to all team members who contributed to this project
 
 
+<a id="conclusion"></a>
 ## 🎉 Conclusion
 
 Building Hire-A-Helper has been an incredible learning journey for our team. 🚀 We set out to create a platform that genuinely helps people connect and support each other, and we're proud of what we've achieved.
