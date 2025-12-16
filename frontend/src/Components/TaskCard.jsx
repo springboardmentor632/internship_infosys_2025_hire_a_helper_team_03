@@ -144,7 +144,14 @@ const TaskCard = ({ task, index, favorites, toggleFavorite, onViewDetails, hasRe
             <FaRupeeSign size={12} />
             {task.budget || 'Negotiable'}
           </span>
-          {hasRequested ? (
+          {getUserName() === 'you' ? (
+            <button 
+              onClick={() => onViewDetails(task)}
+              className="px-4 py-2 text-white font-semibold rounded-lg bg-sky-500 hover:bg-sky-600 transition-all duration-200 text-sm"
+            >
+              Manage Task
+            </button>
+          ) : hasRequested ? (
             <button 
               disabled
               className="px-4 py-2 text-gray-600 font-semibold rounded-lg bg-gray-200 cursor-not-allowed text-sm flex items-center gap-2"

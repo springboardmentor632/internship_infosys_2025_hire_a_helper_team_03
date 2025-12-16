@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaRupeeSign, FaTag, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
-const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
+const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit, hasRequested, onRequestSent }) => {
+  const [requestMessage, setRequestMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [requestError, setRequestError] = useState('');
+  const [requestSuccess, setRequestSuccess] = useState(false);
+
   if (!task) return null;
+
+  // Check if the current user is the task owner
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const currentUserId = currentUser.id || currentUser._id;
+  const taskUserId = task.user?._id || task.user?.id || task.user;
+  const isTaskOwner = currentUserId && taskUserId && currentUserId === taskUserId;
 
   const handleMarkComplete = () => {
     if (onMarkComplete) {
@@ -13,6 +24,48 @@ const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
   const handleEdit = () => {
     if (onEdit) {
       onEdit(task);
+    }
+  };
+
+  const handleSendRequest = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setRequestError('Please login to send a request');
+      return;
+    }
+
+    setSubmitting(true);
+    setRequestError('');
+
+    try {
+      const res = await fetch('http://localhost:5000/api/requests', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          taskId: task._id,
+          message: requestMessage || 'I would like to help with this task.'
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to send request');
+      }
+
+      setRequestSuccess(true);
+      // Dispatch event to notify Feed page
+      window.dispatchEvent(new Event('requestSent'));
+      if (onRequestSent) {
+        onRequestSent();
+      }
+    } catch (err) {
+      setRequestError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -185,6 +238,39 @@ const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
               </div>
             </div>
           </div>
+
+          {/* Request Message Input - Only show for non-owners who haven't requested */}
+          {!isTaskOwner && !hasRequested && !requestSuccess && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Message to Task Owner (Optional)
+              </label>
+              <textarea
+                value={requestMessage}
+                onChange={(e) => setRequestMessage(e.target.value)}
+                placeholder="Introduce yourself and explain why you're a good fit for this task..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none"
+                rows={3}
+              />
+            </div>
+          )}
+
+          {/* Request Error */}
+          {requestError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              {requestError}
+            </div>
+          )}
+
+          {/* Request Success */}
+          {requestSuccess && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Request sent successfully! The task owner will review your request.
+            </div>
+          )}
         </div>
 
         {/* Footer Actions */}
@@ -196,23 +282,50 @@ const TaskDetailsCard = ({ task, onClose, onMarkComplete, onEdit }) => {
             >
               Close
             </button>
-            <button 
-              onClick={handleEdit}
-              className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Edit Task
-            </button>
-            <button 
-              onClick={handleMarkComplete}
-              disabled={task.status === 'completed'}
-              className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl ${
-                task.status === 'completed'
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-green-500 text-white hover:bg-green-600'
-              }`}
-            >
-              {task.status === 'completed' ? 'Completed ✓' : 'Mark as Complete'}
-            </button>
+            
+            {/* Show Edit and Mark Complete buttons only for task owner */}
+            {isTaskOwner ? (
+              <>
+                <button 
+                  onClick={handleEdit}
+                  className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Edit Task
+                </button>
+                <button 
+                  onClick={handleMarkComplete}
+                  disabled={task.status === 'completed'}
+                  className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl ${
+                    task.status === 'completed'
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-green-500 text-white hover:bg-green-600'
+                  }`}
+                >
+                  {task.status === 'completed' ? 'Completed ✓' : 'Mark as Complete'}
+                </button>
+              </>
+            ) : (
+              /* Show Request button for non-owners */
+              hasRequested || requestSuccess ? (
+                <button 
+                  disabled
+                  className="flex-1 px-6 py-3 text-gray-600 font-semibold rounded-lg bg-gray-200 cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Request Sent
+                </button>
+              ) : (
+                <button 
+                  onClick={handleSendRequest}
+                  disabled={submitting}
+                  className="flex-1 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Sending...' : 'Send Request'}
+                </button>
+              )
+            )}
           </div>
         </div>
       </div>
